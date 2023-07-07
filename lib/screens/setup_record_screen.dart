@@ -83,6 +83,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       return;
     }
     try {
+      timer?.cancel();
       await Record().start(); // Use an instance of the Record class
       Timer newTimer = await onStartTimer();
       setState(() {
@@ -111,6 +112,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       return;
     }
     try {
+      timer?.cancel();
       await Record().resume();
       Timer newTimer = await onStartTimer();
       setState(() {
@@ -139,6 +141,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
 
   Future<Timer> onStartTimer() async {
     Timer newTimer = Timer.periodic(const Duration(milliseconds: 100), (t) {
+      if (isRecorded != true) {
+        timer?.cancel();
+      }
       if (duration.inSeconds >= recordingDuration) {
         t.cancel();
         onStop();
