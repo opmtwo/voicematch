@@ -14,6 +14,8 @@ class ProgressBar extends StatelessWidget {
 
   final double? br;
 
+  final int? gutter;
+
   const ProgressBar({
     Key? key,
     required this.value,
@@ -23,6 +25,7 @@ class ProgressBar extends StatelessWidget {
     this.w,
     this.h,
     this.br,
+    this.gutter,
   }) : super(key: key);
 
   final double defaultHeight = 4;
@@ -60,7 +63,8 @@ class ProgressBar extends StatelessWidget {
               top: 0,
               bottom: 0,
               left: 0,
-              width: value * MediaQuery.of(context).size.width,
+              width:
+                  value * (MediaQuery.of(context).size.width - (gutter ?? 0)),
               child: Div(
                 const [],
                 h: h ?? defaultHeight,
