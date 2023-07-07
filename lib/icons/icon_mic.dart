@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:voicematch/utils/color_utils.dart';
 
 String iconMic({Color? code = const Color(0xFFCAF0F8)}) {
   return ("""
 <svg viewBox="0 0 81 81" fill="none" xmlns="http://www.w3.org/2000/svg">
 	<path
 		d="M40.4876 0C62.5857 0 80.5 17.9143 80.5 40.0124C80.5 62.1105 62.5849 80.012 40.4876 80.012C18.3903 80.012 0.5 62.1105 0.5 40.0124C0.5 17.9135 18.3895 0 40.4876 0Z"
-		fill="${code.toString()}"
+		fill="${colorToHex(code)}"
 	/>
 	<path d="M29.9229 44.8028H51.0707V42.8828H29.9397L29.9229 44.8028Z" fill="black" />
 	<path
