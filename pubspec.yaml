@@ -81,6 +81,9 @@ dependencies:
   # https://pub.dev/packages/image_picker/install
   image_picker: ^0.8.7+1
 
+  # https://pub.dev/packages/record/install
+  record: ^4.4.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
