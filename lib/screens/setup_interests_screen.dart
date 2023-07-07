@@ -322,7 +322,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
           ),
         ],
       );
-      // Get.toNamed(Routes.setupOther);
+      Get.toNamed(Routes.setupRecording);
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {
