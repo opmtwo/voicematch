@@ -4,7 +4,7 @@ import 'package:voicematch/screens/intro_screen.dart';
 import 'package:voicematch/screens/setup_interests_screen.dart';
 import 'package:voicematch/screens/setup_intro_screen.dart';
 import 'package:voicematch/screens/setup_other_screen.dart';
-import 'package:voicematch/screens/sign_in_otp_screen.dart';
+import 'package:voicematch/screens/setup_record_screen.dart';
 import 'package:voicematch/screens/sign_in_screen.dart';
 import 'package:voicematch/screens/sign_up_otp_screen.dart';
 import 'package:voicematch/screens/sign_up_screen.dart';
@@ -25,6 +25,7 @@ abstract class Routes {
   static const setupIntro = '/setup/intro';
   static const setupOther = '/setup/other';
   static const setupInterests = '/setup/interests';
+  static const setupRecording = '/setup/recording';
 }
 
 final appPages = [
@@ -39,10 +40,6 @@ final appPages = [
   GetPage(
     name: Routes.signIn,
     page: () => const SignInScreen(),
-  ),
-  GetPage(
-    name: Routes.signInOtp,
-    page: () => const SignInOtpScreen(),
   ),
   GetPage(
     name: Routes.signUp,
@@ -67,5 +64,9 @@ final appPages = [
   GetPage(
     name: Routes.setupInterests,
     page: () => const SetupInterestsScreen(),
+  ),
+  GetPage(
+    name: Routes.setupRecording,
+    page: () => const SetupRecordScreen(),
   ),
 ];
