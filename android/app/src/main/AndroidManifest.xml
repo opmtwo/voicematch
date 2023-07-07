@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.voicematch.app.voicematch">
+    package="com.voicematch.app">
    <application
         android:label="voicematch"
         android:name="${applicationName}"

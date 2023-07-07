@@ -1,4 +1,4 @@
-package com.voicematch.app.voicematch
+package com.voicematch.app
 
 import io.flutter.embedding.android.FlutterActivity
 
