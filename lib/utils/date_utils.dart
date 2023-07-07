@@ -37,3 +37,9 @@ String showLocalTime(
   }
   return result;
 }
+
+String getNow({String format = 'yyyy-MM-dd'}) {
+  DateTime now = DateTime.now();
+  String formattedDate = DateFormat(format).format(now);
+  return formattedDate.toString();
+}
