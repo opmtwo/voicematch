@@ -78,6 +78,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   void onStart() async {
+    setState(() {
+      error = null;
+    });
     if (duration.inSeconds >= recordingDuration) {
       safePrint('onStart - maximum recording duration reached - exit');
       return;
@@ -96,6 +99,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   void onPause() async {
+    setState(() {
+      error = null;
+    });
     try {
       await Record().pause();
       setState(() {
@@ -107,6 +113,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   void onResume() async {
+    setState(() {
+      error = null;
+    });
     if (duration.inSeconds >= recordingDuration) {
       safePrint('onResume - maximum recording duration reached - exit');
       return;
@@ -125,6 +134,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   void onStop() async {
+    setState(() {
+      error = null;
+    });
     try {
       String? path = await Record().stop();
       timer?.cancel();
@@ -141,7 +153,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
 
   Future<Timer> onStartTimer() async {
     Timer newTimer = Timer.periodic(const Duration(milliseconds: 100), (t) {
-      if (isRecorded != true) {
+      if (isRecording != true) {
         timer?.cancel();
       }
       if (duration.inSeconds >= recordingDuration) {
@@ -157,6 +169,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   void onDelete() async {
+    setState(() {
+      error = null;
+    });
     EasyLoading.show(status: 'loading...');
     try {
       await Record().stop();
@@ -175,13 +190,11 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     String? err = '';
     bool isValid = true;
 
-    // String givenName = givenNameController.text;
-    // safePrint({givenName});
-    // err = givenName.trim().length > 2
-    //     ? null
-    //     : 'Name must contain at least 2 characters';
-    // setState(() => givenNameError = err);
-    // isValid = err == null ? isValid : false;
+    err = isRecorded && recordingPath != null
+        ? null
+        : 'Please record your audio to continue';
+    setState(() => error = err);
+    isValid = err == null ? isValid : false;
 
     return isValid;
   }
@@ -309,6 +322,18 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
             ),
             Div(
               [
+                if (error != null)
+                  Div(
+                    [
+                      P(
+                        error,
+                        isBody1: true,
+                        fg: colorPrimary,
+                        fw: FontWeight.w600,
+                      ),
+                    ],
+                    mb: gap,
+                  ),
                 Div(
                   [
                     Row(
