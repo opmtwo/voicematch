@@ -1,115 +1,167 @@
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:amplify_api/amplify_api.dart';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:get/get.dart';
+import 'package:voicematch/amplifyconfiguration.dart';
+import 'package:voicematch/components/loader.dart';
+import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/router.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // transparent status bar
+      statusBarBrightness: Brightness.light, // dark status bar
+      statusBarIconBrightness: Brightness.light, // dark text for status bar
+    ),
+  );
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const VoiceMatch());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class VoiceMatch extends StatefulWidget {
+  const VoiceMatch({Key? key}) : super(key: key);
+
+  @override
+  State<VoiceMatch> createState() => _VoiceMatchState();
+}
+
+class _VoiceMatchState extends State<VoiceMatch> {
+  // busy and error
+  bool? isBusy;
+  String? error;
+
+  // logged in?
+  bool isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  Future<void> init() async {
+    configLoading();
+    await _configureAmplify();
+    await _initAuth();
+  }
+
+  void configLoading() {
+    EasyLoading.instance
+      ..displayDuration = const Duration(milliseconds: 2000)
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+      ..loadingStyle = EasyLoadingStyle.custom
+      ..maskType = EasyLoadingMaskType.custom
+      ..textStyle = const TextStyle(fontSize: 0)
+      ..indicatorSize = 64.0
+      ..indicatorWidget = const Loader()
+      ..radius = 16.0
+      ..progressColor = colorPrimary
+      ..backgroundColor = colorTransparent
+      ..indicatorColor = colorTransparent
+      ..textColor = colorPrimary
+      ..maskColor = colorPrimary.withOpacity(0.15)
+      ..userInteractions = true
+      ..boxShadow = <BoxShadow>[]
+      ..dismissOnTap = false
+      ..customAnimation = null;
+  }
+
+  Future<void> _configureAmplify() async {
+    try {
+      // add auth
+      final auth = AmplifyAuthCognito();
+      await Amplify.addPlugin(auth);
+
+      // add api
+      // final api = AmplifyAPI(modelProvider: ModelProvider.instance);
+      // await Amplify.addPlugin(api);
+
+      // rest api
+      final restApi = AmplifyAPI();
+      await Amplify.addPlugin(restApi);
+
+      // configure
+      await Amplify.configure(amplifyconfig);
+    } on Exception catch (e) {
+      safePrint('An error occurred configuring Amplify: $e');
+    }
+  }
+
+  Future redirectUser() async {
+    List<AuthUserAttribute> attributes =
+        await Amplify.Auth.fetchUserAttributes();
+    String isSetupDone = attributes
+            .firstWhereOrNull((element) =>
+                element.userAttributeKey ==
+                const CognitoUserAttributeKey.custom('custom:is_setup_done'))
+            ?.value ??
+        '';
+    if (isSetupDone.toLowerCase() == 'yes') {
+      // go to welcome screen
+      Get.offNamedUntil(
+        Routes.home,
+        (route) => false,
+      );
+    } else {
+      // go to setup screen
+      Get.offNamedUntil(
+        Routes.setupIntro,
+        (route) => false,
+      );
+    }
+  }
+
+  Future<void> _initAuth() async {
+    var isSignedIn = false;
+    try {
+      final session = await Amplify.Auth.fetchAuthSession();
+      isSignedIn = session.isSignedIn;
+      safePrint('main - isSignedIn = $isSignedIn');
+    } on Exception catch (e) {
+      safePrint('main - An error occurred configuring Amplify: $e');
+      // AuthService().setIsLoggedIn(false);
+    }
+    setState(() {
+      isBusy = false;
+      isLoggedIn = isSignedIn;
+    });
+    if (isSignedIn == true) {
+      await redirectUser();
+    }
+    // let the screen load in the background before removing the splash screen
+    Future.delayed(const Duration(milliseconds: 500), () {
+      FlutterNativeSplash.remove();
+    });
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
+    return GetMaterialApp(
+      title: 'voicematchApp',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        primarySwatch: Colors.red,
+        fontFamily: 'Nunito',
+        listTileTheme: const ListTileThemeData(
+          contentPadding: EdgeInsets.zero,
+          minVerticalPadding: 0,
+          horizontalTitleGap: 0,
+          minLeadingWidth: 0,
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      getPages: appPages,
+      initialRoute: Routes.welcome,
+      // initialRoute: Routes.signUp,
+      builder: EasyLoading.init(),
     );
   }
 }
