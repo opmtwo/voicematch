@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "voicematchGraphApi",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authvoicematchc92d7b64",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

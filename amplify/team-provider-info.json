@@ -1,0 +1,52 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-voicematch-dev-174928-authRole",
+      "UnauthRoleArn": "arn:aws:iam::852346322259:role/amplify-voicematch-dev-174928-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::852346322259:role/amplify-voicematch-dev-174928-authRole",
+      "Region": "eu-central-1",
+      "DeploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+      "UnauthRoleName": "amplify-voicematch-dev-174928-unauthRole",
+      "StackName": "amplify-voicematch-dev-174928",
+      "StackId": "arn:aws:cloudformation:eu-central-1:852346322259:stack/amplify-voicematch-dev-174928/8f46c0b0-052d-11ee-8877-066364a1424a",
+      "AmplifyAppId": "dqe4ja5f4wmp1",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-voicematch-dev-174928-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
+    },
+    "categories": {
+      "auth": {
+        "voicematchc92d7b64": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "voicematchc92d7b64PostConfirmation": {
+          "GROUP": "Default",
+          "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+          "s3Key": "amplify-builds/voicematchc92d7b64PostConfirmation-5a327745364f7273546f-build.zip"
+        },
+        "voicematchc92d7b64PreSignup": {
+          "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+          "s3Key": "amplify-builds/voicematchc92d7b64PreSignup-42312f5941334a714f6c-build.zip"
+        },
+        "voicematchc92d7b64PreTokenGeneration": {
+          "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+          "s3Key": "amplify-builds/voicematchc92d7b64PreTokenGeneration-435457304a73486b3766-build.zip"
+        },
+        "voicematchStorageLambda": {
+          "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+          "s3Key": "amplify-builds/voicematchStorageLambda-4a65754c466d66367662-build.zip"
+        },
+        "voicematchRestApiLambda": {
+          "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
+          "s3Key": "amplify-builds/voicematchRestApiLambda-5737735558567461676e-build.zip"
+        }
+      },
+      "storage": {
+        "voicematchStorage": {}
+      },
+      "api": {
+        "voicematchGraphApi": {},
+        "voicematchRestApi": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "resourceName": "voicematchStorage",
+  "policyUUID": "2c53e71f",
+  "bucketName": "voicematch-storage",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "voicematchStorageLambda",
+  "groupAccess": {
+    "Default": [
+      "CREATE_AND_UPDATE",
+      "READ"
+    ],
+    "Admin": [
+      "CREATE_AND_UPDATE",
+      "READ"
+    ],
+    "Root": [
+      "CREATE_AND_UPDATE",
+      "READ"
+    ]
+  }
+}

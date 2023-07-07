@@ -1,0 +1,124 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+
+# input AMPLIFY {
+# 	globalAuthRule: AuthRule = { allow: public }
+# } # FOR TESTING ONLY!
+
+enum MessageType {
+	text
+	image
+	video
+	audio
+	document
+	link
+	file
+	other
+}
+
+enum OnlineStatus {
+	online
+	offline
+	unknown
+	hidden
+}
+
+type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	name: String
+	givenName: String
+	familyName: String
+	pictureNormal: String
+	pictureMasked: String
+	gender: String
+	lookingFor: String
+	ageRange: String
+	distance: String
+	languages: [String]
+	interests: [String]
+	introRecording: ID
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+type OnlinePresence @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	status: OnlineStatus
+	lastSeenAt: AWSDateTime
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+type Upload @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	userId: ID @index(name: "listUploadsByUserId", queryField: "listUploadsByUserId", sortKeyFields: ["createdAt"])
+	modelId: ID! @index(name: "listUploadsByModelId", queryField: "listUploadsByModelId", sortKeyFields: ["createdAt"])
+	modelType: String
+	name: String
+	mime: String
+	size: Int
+	duration: Int
+	key: String
+	url: String
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+type Connection @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	chatId: ID @index(name: "listConnectionByChatId", queryField: "listConnectionByChatId", sortKeyFields: ["createdAt"])
+	userId: ID @index(name: "listConnectionByUserId", queryField: "listConnectionByUserId", sortKeyFields: ["createdAt"])
+	memberId: ID @index(name: "listConnectionByMemberId", queryField: "listConnectionByMemberId", sortKeyFields: ["createdAt"])
+	user: User @hasOne(fields: ["userId"])
+	member: User @hasOne(fields: ["memberId"])
+	onlinePresence: OnlinePresence @hasOne(fields: ["memberId"])
+	isSender: Boolean
+	isReceiver: Boolean
+	isAccepted: Boolean
+	isDeclined: Boolean
+	isBlocked: Boolean
+	isMuted: Boolean
+	isPinned: Boolean
+	acceptedAt: AWSDateTime
+	declinedAt: AWSDateTime
+	blockedAt: AWSDateTime
+	mutedAt: AWSDateTime
+	pinnedAt: AWSDateTime
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+type Message @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	chatId: ID @index(name: "listMessageByChatId", queryField: "listMessageByChatId", sortKeyFields: ["createdAt"])
+	userId: ID @index(name: "listMessageByUserId", queryField: "listMessageByUserId", sortKeyFields: ["createdAt"])
+	type: MessageType
+	body: String
+	uploadId: ID
+	upload: Upload @hasOne(fields: ["uploadId"])
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
+type MessageEvent @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	# this should be messageId-userId
+	id: ID
+	owner: ID
+	messageId: ID @index(name: "listMessageEventByMessageId", queryField: "listMessageEventByMessageId", sortKeyFields: ["createdAt"])
+	userId: ID @index(name: "listMessageEventByUserId", queryField: "listMessageEventByUserId", sortKeyFields: ["createdAt"])
+	chatId: ID @index(name: "listMessageEventByChatId", queryField: "listMessageEventByChatId", sortKeyFields: ["createdAt"])
+	# this is chatId-userId - used to fetch user specific messages of a chat
+	chatUserId: ID @index(name: "listMessageEventByChatUserId", queryField: "listMessageEventByChatUserId", sortKeyFields: ["createdAt"])
+	type: MessageType
+	body: String
+	uploadId: ID
+	upload: Upload @hasOne(fields: ["uploadId"])
+	readAt: AWSDateTime
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
