@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:voicematch/components/image_masked.dart';
+import 'package:voicematch/components/wave.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
@@ -266,29 +267,10 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                               ),
                               Div(
                                 [
-                                  Stack(
-                                    children: [
-                                      Positioned(
-                                        child: SvgPicture.string(
-                                          iconWave(),
-                                          width: 256,
-                                        ),
-                                      ),
-                                      ClipPath(
-                                        clipper: PercentageClipper(
-                                          percent: 100 -
-                                              ((duration.inMilliseconds /
-                                                  (recordingDuration * 1000) *
-                                                  100)),
-                                        ), // Set the desired percentage here
-                                        child: SvgPicture.string(
-                                          iconWave(),
-                                          width: 256,
-                                          color: const Color(0xFF132D84),
-                                        ),
-                                      ),
-                                    ],
-                                  )
+                                  Wave(
+                                    value: duration.inMilliseconds.toDouble(),
+                                    total: recordingDuration * 1000,
+                                  ),
                                 ],
                               ),
                               Div(
