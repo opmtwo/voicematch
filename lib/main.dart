@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:flutter/services.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -51,6 +52,8 @@ class _VoiceMatchState extends State<VoiceMatch> {
     configLoading();
     await _configureAmplify();
     await _initAuth();
+    // let amplify load before trying to init auth state
+    // await Future.delayed(const Duration(milliseconds: 1500), _initAuth);
   }
 
   void configLoading() {
@@ -78,7 +81,11 @@ class _VoiceMatchState extends State<VoiceMatch> {
     try {
       // add auth
       final auth = AmplifyAuthCognito();
-      await Amplify.addPlugin(auth);
+      // await Amplify.addPlugin(auth);
+
+      // s3 storage
+      final storage = AmplifyStorageS3();
+      // await Amplify.addPlugin(storage);
 
       // add api
       // final api = AmplifyAPI(modelProvider: ModelProvider.instance);
@@ -86,7 +93,16 @@ class _VoiceMatchState extends State<VoiceMatch> {
 
       // rest api
       final restApi = AmplifyAPI();
-      await Amplify.addPlugin(restApi);
+      // await Amplify.addPlugin(restApi);
+
+      // load all plugins at once
+      Future.wait(
+        [
+          Amplify.addPlugin(auth),
+          Amplify.addPlugin(storage),
+          Amplify.addPlugin(restApi)
+        ],
+      );
 
       // configure
       await Amplify.configure(amplifyconfig);
@@ -160,7 +176,6 @@ class _VoiceMatchState extends State<VoiceMatch> {
       ),
       getPages: appPages,
       initialRoute: Routes.welcome,
-      // initialRoute: Routes.signUp,
       builder: EasyLoading.init(),
     );
   }
