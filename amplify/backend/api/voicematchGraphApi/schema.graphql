@@ -51,6 +51,17 @@ type OnlinePresence @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	updatedAt: AWSDateTime
 }
 
+type Recording @model @auth(rules: [{ allow: owner, operations: [] }]) {
+	id: ID
+	owner: ID
+	userId: ID @index(name: "listRecordingsByUserId", queryField: "listRecordingsByUserId", sortKeyFields: ["createdAt"])
+	duration: Int
+	key: String
+	url: String
+	createdAt: AWSDateTime
+	updatedAt: AWSDateTime
+}
+
 type Upload @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	id: ID
 	owner: ID
