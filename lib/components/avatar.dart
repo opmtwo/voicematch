@@ -83,6 +83,7 @@ class AvatarState extends State<Avatar> {
       if (picture.isEmpty) {
         return;
       }
+
       final result = await Amplify.Storage.getUrl(key: picture);
       safePrint('Fetched avatar url - ${result.url}');
       setState(() {
@@ -194,10 +195,11 @@ class AvatarState extends State<Avatar> {
           borderRadius: BorderRadius.circular(100),
           child: profilePic != null
               ? Image.network(
-                  profilePic!,
-                  width: 80,
-                  height: 80,
+                  profilePic as String,
+                  width: 128,
+                  height: 128,
                   fit: BoxFit.cover,
+                  isAntiAlias: true,
                 )
               : const IconBox(
                   P(
@@ -221,7 +223,8 @@ class AvatarState extends State<Avatar> {
                 child: P(
                   'Edit'.toUpperCase(),
                   isBody1: true,
-                  fw: FontWeight.w600,
+                  fw: FontWeight.w700,
+                  fg: colorBlack,
                 ),
               ),
             ],
