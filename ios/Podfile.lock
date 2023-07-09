@@ -27,6 +27,11 @@ PODS:
     - Flutter
     - SwiftFormat/CLI
     - SwiftLint (= 0.48.0)
+  - amplify_storage_s3_ios (0.0.1):
+    - Amplify (= 1.29.1)
+    - amplify_core
+    - AmplifyPlugins/AWSS3StoragePlugin (= 1.29.1)
+    - Flutter
   - AmplifyPlugins/AWSAPIPlugin (1.29.1):
     - AppSyncRealTimeClient (~> 3.0)
     - AWSCore (~> 2.30.1)
@@ -38,6 +43,10 @@ PODS:
     - AWSCore (~> 2.30.1)
     - AWSMobileClient (~> 2.30.1)
     - AWSPluginsCore (= 1.29.1)
+  - AmplifyPlugins/AWSS3StoragePlugin (1.29.1):
+    - AWSCore (~> 2.30.1)
+    - AWSPluginsCore (= 1.29.1)
+    - AWSS3 (~> 2.30.1)
   - AppSyncRealTimeClient (3.1.0):
     - Starscream (~> 4.0.4)
   - AWSAuthCore (2.30.4):
@@ -56,6 +65,8 @@ PODS:
   - AWSPluginsCore (1.29.1):
     - Amplify (= 1.29.1)
     - AWSCore (~> 2.30.1)
+  - AWSS3 (2.30.4):
+    - AWSCore (= 2.30.4)
   - Flutter (1.0.0)
   - flutter_native_splash (0.0.1):
     - Flutter
@@ -88,6 +99,7 @@ DEPENDENCIES:
   - amplify_auth_cognito_ios (from `.symlinks/plugins/amplify_auth_cognito_ios/ios`)
   - amplify_core (from `.symlinks/plugins/amplify_core/ios`)
   - amplify_flutter_ios (from `.symlinks/plugins/amplify_flutter_ios/ios`)
+  - amplify_storage_s3_ios (from `.symlinks/plugins/amplify_storage_s3_ios/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -111,6 +123,7 @@ SPEC REPOS:
     - AWSCore
     - AWSMobileClient
     - AWSPluginsCore
+    - AWSS3
     - ObjectMapper
     - Starscream
     - SwiftFormat
@@ -125,6 +138,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/amplify_core/ios"
   amplify_flutter_ios:
     :path: ".symlinks/plugins/amplify_flutter_ios/ios"
+  amplify_storage_s3_ios:
+    :path: ".symlinks/plugins/amplify_storage_s3_ios/ios"
   Flutter:
     :path: Flutter
   flutter_native_splash:
@@ -154,6 +169,7 @@ SPEC CHECKSUMS:
   amplify_auth_cognito_ios: 5260aed8aaa4e6c5a08a49695077c1b6f8d75251
   amplify_core: 0876b2fbbcec7619f5b58b20c59ecc0118f65a47
   amplify_flutter_ios: b215a2d52f8beeb9d30e29a99152c71fadc6730a
+  amplify_storage_s3_ios: 6e8ff166371b95568e2ea6f0997531c4f027b6fc
   AmplifyPlugins: f8fa63aafd782a44cf48abef656e759dcab3eb71
   AppSyncRealTimeClient: 49901c6f21e541bec09281854c5695a6c1309bf7
   AWSAuthCore: 42e2d4927d94e5e323b63b2ae885f287c51b5889
@@ -162,6 +178,7 @@ SPEC CHECKSUMS:
   AWSCore: 19b8233fe2d0ed3ccf5cff833a615814282cdc90
   AWSMobileClient: 7d9c81e47ef27c6b5604858477006548eb1db342
   AWSPluginsCore: d2c3685072cf896a05f09b55686af476db7c0596
+  AWSS3: 1c5540cbe98d8ae5e24f44dcca25796ddba16058
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   image_picker_ios: 58b9c4269cb176f89acea5e5d043c9358f2d25f8
