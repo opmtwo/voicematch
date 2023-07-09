@@ -1,11 +1,12 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
+import 'dart:io';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
@@ -23,9 +24,38 @@ import 'package:voicematch/icons/icon_pause.dart';
 import 'package:voicematch/icons/icon_play.dart';
 import 'package:voicematch/icons/icon_rewind_minus.dart';
 import 'package:voicematch/icons/icon_rewind_plus.dart';
-import 'package:voicematch/icons/icon_stop.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
+import 'package:uuid/uuid.dart';
+import 'package:voicematch/utils/date_utils.dart';
+
+Future<String?> uploadFile(String path) async {
+  final user = await Amplify.Auth.getCurrentUser();
+  final uuid = const Uuid().v4().toString();
+  final today = getNow(format: 'yyyy-MM-dd');
+  final key = '${user.username}/recordings/$today/$uuid';
+  final localFile = File.fromUri(Uri.parse(path));
+  try {
+    final UploadFileResult result = await Amplify.Storage.uploadFile(
+      local: localFile,
+      key: key,
+      onProgress: (progress) {
+        // safePrint(
+        //     'Fraction completed: ${progress.getFractionCompleted()}');
+      },
+    );
+    safePrint('Successfully uploaded file: ${result.key}');
+    await Amplify.Auth.updateUserAttribute(
+      userAttributeKey: CognitoUserAttributeKey.picture,
+      value: uuid,
+    );
+    safePrint('Successfully updated profile pic in user profile: $uuid');
+    return key;
+  } on StorageException catch (e) {
+    safePrint('Error uploading file: $e');
+  }
+  return null;
+}
 
 class SetupRecordScreen extends StatefulWidget {
   const SetupRecordScreen({Key? key}) : super(key: key);
@@ -63,11 +93,11 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     try {
       List<AuthUserAttribute> attributes =
           await Amplify.Auth.fetchUserAttributes();
-      String givenName = attributes
-              .firstWhereOrNull((element) =>
-                  element.userAttributeKey == CognitoUserAttributeKey.givenName)
-              ?.value ??
-          '';
+      // String givenName = attributes
+      //         .firstWhereOrNull((element) =>
+      //             element.userAttributeKey == CognitoUserAttributeKey.givenName)
+      //         ?.value ??
+      //     '';
       setState(() {
         //
       });
@@ -209,8 +239,10 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     }
     EasyLoading.show(status: 'loading...');
     try {
+      safePrint('recordingPath $recordingPath');
+      final key = await uploadFile(recordingPath as String);
       //
-      // Get.toNamed(Routes.setupOther);
+      Get.toNamed(Routes.setupDone);
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {
