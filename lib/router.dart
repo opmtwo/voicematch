@@ -1,6 +1,7 @@
 import 'package:get/route_manager.dart';
 import 'package:voicematch/screens/home_screen.dart';
 import 'package:voicematch/screens/intro_screen.dart';
+import 'package:voicematch/screens/matches_chat_screen.dart';
 import 'package:voicematch/screens/matches_index_screen.dart';
 import 'package:voicematch/screens/matches_match_screen.dart';
 import 'package:voicematch/screens/matches_preview_screen.dart';
@@ -108,6 +109,6 @@ final appPages = [
   ),
   GetPage(
     name: Routes.matchesChat,
-    page: () => const MatchesMatchScreen(),
+    page: () => const MatchesChatScreen(),
   ),
 ];
