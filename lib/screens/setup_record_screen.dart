@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
+import 'package:voicematch/form/progress_bar_alt.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/options.dart';
 import 'package:voicematch/constants/theme.dart';
@@ -182,7 +183,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   }
 
   Future<Timer> onStartTimer() async {
-    Timer newTimer = Timer.periodic(const Duration(milliseconds: 100), (t) {
+    Timer newTimer = Timer.periodic(const Duration(milliseconds: 33), (t) {
       if (isRecording != true) {
         timer?.cancel();
       }
@@ -192,7 +193,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
         return;
       }
       setState(() {
-        duration = Duration(milliseconds: duration.inMilliseconds + 100);
+        duration = Duration(milliseconds: duration.inMilliseconds + 33);
       });
     });
     return newTimer;
@@ -296,54 +297,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                   ),
                   Div(
                     [
-                      Stack(
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: const [
-                              Div(
-                                [],
-                                h: 40,
-                              ),
-                            ],
-                          ),
-                          Div([
-                            ProgressBar(
-                              value: duration.inSeconds / recordingDuration,
-                              h: 4,
-                              gutter: (gap * 2).toInt(),
-                            ),
-                          ], pt: 18),
-                          Positioned(
-                            top: 0,
-                            left: duration.inSeconds /
-                                recordingDuration *
-                                (MediaQuery.of(context).size.width -
-                                    (gap * 2) -
-                                    40),
-                            child: const IconBox(
-                              Div([]),
-                              w: 40,
-                              h: 40,
-                              bg: colorSeondary050,
-                            ),
-                          ),
-                          Positioned(
-                            top: 10,
-                            left: duration.inSeconds /
-                                    recordingDuration *
-                                    (MediaQuery.of(context).size.width -
-                                        (gap * 2) - // gap on both sides
-                                        40) + // circle width
-                                10, // shift center circle to center of parent circle
-                            child: const IconBox(
-                              Div([]),
-                              w: 20,
-                              h: 20,
-                              bg: colorSeondary500,
-                            ),
-                          ),
-                        ],
+                      ProgressBarAlt(
+                        value: duration.inMilliseconds.toDouble(),
+                        total: recordingDuration * 1000,
                       ),
                     ],
                     mv: gapBottom,
