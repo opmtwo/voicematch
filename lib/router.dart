@@ -1,6 +1,11 @@
 import 'package:get/route_manager.dart';
 import 'package:voicematch/screens/home_screen.dart';
 import 'package:voicematch/screens/intro_screen.dart';
+import 'package:voicematch/screens/matches_index_screen.dart';
+import 'package:voicematch/screens/matches_match.dart';
+import 'package:voicematch/screens/matches_preview_screen.dart';
+import 'package:voicematch/screens/profile_screen.dart';
+import 'package:voicematch/screens/setup_done_screen.dart';
 import 'package:voicematch/screens/setup_interests_screen.dart';
 import 'package:voicematch/screens/setup_intro_screen.dart';
 import 'package:voicematch/screens/setup_other_screen.dart';
@@ -26,6 +31,16 @@ abstract class Routes {
   static const setupOther = '/setup/other';
   static const setupInterests = '/setup/interests';
   static const setupRecording = '/setup/recording';
+  static const setupDone = '/setup/done';
+
+  static const profile = '/profile';
+
+  static const matchesIndex = '/matches';
+  static const matchesPreview = '/matches/:id/preview';
+  static const matchesView = '/matches/:id';
+  static const matchesReveal = '/matches/:id/reveal';
+  static const matchesMatch = '/matches/:id/match';
+  static const matchesChat = '/matches/:id/chat';
 }
 
 final appPages = [
@@ -68,5 +83,31 @@ final appPages = [
   GetPage(
     name: Routes.setupRecording,
     page: () => const SetupRecordScreen(),
+  ),
+  GetPage(
+    name: Routes.setupDone,
+    page: () => const SetupDoneScreen(),
+  ),
+  GetPage(
+    name: Routes.profile,
+    page: () => const ProfileScreen(),
+  ),
+  GetPage(
+    name: Routes.matchesIndex,
+    page: () => const MatchesIndexScreen(),
+  ),
+  GetPage(
+    name: Routes.matchesPreview,
+    page: () => const MatchesPreviewScreen(),
+    transition: Transition.cupertinoDialog,
+    transitionDuration: const Duration(milliseconds: 500),
+  ),
+  GetPage(
+    name: Routes.matchesMatch,
+    page: () => const MatchesMatchScreen(),
+  ),
+  GetPage(
+    name: Routes.matchesChat,
+    page: () => const MatchesMatchScreen(),
   ),
 ];
