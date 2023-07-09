@@ -2,7 +2,7 @@ import 'package:get/route_manager.dart';
 import 'package:voicematch/screens/home_screen.dart';
 import 'package:voicematch/screens/intro_screen.dart';
 import 'package:voicematch/screens/matches_index_screen.dart';
-import 'package:voicematch/screens/matches_match.dart';
+import 'package:voicematch/screens/matches_match_screen.dart';
 import 'package:voicematch/screens/matches_preview_screen.dart';
 import 'package:voicematch/screens/profile_screen.dart';
 import 'package:voicematch/screens/setup_done_screen.dart';
