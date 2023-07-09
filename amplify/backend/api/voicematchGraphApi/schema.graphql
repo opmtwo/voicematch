@@ -26,6 +26,7 @@ enum OnlineStatus {
 type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	id: ID
 	owner: ID
+	onlinePresence: OnlinePresence @hasOne(fields: ["id"])
 	name: String
 	givenName: String
 	familyName: String
@@ -35,9 +36,15 @@ type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	lookingFor: String
 	ageRange: String
 	distance: String
-	languages: [String]
-	interests: [String]
-	introRecording: ID
+	locale: [String]
+	interestCreativity: String
+	interestSports: String
+	interestVideo: String
+	interestMusic: String
+	interestTravelling: String
+	interestPet: String
+	introId: ID
+	intro: Recording @hasOne(fields: ["introId"])
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
