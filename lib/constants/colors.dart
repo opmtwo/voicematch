@@ -16,6 +16,7 @@ const Color colorSeondary050 = Color(0xFFCAF0F8);
 const Color colorSeondary100 = Color(0xFF90E0EF);
 const Color colorSeondary200 = Color(0xFF00B4D8);
 const Color colorSeondary500 = Color(0XFF0077B6);
+const Color colorSeondary700 = Color(0xFF009E66);
 const Color colorSeondary900 = Color(0xFFCAF0F8);
 
 const Color colorGrey200 = Color(0xFFE6E4E7);
