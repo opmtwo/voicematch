@@ -27,6 +27,7 @@ type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	id: ID
 	owner: ID
 	onlinePresence: OnlinePresence @hasOne(fields: ["id"])
+	email: String
 	name: String
 	givenName: String
 	familyName: String
@@ -45,6 +46,7 @@ type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	interestPet: String
 	introId: ID
 	intro: Recording @hasOne(fields: ["introId"])
+	searchTerm: String
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
