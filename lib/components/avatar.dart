@@ -71,10 +71,14 @@ Future<String?> uploadFile(XFile image) async {
 }
 
 class Avatar extends StatefulWidget {
-  final double? width = 128;
-  final double? height = 128;
+  final double? w;
+  final double? h;
 
-  const Avatar({Key? key}) : super(key: key);
+  const Avatar({
+    Key? key,
+    this.w,
+    this.h,
+  }) : super(key: key);
 
   @override
   State<Avatar> createState() => AvatarState();
@@ -227,6 +231,9 @@ class AvatarState extends State<Avatar> {
     );
   }
 
+  final double defaultWidth = 128;
+  final double defaultHeight = 128;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -236,8 +243,8 @@ class AvatarState extends State<Avatar> {
           child: profilePic != null
               ? Image.network(
                   profilePic as String,
-                  width: widget.width,
-                  height: widget.height,
+                  width: widget.w ?? defaultWidth,
+                  height: widget.h ?? defaultHeight,
                   fit: BoxFit.cover,
                   isAntiAlias: true,
                 )
@@ -247,9 +254,9 @@ class AvatarState extends State<Avatar> {
                     isBody1: true,
                     ta: TextAlign.center,
                   ),
-                  w: widget.width,
-                  h: widget.height,
-                  bg: Color(0xFFEEEEEE),
+                  w: widget.w ?? defaultWidth,
+                  h: widget.h ?? defaultHeight,
+                  bg: const Color(0xFFEEEEEE),
                 ),
         ),
         Positioned(
