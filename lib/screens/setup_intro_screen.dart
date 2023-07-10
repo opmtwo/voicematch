@@ -1,11 +1,16 @@
+import 'dart:convert';
+
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:voicematch/components/avatar.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/options.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
@@ -134,6 +139,7 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
     }
     EasyLoading.show(status: 'loading...');
     try {
+      // update user attributes
       await Amplify.Auth.updateUserAttributes(
         attributes: [
           AuthUserAttribute(
@@ -151,6 +157,21 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
           ),
         ],
       );
+
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/onboard');
+      safePrint('onSubmit - url $url');
+      final response = await http.post(url, body: jsonEncode({}), headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onSubmit - status code = ${response.statusCode}');
+
       Get.toNamed(Routes.setupOther);
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
