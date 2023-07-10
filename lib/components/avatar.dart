@@ -1,13 +1,19 @@
+import 'dart:convert';
+
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
@@ -33,12 +39,30 @@ Future<String?> uploadFile(XFile image) async {
         //     'Fraction completed: ${progress.getFractionCompleted()}');
       },
     );
-    safePrint('Successfully uploaded file: ${result.key}');
+
+    // update user attribute
     await Amplify.Auth.updateUserAttribute(
       userAttributeKey: CognitoUserAttributeKey.picture,
       value: uuid,
     );
-    safePrint('Successfully updated profile pic in user profile: $uuid');
+
+    // get access token
+    final response = await Amplify.Auth.fetchAuthSession(
+      options: CognitoSessionOptions(getAWSCredentials: true),
+    ) as CognitoAuthSession;
+    final accessToken = response.userPoolTokens?.accessToken;
+
+    // update profile via oboard api
+    // call onboard api - this will generate public urls for the new image
+    final url = Uri.parse('${apiEndPoint}api/v1/onboard');
+    safePrint('onSubmit - url $url');
+    final res = await http.post(url, body: jsonEncode({}), headers: {
+      'Authorization': accessToken.toString(),
+    });
+
+    // all done
+    safePrint('uploadFile - status code = ${res.statusCode}');
+    safePrint('uploadFile - updated profile pic in user profile: $uuid');
     return uuid;
   } on StorageException catch (e) {
     safePrint('Error uploading file: $e');
@@ -73,28 +97,39 @@ class AvatarState extends State<Avatar> {
 
   Future<void> refreshAvatar() async {
     try {
+      // final attributes = await Amplify.Auth.fetchUserAttributes();
+      // String? picture = attributes
+      //         .firstWhereOrNull((element) =>
+      //             element.userAttributeKey == CognitoUserAttributeKey.picture)
+      //         ?.value ??
+      //     '';
+      // safePrint('refreshAvatar - profile picture - $picture');
+      // if (picture.isEmpty) {
+      //   return;
+      // }
+
+      // final result = await Amplify.Storage.getUrl(key: picture);
+      // safePrint('Fetched avatar url - ${result.url}');
+
       final attributes = await Amplify.Auth.fetchUserAttributes();
-      String? picture = attributes
+      String? url = attributes
               .firstWhereOrNull((element) =>
-                  element.userAttributeKey == CognitoUserAttributeKey.picture)
+                  element.userAttributeKey ==
+                  CognitoUserAttributeKey.custom('custom:picture_normal'))
               ?.value ??
           '';
-      safePrint('refreshAvatar - profile picture - $picture');
-      if (picture.isEmpty) {
-        return;
-      }
-
-      final result = await Amplify.Storage.getUrl(key: picture);
-      safePrint('Fetched avatar url - ${result.url}');
+      safePrint('refreshAvatar - profile picture url - $url');
       setState(() {
-        profilePic = result.url;
+        profilePic = url;
       });
+      safePrint('Fetched avatar url in avatar.dart');
     } catch (e) {
       safePrint('Error fetching user avatar $e');
     }
   }
 
   Future pickImage() async {
+    EasyLoading.show(status: 'loading...');
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
@@ -103,16 +138,18 @@ class AvatarState extends State<Avatar> {
       );
       safePrint(image);
       if (image != null) {
-        Get.back();
+        // Get.back();
         final key = await uploadFile(image);
         if (key != null) {
-          await uploadFile(image);
-          return key;
+          // await uploadFile(image);
+          // return key;
+          await refreshAvatar();
         }
       }
     } catch (e) {
       safePrint('Error in gallery picker $e');
     }
+    EasyLoading.dismiss();
   }
 
   Future<void> onEditAvatar() async {
@@ -207,8 +244,8 @@ class AvatarState extends State<Avatar> {
                     isBody1: true,
                     ta: TextAlign.center,
                   ),
-                  w: 160,
-                  h: 160,
+                  w: 128,
+                  h: 128,
                   bg: Color(0xFFEEEEEE),
                 ),
         ),
