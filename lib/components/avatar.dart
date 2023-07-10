@@ -71,6 +71,9 @@ Future<String?> uploadFile(XFile image) async {
 }
 
 class Avatar extends StatefulWidget {
+  final double? width = 128;
+  final double? height = 128;
+
   const Avatar({Key? key}) : super(key: key);
 
   @override
@@ -115,7 +118,7 @@ class AvatarState extends State<Avatar> {
       String? url = attributes
               .firstWhereOrNull((element) =>
                   element.userAttributeKey ==
-                  CognitoUserAttributeKey.custom('custom:picture_normal'))
+                  const CognitoUserAttributeKey.custom('custom:picture_normal'))
               ?.value ??
           '';
       safePrint('refreshAvatar - profile picture url - $url');
@@ -233,19 +236,19 @@ class AvatarState extends State<Avatar> {
           child: profilePic != null
               ? Image.network(
                   profilePic as String,
-                  width: 128,
-                  height: 128,
+                  width: widget.width,
+                  height: widget.height,
                   fit: BoxFit.cover,
                   isAntiAlias: true,
                 )
-              : const IconBox(
-                  P(
+              : IconBox(
+                  const P(
                     'UPLOAD IMAGE',
                     isBody1: true,
                     ta: TextAlign.center,
                   ),
-                  w: 128,
-                  h: 128,
+                  w: widget.width,
+                  h: widget.height,
                   bg: Color(0xFFEEEEEE),
                 ),
         ),
