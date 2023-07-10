@@ -32,8 +32,8 @@ class ImageMasked extends StatelessWidget {
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaX: sigmaX ?? 8,
-                sigmaY: sigmaX ?? 8,
+                sigmaX: sigmaX != null ? sigmaX as double : 8,
+                sigmaY: sigmaX != null ? sigmaY as double : 8,
               ),
               child: Container(
                 color: Colors.transparent,
