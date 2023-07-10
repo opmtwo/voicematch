@@ -85,6 +85,9 @@ dependencies:
   # https://pub.dev/packages/record/install
   record: ^4.4.4
 
+  # https://pub.dev/packages/audioplayers/install
+  audioplayers: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
