@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:voicematch/components/header.dart';
 import 'package:voicematch/components/image_masked.dart';
 import 'package:voicematch/components/message.dart';
+import 'package:voicematch/components/reveal/reveal.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
@@ -50,6 +51,36 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     getUser();
   }
 
+  final List<Widget> headerChildren = [
+    Row(
+      children: [
+        Div(
+          [
+            ImageMasked(
+              url: 'assets/images/avatar.png',
+              width: 48,
+            ),
+          ],
+          mr: gap / 2,
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            P(
+              'Mario',
+              isH5: true,
+              fg: colorBlack,
+            ),
+            P(
+              'Last seen today at 10:07 PM',
+              isBody2: true,
+            )
+          ],
+        ),
+      ],
+    )
+  ];
+
   Future<void> getUser() async {
     EasyLoading.show(status: 'loading...');
     try {
@@ -66,8 +97,59 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     Navigator.pop(context);
   }
 
-  void onNext() {
+  void onSubmit() {
     //
+  }
+
+  void onCancel() {
+    //
+  }
+
+  void onYes() {
+    //
+  }
+
+  void onNo() {
+    //
+  }
+
+  void onNext() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: colorTransparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, updateState) {
+            final originalState = updateState;
+            return Container(
+              height: MediaQuery.of(context).size.height *
+                  1, // Adjust the height as needed
+              child: Reveal(
+                duration: const Duration(seconds: 1500),
+                isUserHalfRevealed: true,
+                isUserFullRevealed: true,
+                isMemberHalfRevealed: true,
+                isMemberFullRevealed: true,
+                header: headerChildren,
+                submitTitle: 'Continue',
+                cancelTitle: 'cancel',
+                yesTitle: 'Yes',
+                noTitle: 'No',
+                onPrev: onBack,
+                onSubmit: onSubmit,
+                onCancel: onCancel,
+                onYes: onYes,
+                onNo: onNo,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -79,35 +161,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
             Div(
               [
                 Header(
-                  children: [
-                    Row(
-                      children: [
-                        Div(
-                          [
-                            ImageMasked(
-                              url: 'assets/images/avatar.png',
-                              width: 48,
-                            ),
-                          ],
-                          mr: gap / 2,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            P(
-                              'Mario',
-                              isH5: true,
-                              fg: colorBlack,
-                            ),
-                            P(
-                              'Last seen today at 10:07 PM',
-                              isBody2: true,
-                            )
-                          ],
-                        ),
-                      ],
-                    )
-                  ],
+                  children: headerChildren,
                   hasPrev: true,
                   onPrev: onBack,
                   hasNext: true,
