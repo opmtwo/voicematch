@@ -300,7 +300,10 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
                   [
                     Align(
                       alignment: Alignment.center,
-                      child: Avatar(),
+                      child: Avatar(
+                        w: 160,
+                        h: 160,
+                      ),
                     )
                   ],
                   mb: gapTop,
