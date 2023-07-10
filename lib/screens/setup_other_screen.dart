@@ -128,13 +128,13 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
     String? err = '';
     bool isValid = true;
 
-    err = ageRangeIndex < ageGroupOptions.toList().length
+    err = ageRangeIndex > -1 && ageRangeIndex < ageGroupOptions.toList().length
         ? null
         : 'Please select age range';
     setState(() => ageRangeError = err);
     isValid = err == null ? isValid : false;
 
-    err = distanceIndex < distanceOptions.toList().length
+    err = distanceIndex >= 0 && distanceIndex < distanceOptions.toList().length
         ? null
         : 'Please select age range';
     setState(() => distanceError = err);
