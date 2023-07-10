@@ -120,6 +120,18 @@ class ProfileScreenState extends State<ProfileScreen> {
       'callback': () {
         Get.toNamed(Routes.setupRecording);
       }
+    },
+    {
+      'id': 'logout',
+      'label': 'Logout',
+      'callback': () async {
+        try {
+          await Amplify.Auth.signOut();
+          Get.toNamed(Routes.signIn);
+        } catch (err) {
+          safePrint('logout - error - $err');
+        }
+      }
     }
   ];
 
