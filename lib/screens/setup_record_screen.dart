@@ -25,6 +25,7 @@ import 'package:voicematch/icons/icon_pause.dart';
 import 'package:voicematch/icons/icon_play.dart';
 import 'package:voicematch/icons/icon_rewind_minus.dart';
 import 'package:voicematch/icons/icon_rewind_plus.dart';
+import 'package:voicematch/icons/icon_settings.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 import 'package:uuid/uuid.dart';
@@ -328,9 +329,15 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        const FabButton(
-                          Div([]),
+                        FabButton(
+                          SvgPicture.string(
+                            iconSettings(),
+                            height: 24,
+                          ),
                           bg: colorTransparent,
+                          onPress: () {
+                            Get.toNamed(Routes.profile);
+                          },
                         ),
                         FabButton(
                           SvgPicture.string(
