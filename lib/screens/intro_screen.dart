@@ -5,6 +5,7 @@ import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
+import 'package:voicematch/form/button.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 
@@ -55,16 +56,11 @@ class IntroScreenState extends State<IntroScreen> {
                         ),
                         Div(
                           [
-                            GestureDetector(
-                              onTap: () {
+                            Button(
+                              'Join us on this journey!',
+                              onPress: () {
                                 Get.toNamed(Routes.signIn);
                               },
-                              child: const P(
-                                'Join us on this journey!',
-                                isBody1: true,
-                                fg: colorWhite,
-                                ta: TextAlign.center,
-                              ),
                             ),
                           ],
                         )
