@@ -2,7 +2,11 @@ const { config: awsConfig } = require('aws-sdk');
 const awsAppSyncClient = require('aws-appsync').default;
 const gql = require('graphql-tag');
 
-const { API_SUPERDAPP_GRAPHQLAPIENDPOINTOUTPUT: GRAPHQLAPIENDPOINTOUTPUT, REGION } = process.env;
+const { API_VOICEMATCHGRAPHAPI_GRAPHQLAPIENDPOINTOUTPUT: GRAPHQLAPIENDPOINTOUTPUT, REGION } = process.env;
+console.log({
+	GRAPHQLAPIENDPOINTOUTPUT,
+	REGION,
+});
 
 const apsClient = new awsAppSyncClient({
 	url: GRAPHQLAPIENDPOINTOUTPUT,

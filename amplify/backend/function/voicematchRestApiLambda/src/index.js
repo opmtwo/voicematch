@@ -1,3 +1,4 @@
+require('cross-fetch/polyfill');
 const awsServerlessExpress = require('aws-serverless-express');
 const app = require('./app');
 
@@ -6,8 +7,9 @@ const app = require('./app');
  */
 const server = awsServerlessExpress.createServer(app);
 
+require('./routers/onboard');
 require('./routers/me');
-require('./routers/connections');
+// require('./routers/connections');
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}

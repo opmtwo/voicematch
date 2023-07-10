@@ -3,13 +3,13 @@ const { v4 } = require('uuid');
 const { verifyToken } = require('../middlewares/auth');
 const { validateFormData, IAvatar } = require('../schemas');
 const { s3GetObject, s3PutObject } = require('../utils/s3-utils');
-const { REGION, STORAGE_STORAGE_BUCKETNAME: BUCKETNAME, AUTH_SUPERDAPP5A8B82A5_USERPOOLID: USERPOOLID } = process.env;
 const { apsQuery, apsMutation, apsGetAll } = require('../utils/aps-utils');
-const { idpAdminUpdateUserAttributes, idpGetUserAttribute } = require('../utils/idp-utils');
+const { idpAdminUpdateUserAttributes } = require('../utils/idp-utils');
 const { getUser, getOnlinePresence, listConnectionByUserId, listConnectionByChatId } = require('../gql/queries');
 const { updateOnlinePresence, createOnlinePresence, updateConnection } = require('../gql/mutations');
-const { createUser, updateUser } = require('../gql/mutations');
-const { default: slugify } = require('slugify');
+const { updateUser } = require('../gql/mutations');
+
+const { REGION, STORAGE_VOICEMATCHSTORAGE_BUCKETNAME: BUCKETNAME, AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID } = process.env;
 const { BATCH_SIZE } = require('../consts');
 
 app.put('/api/v1/me/avatar', verifyToken, validateFormData(IAvatar), async (req, res, next) => {
@@ -153,27 +153,6 @@ app.delete('/api/v1/me/avatar', validateFormData(IAvatar), verifyToken, async (r
 
 	// all done
 	return res.status(200).json({});
-});
-
-app.put('/api/v1/me/onboard', verifyToken, async (req, res, next) => {
-	const { Username: sub } = req.user;
-	const username = await idpGetUserAttribute(req.user, 'custom:username', '');
-	const email = await idpGetUserAttribute(req.user, 'email', '');
-	const givenName = await idpGetUserAttribute(req.user, 'given_name', '');
-	const familyName = await idpGetUserAttribute(req.user, 'family_name', '');
-	const picture = await idpGetUserAttribute(req.user, 'picture', '');
-	const name = await idpGetUserAttribute(req.user, 'name', '');
-	const searchTerm = slugify(`${username} ${email} ${name}`, { lower: true, trim: true });
-	try {
-		const user = await apsQuery(getUser, { id: sub });
-		const { id, _version } = user.data.getUser;
-		const userUpdated = await apsMutation(updateUser, { id, _version, username, email, givenName, familyName, name, picture, searchTerm });
-		return res.status(200).json(userUpdated.data.updateUser);
-	} catch (err) {
-		console.log('Error updating existing user - tyring to create new user', err);
-		const user = await apsMutation(createUser, { id: sub, owner: sub, username, email, givenName, familyName, name, picture, searchTerm });
-		return res.status(200).json(user.data.createUser);
-	}
 });
 
 app.post('/api/v1/me/online', verifyToken, async (req, res, next) => {

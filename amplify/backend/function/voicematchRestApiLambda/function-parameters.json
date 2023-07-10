@@ -28,6 +28,12 @@
         "update",
         "delete"
       ],
+      "Recording:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
       "Upload:@model(appsync)": [
         "create",
         "read",
