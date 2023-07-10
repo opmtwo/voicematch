@@ -88,6 +88,9 @@ dependencies:
   # https://pub.dev/packages/audioplayers/install
   audioplayers: ^3.0.0
 
+  # https://pub.dev/packages/get_storage/install
+  localstorage: ^4.0.0+1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
