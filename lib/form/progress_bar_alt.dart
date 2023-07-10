@@ -8,6 +8,7 @@ import 'package:voicematch/form/progress_bar.dart';
 class ProgressBarAlt extends StatelessWidget {
   final double total;
   final double value;
+  final int? gutter;
   final Color? trackBg;
   final Color? trackFg;
   final Color? thumbBg = colorSeondary050;
@@ -17,6 +18,7 @@ class ProgressBarAlt extends StatelessWidget {
     Key? key,
     required this.value,
     required this.total,
+    this.gutter,
     this.trackBg,
     this.trackFg,
   }) : super(key: key);
@@ -48,7 +50,7 @@ class ProgressBarAlt extends StatelessWidget {
           top: 0,
           left: value /
               total *
-              (MediaQuery.of(context).size.width - (gap * 2) - 40),
+              (MediaQuery.of(context).size.width - (gap * 2) - (gutter ?? 40)),
           child: IconBox(
             const Div([]),
             w: 40,
@@ -62,7 +64,7 @@ class ProgressBarAlt extends StatelessWidget {
                   total *
                   (MediaQuery.of(context).size.width -
                       (gap * 2) - // gap on both sides
-                      40) + // circle width
+                      (gutter ?? 40)) + // circle width
               10, // shift center circle to center of parent circle
           child: IconBox(
             const Div([]),
