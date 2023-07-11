@@ -40,7 +40,7 @@ class ProgressBarAlt extends StatelessWidget {
           ProgressBar(
             value: value / total,
             h: 4,
-            gutter: (gap * 2).toInt(),
+            gutter: gutter ?? (gap * 2).toInt(),
             bg: trackBg,
             fg: trackFg,
             br: radius,
@@ -50,7 +50,7 @@ class ProgressBarAlt extends StatelessWidget {
           top: 0,
           left: value /
               total *
-              (MediaQuery.of(context).size.width - (gap * 2) - (gutter ?? 40)),
+              (MediaQuery.of(context).size.width - (gutter ?? (gap * 2)) - 40),
           child: IconBox(
             const Div([]),
             w: 40,
@@ -63,8 +63,8 @@ class ProgressBarAlt extends StatelessWidget {
           left: value /
                   total *
                   (MediaQuery.of(context).size.width -
-                      (gap * 2) - // gap on both sides
-                      (gutter ?? 40)) + // circle width
+                      (gutter ?? (gap * 2)) - // gap on both sides
+                      40) + // circle width
               10, // shift center circle to center of parent circle
           child: IconBox(
             const Div([]),
