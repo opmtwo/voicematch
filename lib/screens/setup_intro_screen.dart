@@ -116,15 +116,33 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
     setState(() => givenNameError = err);
     isValid = err == null ? isValid : false;
 
-    error = [0, 1].contains(genderIndex) ? null : 'Please select your gender';
-    setState(() => genderError = error);
+    err = [0, 1].contains(genderIndex) ? null : 'Please select your gender';
+    setState(() => genderError = err);
     isValid = error == null ? isValid : false;
 
-    error = [0, 1].contains(targetGenderIndex)
+    err = [0, 1].contains(targetGenderIndex)
         ? null
         : 'Please select interested gender';
-    setState(() => targetGenderError = error);
-    isValid = error == null ? isValid : false;
+    setState(() => targetGenderError = err);
+    isValid = err == null ? isValid : false;
+
+    // if form is valid then validate avatar
+    if (isValid) {
+      List<AuthUserAttribute> attributes =
+          await Amplify.Auth.fetchUserAttributes();
+      String picture = attributes
+              .firstWhereOrNull((element) =>
+                  element.userAttributeKey == CognitoUserAttributeKey.picture)
+              ?.value ??
+          '';
+      err = picture.isNotEmpty ? null : 'Please select profile pic';
+      setState(() => error = err);
+      isValid = err == null ? isValid : false;
+    } else {
+      setState(() {
+        error = null;
+      });
+    }
 
     return isValid;
   }
@@ -214,7 +232,7 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
                       P(
                         error,
                         isBody1: true,
-                        fg: colorPrimary050,
+                        fg: colorPrimary,
                         fw: FontWeight.w600,
                       ),
                     ],
