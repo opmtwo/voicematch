@@ -190,7 +190,7 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
           [
             const Div(
               [
-                ProgressBar(value: 1 / 4),
+                ProgressBar(value: 1 / 5),
               ],
               mv: gapTop,
             ),

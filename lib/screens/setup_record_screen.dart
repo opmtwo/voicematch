@@ -262,7 +262,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
           [
             const Div(
               [
-                ProgressBar(value: 1 / 4),
+                ProgressBar(value: 4 / 5),
               ],
               mv: gapTop,
             ),

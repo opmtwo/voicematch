@@ -361,7 +361,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
           [
             Div(
               [
-                const ProgressBar(value: 3 / 4),
+                const ProgressBar(value: 3 / 5),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: const [

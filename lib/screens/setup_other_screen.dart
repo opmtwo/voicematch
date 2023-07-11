@@ -290,7 +290,7 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
           [
             const Div(
               [
-                ProgressBar(value: 2 / 4),
+                ProgressBar(value: 2 / 5),
               ],
               mv: gapTop,
             ),
