@@ -6,6 +6,9 @@ import 'package:voicematch/screens/matches_index_screen.dart';
 import 'package:voicematch/screens/matches_match_screen.dart';
 import 'package:voicematch/screens/matches_preview_screen.dart';
 import 'package:voicematch/screens/profile_screen.dart';
+import 'package:voicematch/screens/reset_password_code_screen.dart';
+import 'package:voicematch/screens/reset_password_password_screen.dart';
+import 'package:voicematch/screens/reset_password_username_screen.dart';
 import 'package:voicematch/screens/setup_done_screen.dart';
 import 'package:voicematch/screens/setup_interests_screen.dart';
 import 'package:voicematch/screens/setup_intro_screen.dart';
@@ -25,6 +28,10 @@ abstract class Routes {
 
   static const signUp = '/sign-up';
   static const signUpOtp = '/sign-up/otp';
+
+  static const resetPasswordUsername = '/reset-password/username';
+  static const resetPasswordCode = '/reset-password/code';
+  static const resetPasswordPassword = '/reset-password/password';
 
   static const home = '/home';
 
@@ -64,6 +71,18 @@ final appPages = [
   GetPage(
     name: Routes.signUpOtp,
     page: () => const SignUpOtpScreen(),
+  ),
+  GetPage(
+    name: Routes.resetPasswordUsername,
+    page: () => const ResetPasswordUsernameScreen(),
+  ),
+  GetPage(
+    name: Routes.resetPasswordCode,
+    page: () => const ResetPasswordCodeScreen(),
+  ),
+  GetPage(
+    name: Routes.resetPasswordPassword,
+    page: () => const ResetPasswordPasswordScreen(),
   ),
   GetPage(
     name: Routes.home,
