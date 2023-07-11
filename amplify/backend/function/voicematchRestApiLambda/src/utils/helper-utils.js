@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const safelyParseJSON = (json) => {
 	let parsed;
 	try {
@@ -50,10 +52,24 @@ const formatTimestamp = (timestamp, format, isIso) => {
 	return new Intl.DateTimeFormat('en-US', options).format(date);
 };
 
+const sha256 = (value, verbose = true) => {
+	if (verbose) {
+		console.log('sha256 - input', value);
+	}
+	const hash = crypto.createHash('sha256');
+	hash.update(value);
+	const result = hash.digest('hex');
+	if (verbose) {
+		console.log('sha256 - result', result);
+	}
+	return result;
+};
+
 module.exports = {
 	getHostname,
 	getRootDomain,
 	safelyParseJSON,
 	getEventUser,
 	formatTimestamp,
+	sha256,
 };
