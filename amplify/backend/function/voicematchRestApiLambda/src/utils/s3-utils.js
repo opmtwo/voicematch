@@ -252,6 +252,33 @@ const s3PutObject = async (bucket, key, data, contentEncoding = null, contentTyp
 	}
 };
 
+const s3UpdateACL = async (bucket, key, acl, verbose = true) => {
+	if (verbose) {
+		console.log(`s3UpdateACL - bucket: ${bucket}, key: ${key}`);
+	}
+	try {
+		const s3 = new aws.S3();
+		const params = {
+			Bucket: bucket,
+			Key: key,
+			ACL: acl,
+		};
+		if (verbose) {
+			console.log('s3UpdateACL - params', params);
+		}
+		const res = await s3.putObjectAcl(params).promise();
+		if (verbose) {
+			console.log('s3UpdateACL - res', res);
+		}
+		return res;
+	} catch (err) {
+		if (verbose) {
+			console.log('s3UpdateACL - err', err);
+		}
+		throw err;
+	}
+};
+
 const s3GeneratePresignedUrl = async (
 	clientMethod,
 	bucket,
@@ -396,6 +423,7 @@ module.exports = {
 	s3CloneObject,
 	s3ReadCsvAsJson,
 	s3PutObject,
+	s3UpdateACL,
 	s3GeneratePresignedUrl,
 	s3CreatePresignedPostCommand,
 	s3DeleteObject,
