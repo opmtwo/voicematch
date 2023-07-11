@@ -111,20 +111,6 @@ class AvatarState extends State<Avatar> {
 
   Future<void> refreshAvatar() async {
     try {
-      // final attributes = await Amplify.Auth.fetchUserAttributes();
-      // String? picture = attributes
-      //         .firstWhereOrNull((element) =>
-      //             element.userAttributeKey == CognitoUserAttributeKey.picture)
-      //         ?.value ??
-      //     '';
-      // safePrint('refreshAvatar - profile picture - $picture');
-      // if (picture.isEmpty) {
-      //   return;
-      // }
-
-      // final result = await Amplify.Storage.getUrl(key: picture);
-      // safePrint('Fetched avatar url - ${result.url}');
-
       final attributes = await Amplify.Auth.fetchUserAttributes();
       String? url = attributes
               .firstWhereOrNull((element) =>
@@ -247,7 +233,7 @@ class AvatarState extends State<Avatar> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100),
-          child: profilePic != null
+          child: profilePic != null && profilePic?.trim().isEmpty == false
               ? Image.network(
                   profilePic as String,
                   width: widget.w ?? defaultWidth,
