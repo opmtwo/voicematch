@@ -45,8 +45,8 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 	// prepare thumb and blurred images
 	const pictureKey = await idpGetUserAttribute(req.user, 'picture', undefined);
 
-	let pictureNormal = '';
-	let pictureMasked = '';
+	let pictureNormal = undefined;
+	let pictureMasked = undefined;
 	if (pictureKey && avatar) {
 		try {
 			const pictureObj = await s3GetObject(BUCKETNAME, pictureKey);
@@ -99,14 +99,6 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		}
 	}
 
-	// setup done?
-	// setup is done when user has setup info and added recording
-	// might be worth it to check for profile image as well
-	let isSetupDone = false;
-	if (pictureNormal && pictureMasked && introModel?.id) {
-		isSetupDone = true;
-	}
-
 	// prepare form data
 	const data = {
 		id: sub,
@@ -138,8 +130,6 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		introId,
 
 		searchTerm,
-
-		isSetupDone,
 	};
 
 	// create or update user profile

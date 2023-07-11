@@ -37,7 +37,7 @@
         },
         "voicematchRestApiLambda": {
           "deploymentBucketName": "amplify-voicematch-dev-174928-deployment",
-          "s3Key": "amplify-builds/voicematchRestApiLambda-4f477962614949586155-build.zip"
+          "s3Key": "amplify-builds/voicematchRestApiLambda-46332f356c6e646e534a-build.zip"
         }
       },
       "storage": {
