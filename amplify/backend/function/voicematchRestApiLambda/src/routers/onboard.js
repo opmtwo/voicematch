@@ -5,14 +5,16 @@ const { default: slugify } = require('slugify');
 const { verifyToken } = require('../middlewares/auth');
 const { idpGetUserAttribute, idpAdminUpdateUserAttributes } = require('../utils/idp-utils');
 const { apsQuery, apsMutation } = require('../utils/aps-utils');
-const { s3GetObject, s3PutObject } = require('../utils/s3-utils');
-const { createUser, updateUser } = require('../gql/mutations');
+const { s3GetObject, s3PutObject, s3UpdateACL } = require('../utils/s3-utils');
+const { createUser, updateUser, createRecording } = require('../gql/mutations');
 const { getUser } = require('../gql/queries');
 
 const { REGION, STORAGE_VOICEMATCHSTORAGE_BUCKETNAME: BUCKETNAME, AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID } = process.env;
 
 app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+	const { avatar, recording } = req.query;
+	console.log({ avatar, recording });
 
 	// get profile info
 	const email = await idpGetUserAttribute(req.user, 'email', undefined);
@@ -33,19 +35,21 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 	const interestMusic = await idpGetUserAttribute(req.user, 'custom:interest_music', undefined);
 	const interestTravelling = await idpGetUserAttribute(req.user, 'custom:interest_travelling', undefined);
 	const interestPet = await idpGetUserAttribute(req.user, 'custom:interest_pet', undefined);
-	const introId = await idpGetUserAttribute(req.user, 'custom:intro_id', undefined);
+
+	// const introId = await idpGetUserAttribute(req.user, 'custom:intro_id', undefined);
+	const introKey = await idpGetUserAttribute(req.user, 'custom:intro_recording', undefined);
 
 	// prepare search term
 	const searchTerm = slugify(`${sub} ${email} ${name}`, { lower: true, trim: true });
 
 	// prepare thumb and blurred images
-	const picture = await idpGetUserAttribute(req.user, 'picture', undefined);
+	const pictureKey = await idpGetUserAttribute(req.user, 'picture', undefined);
 
 	let pictureNormal = '';
 	let pictureMasked = '';
-	if (picture) {
+	if (pictureKey && avatar) {
 		try {
-			const pictureObj = await s3GetObject(BUCKETNAME, `public/${picture}`);
+			const pictureObj = await s3GetObject(BUCKETNAME, pictureKey);
 			const imageNormal = await sharp(pictureObj.Body).resize(512, 512).toBuffer();
 			const imageMasked = await sharp(pictureObj.Body).resize(512, 512).blur(10).toBuffer();
 			const keyNormal = `avatars/${sub}/${v4()}`;
@@ -63,6 +67,44 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		} catch (err) {
 			console.log('Error in updating profile pic', err);
 		}
+	}
+
+	// setup intro recording
+	let introId = undefined;
+	let introModel;
+	if (introKey && recording) {
+		try {
+			// get the intro recording file
+			// this entire workflow will skip if this file doesn't exist'
+			const introObj = await s3GetObject(BUCKETNAME, introKey);
+
+			// make recording readable
+			await s3UpdateACL(BUCKETNAME, introKey, 'public-read');
+
+			// assing intro id
+			introId = v4();
+
+			// store the recording data
+			const newRecording = await apsMutation(createRecording, {
+				id: introId,
+				owner: sub,
+				userId: sub,
+				duration: 30, // this is the duration of the recording
+				key: `public/${introKey}`,
+				url: `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/public/${introKey}`,
+			});
+			introModel = (await newRecording).data.createRecording;
+		} catch (err) {
+			console.log('Error in updating intro recording', err);
+		}
+	}
+
+	// setup done?
+	// setup is done when user has setup info and added recording
+	// might be worth it to check for profile image as well
+	let isSetupDone = false;
+	if (pictureNormal && pictureMasked && introModel?.id) {
+		isSetupDone = true;
 	}
 
 	// prepare form data
@@ -92,9 +134,12 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		interestMusic,
 		interestTravelling,
 		interestPet,
+
 		introId,
 
 		searchTerm,
+
+		isSetupDone,
 	};
 
 	// create or update user profile
