@@ -122,41 +122,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
           CognitoUserAttributeKey.givenName: givenNameController.text,
         }),
       );
+
+      // next step info
       safePrint(result.nextStep);
       safePrint(result.nextStep.signUpStep);
+
+      // confirmation needed
       if (result.nextStep.signUpStep == 'CONFIRM_SIGN_UP_STEP') {
-        return Get.toNamed(Routes.signUpOtp, parameters: {
+        Get.toNamed(Routes.signUpOtp, parameters: {
           'type': 'email',
           'email': username,
+          'username': username,
           'password': password,
         });
+        EasyLoading.dismiss();
+        return;
       }
+
+      // confirmation not needed - sign in
       await Amplify.Auth.signIn(username: username, password: password);
+
+      // redirect to the home page
+      Get.offNamedUntil(
+        Routes.home,
+        (route) => false,
+      );
     } on AuthException catch (e) {
       safePrint(e.recoverySuggestion);
       safePrint(e.underlyingException);
+
+      // user already exists
       if (e.message.contains('already exists')) {
-        // try {
-        //   // await Amplify.Auth.signIn(username: phone, password: phone);
-        //   return Get.toNamed(Routes.loginOtp, parameters: {
-        //     'type': 'email',
-        //     'username': username,
-        //     'password': password,
-        //   });
-        // } on AuthException catch (e) {
-        //   safePrint('Auto sign in error in register screen - ${e.message}');
-        //   if (e.message.contains('not confirmed') ||
-        //       e.message.contains('no registered')) {
-        //     await Amplify.Auth.resendSignUpCode(
-        //         username: usernameController.text);
-        //     return Get.toNamed(Routes.registerOtp,
-        //         parameters: {'phone': phone});
-        //   }
-        //   return setState(() {
-        //     error = e.message;
-        //   });
-        // }
+        //
       }
+
+      // something went wrong
       safePrint('register - onContinue - error - ${e.message}');
       setState(() {
         error = e.message;

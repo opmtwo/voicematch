@@ -35,9 +35,9 @@ class SignUpOtpScreenState extends State<SignUpOtpScreen> {
   void initState() {
     super.initState();
     setState(() {
-      email = Get.arguments['email'] ?? '';
-      phone = Get.arguments['phone'] ?? '';
-      password = Get.arguments['password'] ?? '';
+      email = Get.parameters['email'] ?? '';
+      phone = Get.parameters['phone'] ?? '';
+      password = Get.parameters['password'] ?? '';
     });
     safePrint('$email, $phone, $password');
   }
@@ -68,11 +68,11 @@ class SignUpOtpScreenState extends State<SignUpOtpScreen> {
     try {
       await Amplify.Auth.confirmSignUp(username: email, confirmationCode: code);
       await Amplify.Auth.signIn(username: email, password: password);
-      Get.offNamedUntil(Routes.home, (route) => false);
+      Get.offNamedUntil(Routes.intro, (route) => false);
     } on AuthException catch (e) {
       if (e.message.contains('CONFIRMED')) {
         await Amplify.Auth.signIn(username: email, password: password);
-        Get.offNamedUntil(Routes.home, (route) => false);
+        Get.offNamedUntil(Routes.intro, (route) => false);
       } else {
         safePrint('onSubmit error - ${e.message}, $email, $password');
         setState(() {
