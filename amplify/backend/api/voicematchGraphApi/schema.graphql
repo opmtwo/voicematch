@@ -46,6 +46,7 @@ type User @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	interestPet: String
 	introId: ID
 	intro: Recording @hasOne(fields: ["introId"])
+	isSetupDone: Boolean
 	searchTerm: String
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
