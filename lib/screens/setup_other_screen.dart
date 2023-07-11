@@ -154,10 +154,11 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
   }
 
   Future<void> onSubmit() async {
+    EasyLoading.show(status: 'loading...');
     if (await isFormValid() != true) {
+      EasyLoading.dismiss();
       return;
     }
-    EasyLoading.show(status: 'loading...');
     try {
       await Amplify.Auth.updateUserAttributes(
         attributes: [
