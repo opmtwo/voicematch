@@ -128,12 +128,13 @@ class SignInScreenState extends State<SignInScreen> {
       if (e.message.contains('not confirmed') ||
           e.message.contains('no registered')) {
         await Amplify.Auth.resendSignUpCode(username: usernameController.text);
-        Get.toNamed(Routes.signUpOtp, arguments: {
+        Get.toNamed(Routes.signUpOtp, parameters: {
           'type': 'email',
           'username': username,
           'email': username,
           'password': password,
         });
+        EasyLoading.dismiss();
         return;
       }
 
