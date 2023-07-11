@@ -18,14 +18,18 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/icons/icon_close.dart';
+import 'package:voicematch/utils/date_utils.dart';
 
 enum Status { available, busy, offline }
 
 final ImagePicker _picker = ImagePicker();
 
 Future<String?> uploadFile(XFile image) async {
+  final user = await Amplify.Auth.getCurrentUser();
   final tempDir = await getTemporaryDirectory();
   final uuid = const Uuid().v4().toString();
+  final today = getNow(format: 'yyyy-MM-dd');
+  final key = '${user.userId}/avatars/$today/$uuid';
   final path = tempDir.path + uuid;
   // final exampleFile = File(tempDir.path + '/uuid').createSync();
   await image.saveTo(path);
@@ -33,17 +37,20 @@ Future<String?> uploadFile(XFile image) async {
   try {
     final UploadFileResult result = await Amplify.Storage.uploadFile(
       local: imageFile,
-      key: uuid,
+      key: key,
       onProgress: (progress) {
         // safePrint(
         //     'Fraction completed: ${progress.getFractionCompleted()}');
       },
+      options: UploadFileOptions(
+          // accessLevel: StorageAccessLevel.guest,
+          ),
     );
 
     // update user attribute
     await Amplify.Auth.updateUserAttribute(
       userAttributeKey: CognitoUserAttributeKey.picture,
-      value: uuid,
+      value: 'public/$key',
     );
 
     // get access token
@@ -54,7 +61,7 @@ Future<String?> uploadFile(XFile image) async {
 
     // update profile via oboard api
     // call onboard api - this will generate public urls for the new image
-    final url = Uri.parse('${apiEndPoint}api/v1/onboard');
+    final url = Uri.parse('${apiEndPoint}api/v1/onboard?avatar=true');
     safePrint('onSubmit - url $url');
     final res = await http.post(url, body: jsonEncode({}), headers: {
       'Authorization': accessToken.toString(),
