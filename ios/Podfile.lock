@@ -49,6 +49,8 @@ PODS:
     - AWSS3 (~> 2.30.1)
   - AppSyncRealTimeClient (3.1.0):
     - Starscream (~> 4.0.4)
+  - audioplayers_darwin (0.0.1):
+    - Flutter
   - AWSAuthCore (2.30.4):
     - AWSCore (= 2.30.4)
   - AWSCognitoIdentityProvider (2.30.4):
@@ -100,6 +102,7 @@ DEPENDENCIES:
   - amplify_core (from `.symlinks/plugins/amplify_core/ios`)
   - amplify_flutter_ios (from `.symlinks/plugins/amplify_flutter_ios/ios`)
   - amplify_storage_s3_ios (from `.symlinks/plugins/amplify_storage_s3_ios/ios`)
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
@@ -140,6 +143,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/amplify_flutter_ios/ios"
   amplify_storage_s3_ios:
     :path: ".symlinks/plugins/amplify_storage_s3_ios/ios"
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   Flutter:
     :path: Flutter
   flutter_native_splash:
@@ -172,6 +177,7 @@ SPEC CHECKSUMS:
   amplify_storage_s3_ios: 6e8ff166371b95568e2ea6f0997531c4f027b6fc
   AmplifyPlugins: f8fa63aafd782a44cf48abef656e759dcab3eb71
   AppSyncRealTimeClient: 49901c6f21e541bec09281854c5695a6c1309bf7
+  audioplayers_darwin: 877d9a4d06331c5c374595e46e16453ac7eafa40
   AWSAuthCore: 42e2d4927d94e5e323b63b2ae885f287c51b5889
   AWSCognitoIdentityProvider: 2331f5f4c8c1775c6a228bb2dae2d353198401e8
   AWSCognitoIdentityProviderASF: d905c2acab3d2e7016b643d53ba553d5217fa929
