@@ -59,7 +59,10 @@ class IntroScreenState extends State<IntroScreen> {
                             Button(
                               'Join us on this journey!',
                               onPress: () {
-                                Get.toNamed(Routes.signIn);
+                                Get.offNamedUntil(
+                                  Routes.home,
+                                  (route) => false,
+                                );
                               },
                             ),
                           ],
