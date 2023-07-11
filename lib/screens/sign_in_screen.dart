@@ -300,7 +300,7 @@ class SignInScreenState extends State<SignInScreen> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              //
+                              Get.toNamed(Routes.resetPasswordUsername);
                             },
                             child: const P(
                               'Forget Password?',
