@@ -3,6 +3,7 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:record/record.dart';
+import 'package:voicematch/components/current_time.dart';
 import 'package:voicematch/components/image_masked.dart';
 import 'package:voicematch/components/wave.dart';
 import 'package:voicematch/constants/colors.dart';
@@ -225,11 +226,10 @@ class _MessageState extends State<Message> with TickerProviderStateMixin {
                 alignment: widget.isSender == true
                     ? Alignment.topLeft
                     : Alignment.topRight,
-                child: P(
-                  '${(Duration(seconds: widget.recordingDuration as int)).inMinutes.toString().padLeft(2, '0')}:${(Duration(
-                        seconds: widget.recordingDuration as int,
-                      ).inSeconds % 60).toString().padLeft(2, '0')}',
-                  isBody1: true,
+                child: const CurrentTime(
+                  duration: Duration(
+                    seconds: recordingDuration,
+                  ),
                 ),
               ),
             ],
