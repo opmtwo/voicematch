@@ -41,7 +41,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
   @override
   void initState() {
     super.initState();
-    initUser();
+    // initUser();
   }
 
   Future<void> initUser() async {
@@ -50,8 +50,8 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
       setState(() {
         //
       });
-    } on AuthException catch (e) {
-      safePrint('initUser- error - ${e.message}');
+    } catch (err) {
+      safePrint('initUser- error - $err');
     }
     EasyLoading.dismiss();
   }
@@ -69,51 +69,56 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
             const Div(
               [
                 ProgressBar(
-                  value: 4 / 4,
+                  value: 5 / 5,
                 ),
               ],
               mv: gapBottom,
             ),
             Expanded(
               flex: 1,
-              child: Div(
-                [
-                  const Div(
-                    [
-                      Logo(),
-                    ],
-                    mb: gap,
-                  ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                   Div(
                     [
-                      Image.asset(
-                        'assets/images/sign-up-done.png',
-                        height: 200,
+                      const Div(
+                        [
+                          Logo(),
+                        ],
+                        mb: gap,
+                      ),
+                      Div(
+                        [
+                          Image.asset(
+                            'assets/images/sign-up-done.png',
+                            height: 200,
+                          ),
+                        ],
+                        mv: gapBottom,
+                      ),
+                      const Div(
+                        [
+                          P(
+                            'Congratulations',
+                            isH5: true,
+                            fw: FontWeight.w600,
+                          ),
+                        ],
+                        mb: gap,
+                      ),
+                      const Div(
+                        [
+                          P(
+                            'Now you are ready to listen to awesome people',
+                            isBody1: true,
+                          ),
+                        ],
+                        mv: gapBottom,
                       ),
                     ],
-                    mv: gapBottom,
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'Congratulations',
-                        isH5: true,
-                        fw: FontWeight.w600,
-                      ),
-                    ],
-                    mb: gap,
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'Now you are ready to listen to awesome people',
-                        isBody1: true,
-                      ),
-                    ],
-                    mv: gapBottom,
+                    ph: gap,
                   ),
                 ],
-                ph: gap,
               ),
             ),
             Div(
@@ -121,7 +126,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
                 Div(
                   [
                     Button(
-                      'next',
+                      'start',
                       onPress: () {
                         Get.toNamed(Routes.matchesIndex);
                       },
