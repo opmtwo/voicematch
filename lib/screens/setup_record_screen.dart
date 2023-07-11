@@ -1,15 +1,23 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'dart:io';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:voicematch/components/audio_player.dart';
+import 'package:voicematch/components/current_time.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/form/progress_bar_alt.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/options.dart';
@@ -31,7 +39,7 @@ import 'package:voicematch/router.dart';
 import 'package:uuid/uuid.dart';
 import 'package:voicematch/utils/date_utils.dart';
 
-Future<String?> uploadFile(String path) async {
+Future<String> uploadFile(String path) async {
   final user = await Amplify.Auth.getCurrentUser();
   final uuid = const Uuid().v4().toString();
   final today = getNow(format: 'yyyy-MM-dd');
@@ -45,18 +53,22 @@ Future<String?> uploadFile(String path) async {
         // safePrint(
         //     'Fraction completed: ${progress.getFractionCompleted()}');
       },
+      options: UploadFileOptions(
+        contentType: 'audio/mp4',
+      ),
     );
     safePrint('Successfully uploaded file: ${result.key}');
     await Amplify.Auth.updateUserAttribute(
-      userAttributeKey: CognitoUserAttributeKey.picture,
-      value: uuid,
+      userAttributeKey:
+          const CognitoUserAttributeKey.custom('custom:intro_recording'),
+      value: 'public/$key',
     );
-    safePrint('Successfully updated profile pic in user profile: $uuid');
+    safePrint('Successfully updated intro recording user profile: $uuid');
     return key;
-  } on StorageException catch (e) {
-    safePrint('Error uploading file: $e');
+  } on StorageException catch (err) {
+    safePrint('Error uploading file: $err');
+    rethrow;
   }
-  return null;
 }
 
 class SetupRecordScreen extends StatefulWidget {
@@ -83,6 +95,12 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
 
   // recording duration
   Duration duration = const Duration(seconds: 0);
+
+  // playback state
+  PlayerState playbackState = PlayerState.stopped;
+
+  // playback duration
+  Duration playbackDuration = const Duration(seconds: 0);
 
   @override
   void initState() {
@@ -191,6 +209,9 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       if (duration.inSeconds >= recordingDuration) {
         t.cancel();
         onStop();
+        // here we set the playback time as the total recording time
+        // because we don't want to show zero after the user has recorded the audio
+        playbackDuration = const Duration(seconds: recordingDuration);
         return;
       }
       setState(() {
@@ -211,6 +232,8 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
         isRecording = false;
         isRecorded = false;
         duration = const Duration(milliseconds: 0);
+        playbackState = PlayerState.stopped;
+        playbackDuration = const Duration(milliseconds: 0);
       });
     } catch (err) {
       safePrint('onDelete - error - $err');
@@ -243,7 +266,22 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     try {
       safePrint('recordingPath $recordingPath');
       final key = await uploadFile(recordingPath as String);
-      //
+
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/onboard?recording=true');
+      safePrint('onSubmit - url $url');
+      final response = await http.post(url, body: jsonEncode({}), headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onSubmit - status code = ${response.statusCode}');
+
+      // all done
       Get.toNamed(Routes.setupDone);
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
@@ -252,6 +290,18 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       });
     }
     EasyLoading.dismiss();
+  }
+
+  void onPositionChanged(Duration duration) {
+    setState(() {
+      playbackDuration = duration;
+    });
+  }
+
+  void onStateChanged(PlayerState state) {
+    setState(() {
+      playbackState = state;
+    });
   }
 
   @override
@@ -286,21 +336,24 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                     ],
                     mb: gap,
                   ),
+                  // this shows recording time or current playback time based on the current state
                   Div(
                     [
-                      P(
-                        '00.${duration.inSeconds.toString().padLeft(2, "0")}.00',
-                        fg: colorBlack,
-                        isBody1: true,
-                        ta: TextAlign.center,
+                      CurrentTime(
+                        duration: isRecorded ? playbackDuration : duration,
                       ),
                     ],
                   ),
+                  // this shows recording progress or current playback progress based on the current state
                   Div(
                     [
                       ProgressBarAlt(
-                        value: duration.inMilliseconds.toDouble(),
+                        value: isRecorded
+                            ? min(recordingDuration * 1000,
+                                playbackDuration.inMilliseconds.toDouble())
+                            : duration.inMilliseconds.toDouble(),
                         total: recordingDuration * 1000,
+                        gutter: (gap * 2).toInt(),
                       ),
                     ],
                     mv: gapBottom,
@@ -323,108 +376,43 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                     ],
                     mb: gap,
                   ),
-                Div(
-                  [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        FabButton(
-                          SvgPicture.string(
-                            iconSettings(),
-                            height: 24,
-                          ),
-                          bg: colorTransparent,
-                          onPress: () {
-                            Get.toNamed(Routes.profile);
-                          },
-                        ),
-                        FabButton(
-                          SvgPicture.string(
-                            iconRewindMinus(),
-                            height: 24,
-                          ),
-                          bg: colorTransparent,
-                          onPress: () {
-                            //
-                          },
-                        ),
-                        FabButton(
-                          SvgPicture.string(
-                            isRecording ? iconPause() : iconPlay(),
-                            height: isRecording ? 24 : 32,
-                          ),
-                          onPress: isRecording ? onStop : onStart,
-                          bg: colorTransparent,
-                        ),
-                        FabButton(
-                          SvgPicture.string(
-                            iconRewindPlus(),
-                            height: 24,
-                          ),
-                          bg: colorTransparent,
-                          onPress: () {
-                            //
-                          },
-                        ),
-                        FabButton(
-                          SvgPicture.string(
-                            iconDelete(),
-                            height: 24,
-                          ),
-                          bg: colorTransparent,
-                          onPress: onDelete,
-                        ),
-                      ],
-                    )
-                  ],
-                  mv: gapTop,
-                ),
-                Div(
-                  [
-                    ConstrainedBox(
-                      constraints: const BoxConstraints.tightForFinite(
-                        width: 100,
-                        height: 100,
+                if (isRecorded && recordingPath != null)
+                  Div(
+                    [
+                      AudioFilePlayer(
+                        audioPath: recordingPath as String,
+                        isLocal: true,
+                        onDelete: onDelete,
+                        onPositionChanged: onPositionChanged,
+                        onStateChanged: onStateChanged,
                       ),
-                      child: Stack(
-                        children: [
-                          const Positioned(
-                            top: 0,
-                            right: 0,
-                            left: 0,
-                            child: Div(
-                              [
-                                IconBox(
-                                  Div([]),
-                                  w: 100,
-                                  h: 100,
+                    ],
+                    h: 100,
+                  ),
+                if (!isRecorded)
+                  Div(
+                    [
+                      FabButton(
+                        SvgPicture.string(
+                          isRecording
+                              ? iconPause(code: colorWhite)
+                              : iconMic(
+                                  opacity: 0,
                                 ),
-                              ],
-                              bg: colorSeondary050,
-                              br: 50,
-                            ),
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            left: 0,
-                            child: IconBox(
-                              SvgPicture.string(
-                                iconMic(),
-                                // width: 500,
-                                height: 100,
-                              ),
-                              w: 100,
-                              h: 100,
-                            ),
-                          ),
-                        ],
+                          height: isRecording ? 36 : 100,
+                        ),
+                        w: 100,
+                        h: 100,
+                        bg: isRecording ? colorPrimary : colorSeondary100,
+                        onPress: isRecording
+                            ? onPause
+                            : duration.inMicroseconds == 0
+                                ? onStart
+                                : onResume,
                       ),
-                    ),
-                  ],
-                  mb: gap * 2,
-                ),
+                    ],
+                    h: 100,
+                  ),
                 Div(
                   [
                     Button(
@@ -432,6 +420,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                       onPress: onSubmit,
                     ),
                   ],
+                  mt: gapTop,
                 )
               ],
               ph: gap,
