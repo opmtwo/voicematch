@@ -24,7 +24,7 @@ class WelcomeScreenState extends State<WelcomeScreen> {
       return;
     }
     if (newIndex == 0 && index == 2) {
-      Get.toNamed(Routes.intro);
+      Get.toNamed(Routes.signIn);
       return;
     }
     setState(() {
@@ -68,7 +68,7 @@ class WelcomeScreenState extends State<WelcomeScreen> {
                   Button(
                     'Continue',
                     onPress: () {
-                      Get.toNamed(Routes.intro);
+                      Get.toNamed(Routes.signIn);
                     },
                   )
                 ],
