@@ -36,16 +36,13 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   }
 
   Future<void> getMatches() async {
-    EasyLoading.show(status: 'loading...');
-    try {
-      //
-      setState(() {
-        //
-      });
-    } on AuthException catch (e) {
-      safePrint('getMatches- error - ${e.message}');
-    }
-    EasyLoading.dismiss();
+    await EasyLoading.show(status: 'loading...');
+    // try {
+    //   //
+    // } catch (err) {
+    //   safePrint('getMatches- error - $err');
+    // }
+    await EasyLoading.dismiss();
   }
 
   void onBack() {
