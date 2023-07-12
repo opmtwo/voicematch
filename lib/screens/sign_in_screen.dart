@@ -120,10 +120,11 @@ class SignInScreenState extends State<SignInScreen> {
 
       // clear history and navigate
       Get.offNamedUntil(
-        isSetupDone == 'yes' ? Routes.home : Routes.setupIntro,
+        isSetupDone == 'true' ? Routes.matchesIndex : Routes.setupIntro,
         (route) => false,
       );
     } on AuthException catch (e) {
+      safePrint('onSubmit - error $e');
       // user confirmation is pending
       if (e.message.contains('not confirmed') ||
           e.message.contains('no registered')) {
