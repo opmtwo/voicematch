@@ -143,10 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       await Amplify.Auth.signIn(username: username, password: password);
 
       // redirect to the home page
-      Get.offNamedUntil(
-        Routes.home,
-        (route) => false,
-      );
+      await redirectUser();
     } on AuthException catch (e) {
       safePrint(e.recoverySuggestion);
       safePrint(e.underlyingException);

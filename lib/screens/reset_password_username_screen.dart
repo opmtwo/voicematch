@@ -61,10 +61,7 @@ class ResetPasswordUsernameScreenState
     }
 
     // user is already signed in - redirect to the home page
-    Get.offNamedUntil(
-      Routes.home,
-      (route) => false,
-    );
+    await redirectUser();
   }
 
   // Validate form

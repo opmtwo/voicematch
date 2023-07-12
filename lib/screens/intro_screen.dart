@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/route_manager.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
@@ -7,7 +6,7 @@ import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicematch/utils/user_utils.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({Key? key}) : super(key: key);
@@ -17,6 +16,10 @@ class IntroScreen extends StatefulWidget {
 }
 
 class IntroScreenState extends State<IntroScreen> {
+  Future<void> onSubmit() async {
+    await redirectUser();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,12 +61,7 @@ class IntroScreenState extends State<IntroScreen> {
                           [
                             Button(
                               'Join us on this journey!',
-                              onPress: () {
-                                Get.offNamedUntil(
-                                  Routes.home,
-                                  (route) => false,
-                                );
-                              },
+                              onPress: onSubmit,
                             ),
                           ],
                         )

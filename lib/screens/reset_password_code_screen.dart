@@ -11,6 +11,7 @@ import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
+import 'package:voicematch/utils/user_utils.dart';
 
 class ResetPasswordCodeScreen extends StatefulWidget {
   const ResetPasswordCodeScreen({Key? key}) : super(key: key);
@@ -44,10 +45,7 @@ class ResetPasswordCodeScreenState extends State<ResetPasswordCodeScreen> {
 
     // user is already signed in - redirect to the home page
     if (isSignedIn) {
-      Get.offNamedUntil(
-        Routes.home,
-        (route) => false,
-      );
+      await redirectUser();
       return;
     }
 

@@ -119,10 +119,7 @@ class ResetPasswordPasswordScreenState
       );
 
       // clear history and navigate
-      Get.offNamedUntil(
-        Routes.home,
-        (route) => false,
-      );
+      await redirectUser();
     } on AuthException catch (e) {
       // something went wrong
       setState(() {
