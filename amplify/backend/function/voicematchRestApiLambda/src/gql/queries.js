@@ -44,6 +44,7 @@ exports.getUser = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			isSetupDone
 			searchTerm
 			createdAt
 			updatedAt
@@ -75,6 +76,7 @@ exports.listUsers = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -310,6 +312,7 @@ exports.getConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -336,6 +339,7 @@ exports.getConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -362,6 +366,7 @@ exports.getConnection = /* GraphQL */ `
 			blockedAt
 			mutedAt
 			pinnedAt
+			matchPercentage
 			createdAt
 			updatedAt
 			__typename
@@ -389,6 +394,7 @@ exports.listConnections = /* GraphQL */ `
 				blockedAt
 				mutedAt
 				pinnedAt
+				matchPercentage
 				createdAt
 				updatedAt
 				__typename
@@ -426,6 +432,7 @@ exports.listConnectionByChatId = /* GraphQL */ `
 				blockedAt
 				mutedAt
 				pinnedAt
+				matchPercentage
 				createdAt
 				updatedAt
 				__typename
@@ -463,6 +470,7 @@ exports.listConnectionByUserId = /* GraphQL */ `
 				blockedAt
 				mutedAt
 				pinnedAt
+				matchPercentage
 				createdAt
 				updatedAt
 				__typename
@@ -507,6 +515,7 @@ exports.listConnectionByMemberId = /* GraphQL */ `
 				blockedAt
 				mutedAt
 				pinnedAt
+				matchPercentage
 				createdAt
 				updatedAt
 				__typename

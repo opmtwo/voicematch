@@ -109,6 +109,7 @@ type Connection @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	blockedAt: AWSDateTime
 	mutedAt: AWSDateTime
 	pinnedAt: AWSDateTime
+	matchPercentage: Float
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }

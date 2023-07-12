@@ -44,6 +44,7 @@ exports.createUser = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			isSetupDone
 			searchTerm
 			createdAt
 			updatedAt
@@ -94,6 +95,7 @@ exports.updateUser = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			isSetupDone
 			searchTerm
 			createdAt
 			updatedAt
@@ -144,6 +146,7 @@ exports.deleteUser = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			isSetupDone
 			searchTerm
 			createdAt
 			updatedAt
@@ -324,6 +327,7 @@ exports.createConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -350,6 +354,7 @@ exports.createConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -376,6 +381,7 @@ exports.createConnection = /* GraphQL */ `
 			blockedAt
 			mutedAt
 			pinnedAt
+			matchPercentage
 			createdAt
 			updatedAt
 			__typename
@@ -411,6 +417,7 @@ exports.updateConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -437,6 +444,7 @@ exports.updateConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -463,6 +471,7 @@ exports.updateConnection = /* GraphQL */ `
 			blockedAt
 			mutedAt
 			pinnedAt
+			matchPercentage
 			createdAt
 			updatedAt
 			__typename
@@ -498,6 +507,7 @@ exports.deleteConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -524,6 +534,7 @@ exports.deleteConnection = /* GraphQL */ `
 				interestTravelling
 				interestPet
 				introId
+				isSetupDone
 				searchTerm
 				createdAt
 				updatedAt
@@ -550,6 +561,7 @@ exports.deleteConnection = /* GraphQL */ `
 			blockedAt
 			mutedAt
 			pinnedAt
+			matchPercentage
 			createdAt
 			updatedAt
 			__typename
