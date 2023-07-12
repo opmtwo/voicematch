@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:voicematch/components/logo.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
@@ -58,6 +62,39 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
 
   void onBack() {
     Navigator.pop(context);
+  }
+
+  Future<void> onSubmit() async {
+    await EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/onboard/done');
+      safePrint('onSubmit - url $url');
+      final response = await http.post(url, body: jsonEncode({}), headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onSubmit - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('Received non-200 status code: ${response.statusCode}');
+      }
+
+      // all done
+      Get.toNamed(Routes.matchesIndex);
+    } catch (err) {
+      safePrint('onSubmit - error $err');
+      setState(() {
+        error = err.toString();
+      });
+    }
+    await EasyLoading.dismiss();
   }
 
   @override
@@ -127,9 +164,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
                   [
                     Button(
                       'start',
-                      onPress: () {
-                        Get.toNamed(Routes.matchesIndex);
-                      },
+                      onPress: onSubmit,
                     ),
                   ],
                 )
