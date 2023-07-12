@@ -12,6 +12,7 @@ import 'package:voicematch/amplifyconfiguration.dart';
 import 'package:voicematch/components/loader.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/router.dart';
+import 'package:voicematch/utils/user_utils.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -108,30 +109,6 @@ class _VoiceMatchState extends State<VoiceMatch> {
       await Amplify.configure(amplifyconfig);
     } on Exception catch (e) {
       safePrint('An error occurred configuring Amplify: $e');
-    }
-  }
-
-  Future redirectUser() async {
-    List<AuthUserAttribute> attributes =
-        await Amplify.Auth.fetchUserAttributes();
-    String isSetupDone = attributes
-            .firstWhereOrNull((element) =>
-                element.userAttributeKey ==
-                const CognitoUserAttributeKey.custom('custom:is_setup_done'))
-            ?.value ??
-        '';
-    if (isSetupDone.toLowerCase() == 'yes') {
-      // go to welcome screen
-      Get.offNamedUntil(
-        Routes.home,
-        (route) => false,
-      );
-    } else {
-      // go to setup screen
-      Get.offNamedUntil(
-        Routes.setupIntro,
-        (route) => false,
-      );
     }
   }
 
