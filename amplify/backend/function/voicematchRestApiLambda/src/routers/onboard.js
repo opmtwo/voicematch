@@ -4,10 +4,11 @@ const { v4 } = require('uuid');
 const { default: slugify } = require('slugify');
 const { verifyToken } = require('../middlewares/auth');
 const { idpGetUserAttribute, idpAdminUpdateUserAttributes } = require('../utils/idp-utils');
-const { apsQuery, apsMutation } = require('../utils/aps-utils');
+const { apsQuery, apsMutation, apsGetAll } = require('../utils/aps-utils');
 const { s3GetObject, s3PutObject, s3UpdateACL } = require('../utils/s3-utils');
-const { createUser, updateUser, createRecording } = require('../gql/mutations');
-const { getUser } = require('../gql/queries');
+const { createUser, updateUser, createRecording, createConnection } = require('../gql/mutations');
+const { getUser, listUsers, getConnection } = require('../gql/queries');
+const { calculateMatchPercentage } = require('../utils/match-utils');
 
 const { REGION, STORAGE_VOICEMATCHSTORAGE_BUCKETNAME: BUCKETNAME, AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID } = process.env;
 
@@ -145,4 +146,117 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		const user = await apsMutation(createUser, data);
 		return res.status(200).json(user.data.createUser);
 	}
+});
+
+app.post('/api/v1/onboard/done', verifyToken, async (req, res, next) => {
+	// current user
+	const { Username: sub } = req.user;
+
+	// get profile
+	const userProfile = (await apsQuery(getUser, { id: sub })).data.getUser;
+
+	// this is supposed to be called only once
+	if (userProfile.isSetupDone === true) {
+		console.log('Setup already complete - exit');
+		return res.status(200).json({});
+	}
+
+	/**
+	 * @summary
+	 * get all profiles
+	 *
+	 * @todo
+	 * Ignore deleted users
+	 */
+	const allProfiles = await apsGetAll(listUsers, {}, 'listUsers');
+
+	// find matching profiles
+	let matchingProfiles = [];
+	for (let i = 0; i < allProfiles.length; i++) {
+		const _profile = allProfiles[i];
+		// Exclude the target user from the matching process
+		if (_profile.id === userProfile.id) {
+			continue;
+		}
+		const matchPercentage = calculateMatchPercentage(_profile, userProfile);
+		matchingProfiles.push({
+			user: _profile,
+			matchPercentage,
+		});
+	}
+	console.log(`Found ${matchingProfiles.length} matching profiles`);
+
+	// Sort the matching users based on match percentage in descending order
+	matchingProfiles.sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+	// create matches
+	let promises = [];
+	for (let i = 0; i < matchingProfiles.length; i++) {
+		const { user: _profile, matchPercentage } = matchingProfiles[i];
+		const { id: memberId } = _profile;
+
+		// connection ids for user and member
+		const connectionIdUser = `${sub}-${memberId}`;
+		const connectionIdMember = `${memberId}-${sub}`;
+
+		// chat id
+		const chatId = [sub, memberId].sort().join('-');
+
+		// check if connections already exist
+		const existingConnections = await Promise.all([apsQuery(getConnection, { id: connectionIdUser }), apsQuery(getConnection, { id: connectionIdMember })]);
+
+		// skip if already exists
+		if (existingConnections?.[0]?.data?.getConnection?.id || existingConnections?.[1]?.data?.getConnection?.id) {
+			console.log('Connection already exists - skip', { connectionIdUser, connectionIdMember, chatId });
+			continue;
+		}
+
+		// add user connection
+		promises.push(
+			apsMutation(createConnection, {
+				id: connectionIdUser,
+				owner: sub,
+				userId: sub,
+				memberId,
+				chatId,
+				isSender: true,
+				isReceiver: false,
+				matchPercentage,
+			})
+		);
+
+		// add member connection
+		promises.push(
+			apsMutation(createConnection, {
+				id: connectionIdMember,
+				owner: memberId,
+				userId: memberId,
+				memberId: sub,
+				chatId,
+				isSender: false,
+				isReceiver: true,
+				matchPercentage,
+			})
+		);
+
+		// take top 10 results - 2 connections for each user
+		if (promises.length >= 20) {
+			break;
+		}
+	}
+
+	// create connections
+	console.log(`Creating ${promises.length} connections`);
+	await Promise.all(promises);
+
+	// mark profile setup as completed
+	await Promise.all([
+		apsMutation(updateUser, { id: sub, isSetupDone: true }),
+		await idpAdminUpdateUserAttributes(USERPOOLID, sub, {
+			'custom:is_setup_done': 'true',
+		}),
+	]);
+
+	// all done
+	return res.status(200).json({});
 });
