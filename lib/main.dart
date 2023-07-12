@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
+import 'package:localstorage/localstorage.dart';
 import 'package:voicematch/amplifyconfiguration.dart';
 import 'package:voicematch/components/loader.dart';
 import 'package:voicematch/constants/colors.dart';
@@ -42,6 +43,9 @@ class _VoiceMatchState extends State<VoiceMatch> {
 
   // logged in?
   bool isLoggedIn = false;
+
+  // local storage - used to store badge counter
+  final storage = LocalStorage('voicematch.json');
 
   @override
   void initState() {
