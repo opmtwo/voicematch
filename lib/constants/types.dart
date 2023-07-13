@@ -56,9 +56,9 @@ class UserProfileModel {
           OnlinePresenceModel.fromJson(parsedJson['onlinePresence']);
     }
 
-    RecordingModel? recording;
-    if (parsedJson['recording']?['id'] != null) {
-      recording = RecordingModel.fromJson(parsedJson['recording']);
+    RecordingModel? intro;
+    if (parsedJson['intro']?['id'] != null) {
+      intro = RecordingModel.fromJson(parsedJson['intro']);
     }
 
     // safePrint("${parsedJson['locale']}");
@@ -84,7 +84,7 @@ class UserProfileModel {
       interestTravelling: parsedJson['interestTravelling'],
       interestPet: parsedJson['interestPet'],
       introId: parsedJson['introId'],
-      intro: recording,
+      intro: intro,
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
