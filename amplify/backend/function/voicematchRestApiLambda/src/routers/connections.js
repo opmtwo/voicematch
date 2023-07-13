@@ -7,7 +7,6 @@ const { ddbUpdate, ddbDelete } = require('../utils/ddb-utils');
 const { idpAdminGetUser } = require('../utils/idp-utils');
 const { apsGetAll, apsMutation, apsQuery } = require('../utils/aps-utils');
 const {
-	listConnectionByUserId,
 	getConnection,
 	listMessageByChatId,
 	listConnectionByChatId,
@@ -16,6 +15,7 @@ const {
 	getMessage,
 	listMessageEventByMessageId,
 } = require('../gql/queries');
+const { listConnectionByUserId } = require('../gql/queries_custom');
 const {
 	updateConnection,
 	createConnection,
@@ -27,16 +27,17 @@ const {
 	deleteMessage,
 	updateMessage,
 } = require('../gql/mutations');
-const { LIMIT, LIMIT_SEARCH_RESULTS, BATCH_SIZE } = require('../consts');
 const { snsPublish } = require('../utils/sns-utils');
-const { s3GeneratePresignedUrl, s3CreatePresignedPostCommand } = require('../utils/s3-utils');
+const { s3CreatePresignedPostCommand } = require('../utils/s3-utils');
+
+const { LIMIT, LIMIT_SEARCH_RESULTS, BATCH_SIZE } = require('../consts');
+
 const {
-	SNS_TOPIC_ARN,
-	AUTH_SUPERDAPP5A8B82A5_USERPOOLID: USERPOOLID,
-	API_SUPERDAPP_CONNECTIONTABLE_NAME: CONNECTIONTABLE,
-	API_SUPERDAPP_MESSAGETABLE_NAME: MESSAGETABLE,
-	API_SUPERDAPP_MESSAGEEVENTTABLE_NAME: MESSAGEEVENTTABLE,
-	SNS_MESSAGE_TOPIC_ARN,
+	AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID,
+	API_VOICEMATCHGRAPHAPI_CONNECTIONTABLE_NAME: CONNECTIONTABLE,
+	API_VOICEMATCHGRAPHAPI_MESSAGETABLE_NAME: MESSAGETABLE,
+	API_VOICEMATCHGRAPHAPI_MESSAGEEVENTTABLE_NAME: MESSAGEEVENTTABLE,
+	SNS_CLEANUP_TOPIC_ARN,
 	STORAGE_STORAGE_BUCKETNAME: BUCKETNAME,
 } = process.env;
 
