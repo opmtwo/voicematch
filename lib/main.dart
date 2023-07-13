@@ -12,6 +12,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:voicematch/amplifyconfiguration.dart';
 import 'package:voicematch/components/loader.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/observers/getx_route_observer.dart';
 import 'package:voicematch/router.dart';
 import 'package:voicematch/utils/user_utils.dart';
 
@@ -46,6 +47,9 @@ class _VoiceMatchState extends State<VoiceMatch> {
 
   // local storage - used to store badge counter
   final storage = LocalStorage('voicematch.json');
+
+  // Initialize your custom RouteObserver
+  final GetXRouteObserver routeObserver = GetXRouteObserver();
 
   @override
   void initState() {
@@ -158,6 +162,7 @@ class _VoiceMatchState extends State<VoiceMatch> {
       getPages: appPages,
       initialRoute: Routes.welcome,
       builder: EasyLoading.init(),
+      navigatorObservers: [routeObserver],
     );
   }
 }
