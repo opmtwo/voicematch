@@ -1,18 +1,8 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/route_manager.dart';
-import 'package:get/get.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/form/fab_button.dart';
-import 'package:voicematch/icons/icon_delete.dart';
-import 'package:voicematch/icons/icon_pause.dart';
-import 'package:voicematch/icons/icon_play.dart';
-import 'package:voicematch/icons/icon_rewind_minus.dart';
-import 'package:voicematch/icons/icon_rewind_plus.dart';
-import 'package:voicematch/icons/icon_settings.dart';
-import 'package:voicematch/router.dart';
 
 class AudioFilePlayer extends StatefulWidget {
   // file path or url
@@ -22,7 +12,10 @@ class AudioFilePlayer extends StatefulWidget {
   final bool isLocal;
 
   // delete callback
-  final VoidCallback onDelete;
+  final VoidCallback? onPrev;
+
+  // delete callback
+  final VoidCallback? onNext;
 
   // callback when playback position changes
   final Function(Duration) onPositionChanged;
@@ -30,13 +23,46 @@ class AudioFilePlayer extends StatefulWidget {
   // callback when playback state changes
   final Function(PlayerState) onStateChanged;
 
+  // play icon - required
+  final Widget iconPlay;
+
+  // play icon - required
+  final Widget iconPause;
+
+  // play icon bg
+  final Color? iconPlayBg;
+
+  // pause icon bg
+  final Color? iconPauseBg;
+
+  // skip plus icon - optional
+  final Widget? iconSkipPrev;
+
+  // skip minus icon - optional
+  final Widget? iconSkipNext;
+
+  // left icon - optional
+  final Widget? iconPrev;
+
+  // left icon - optional
+  final Widget? iconNext;
+
   const AudioFilePlayer({
     Key? key,
     required this.audioPath,
     required this.isLocal,
-    required this.onDelete,
     required this.onPositionChanged,
     required this.onStateChanged,
+    required this.iconPlay,
+    required this.iconPause,
+    this.iconPrev,
+    this.iconNext,
+    this.iconSkipPrev,
+    this.iconSkipNext,
+    this.iconPlayBg,
+    this.iconPauseBg,
+    this.onPrev,
+    this.onNext,
   }) : super(key: key);
 
   @override
@@ -171,48 +197,35 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        FabButton(
-          SvgPicture.string(
-            iconSettings(),
-            height: 24,
+        if (widget.iconPrev != null)
+          FabButton(
+            widget.iconPrev!,
+            bg: colorTransparent,
+            onPress: widget.onPrev,
           ),
-          bg: colorTransparent,
-          onPress: () {
-            Get.toNamed(Routes.profile);
-          },
-        ),
-        FabButton(
-          SvgPicture.string(
-            iconRewindMinus(),
-            height: 24,
+        if (widget.iconSkipPrev != null)
+          FabButton(
+            widget.iconSkipPrev!,
+            bg: colorTransparent,
+            onPress: _skipBackward,
           ),
-          bg: colorTransparent,
-          onPress: _skipBackward,
-        ),
         FabButton(
-          SvgPicture.string(
-            isPlaying ? iconPause() : iconPlay(),
-            height: isPlaying ? 24 : 32,
-          ),
+          isPlaying ? widget.iconPause : widget.iconPlay,
           onPress: isPlaying ? _pauseAudio : _playAudio,
-          bg: colorTransparent,
+          bg: isPlaying ? widget.iconPauseBg : widget.iconPlayBg,
         ),
-        FabButton(
-          SvgPicture.string(
-            iconRewindPlus(),
-            height: 24,
+        if (widget.iconSkipNext != null)
+          FabButton(
+            widget.iconSkipNext!,
+            bg: colorTransparent,
+            onPress: _skipForward,
           ),
-          bg: colorTransparent,
-          onPress: _skipForward,
-        ),
-        FabButton(
-          SvgPicture.string(
-            iconDelete(),
-            height: 24,
+        if (widget.iconNext != null)
+          FabButton(
+            widget.iconNext!,
+            bg: colorTransparent,
+            onPress: widget.onNext,
           ),
-          bg: colorTransparent,
-          onPress: widget.onDelete,
-        ),
       ],
     );
   }
