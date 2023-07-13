@@ -92,10 +92,32 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
     Navigator.pop(context);
   }
 
-  Future<void> onDelete() async {
+  Future<void> onDelete(String id) async {
     EasyLoading.show(status: 'loading...');
     try {
-      //
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id');
+      safePrint('onDelete - url $url');
+      final response = await http.delete(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onDelete - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('onDelete - non 200 code - ${response.statusCode}');
+      }
+
+      // update state
+      setState(() {
+        connections = connections.where((value) => value.id != id).toList();
+      });
     } on AuthException catch (e) {
       safePrint('onDelete - error ${e.message}');
       setState(() {
@@ -105,7 +127,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
     EasyLoading.dismiss();
   }
 
-  Future<void> onUnmatch() async {
+  Future<void> onUnmatch(String id) async {
     showCupertinoDialog(
       barrierDismissible: true,
       context: context,
@@ -119,6 +141,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
             child: const Text("Yes"),
             onPressed: () {
               Navigator.pop(context);
+              onDelete(id);
             },
           ),
           CupertinoDialogAction(
@@ -216,8 +239,8 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                               onPress: () {
                                                 Get.toNamed(
                                                   Routes.matchesPreview,
-                                                  arguments: {
-                                                    'id': index,
+                                                  parameters: {
+                                                    'id': item.id,
                                                   },
                                                 );
                                               },
@@ -298,8 +321,8 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                           Get.toNamed(
                                                             Routes
                                                                 .matchesPreview,
-                                                            arguments: {
-                                                              'id': index
+                                                            parameters: {
+                                                              'id': item.id,
                                                             },
                                                           );
                                                         },
@@ -355,7 +378,11 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                   height: 40,
                                                   // bg: colorOnSurfaceMediumEmphasis,
                                                   bg: colorBlack,
-                                                  onPress: onUnmatch,
+                                                  onPress: () {
+                                                    safePrint(
+                                                        'item.id ${item.id}');
+                                                    onUnmatch(item.id);
+                                                  },
                                                 ),
                                               ),
                                             ],
