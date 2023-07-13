@@ -152,6 +152,83 @@ class RecordingModel {
   }
 }
 
+class ConnectionModel {
+  final String id;
+  final String owner;
+  final String chatId;
+  final String userId;
+  final String memberId;
+  final UserProfileModel member;
+  final OnlinePresenceModel? onlinePresence;
+  final bool? isSender;
+  final bool? isReceiver;
+  final bool? isAccepted;
+  final bool? isDeclined;
+  final bool? isBlocked;
+  final bool? isMuted;
+  final bool? isPinned;
+  final String? acceptedAt;
+  final String? declinedAt;
+  final String? blockedAt;
+  final String? mutedAt;
+  final String? pinnedAt;
+  final double matchPercentage;
+  final String createdAt;
+  final String updatedAt;
+
+  ConnectionModel({
+    required this.id,
+    required this.owner,
+    required this.chatId,
+    required this.userId,
+    required this.memberId,
+    required this.member,
+    this.onlinePresence,
+    this.isSender,
+    this.isReceiver,
+    this.isAccepted,
+    this.isDeclined,
+    this.isBlocked,
+    this.isMuted,
+    this.isPinned,
+    this.acceptedAt,
+    this.declinedAt,
+    this.blockedAt,
+    this.mutedAt,
+    this.pinnedAt,
+    required this.matchPercentage,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ConnectionModel.fromJson(Map<String, dynamic> parsedJson) {
+    OnlinePresenceModel? onlinePresence;
+    if (parsedJson['onlinePresence']?['id'] != null) {
+      onlinePresence =
+          OnlinePresenceModel.fromJson(parsedJson['onlinePresence']);
+    }
+
+    return ConnectionModel(
+      id: parsedJson['id'],
+      owner: parsedJson['owner'],
+      chatId: parsedJson['chatId'],
+      userId: parsedJson['userId'],
+      memberId: parsedJson['memberId'],
+      member: UserProfileModel.fromJson(parsedJson['member']),
+      onlinePresence: onlinePresence,
+      isSender: parsedJson['isSender'] == true,
+      isReceiver: parsedJson['isReceiver'] == true,
+      isAccepted: parsedJson['isAccepted'] == true,
+      isDeclined: parsedJson['isDeclined'] == true,
+      isBlocked: parsedJson['isBlocked'] == true,
+      isMuted: parsedJson['isMuted'] == true,
+      isPinned: parsedJson['isPinned'] == true,
+      acceptedAt: parsedJson['acceptedAt'],
+      declinedAt: parsedJson['declinedAt'],
+      blockedAt: parsedJson['blockedAt'],
+      mutedAt: parsedJson['mutedAt'],
+      pinnedAt: parsedJson['pinnedAt'],
+      matchPercentage: double.parse(parsedJson['matchPercentage'].toString()),
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
