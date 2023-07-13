@@ -1,7 +1,7 @@
 class UserProfileModel {
   final String id;
   final String owner;
-  // final String onlinePresence;
+  final OnlinePresenceModel? onlinePresence;
   final String? name;
   final String? givenName;
   final String? familyName;
@@ -19,14 +19,14 @@ class UserProfileModel {
   final String? interestTravelling;
   final String? interestPet;
   final String? introId;
-  // final String intro;
+  final RecordingModel? intro;
   final String createdAt;
   final String updatedAt;
 
   UserProfileModel({
     required this.id,
     required this.owner,
-    // required this.onlinePresence,
+    this.onlinePresence,
     this.name,
     this.givenName,
     this.familyName,
@@ -44,16 +44,29 @@ class UserProfileModel {
     this.interestTravelling,
     this.interestPet,
     this.introId,
-    // required this.intro,
+    this.intro,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> parsedJson) {
+    OnlinePresenceModel? onlinePresence;
+    if (parsedJson['onlinePresence']?['id'] != null) {
+      onlinePresence =
+          OnlinePresenceModel.fromJson(parsedJson['onlinePresence']);
+    }
+
+    RecordingModel? recording;
+    if (parsedJson['recording']?['id'] != null) {
+      recording = RecordingModel.fromJson(parsedJson['recording']);
+    }
+
+    // safePrint("${parsedJson['locale']}");
+
     return UserProfileModel(
       id: parsedJson['id'],
       owner: parsedJson['owner'],
-      // onlinePresence: parsedJson['onlinePresence'],
+      onlinePresence: onlinePresence,
       name: parsedJson['name'],
       givenName: parsedJson['givenName'],
       familyName: parsedJson['familyName'],
@@ -63,7 +76,7 @@ class UserProfileModel {
       lookingFor: parsedJson['lookingFor'],
       ageRange: parsedJson['ageRange'],
       distance: parsedJson['distance'],
-      locale: parsedJson['locale'],
+      locale: List<String>.from(parsedJson['locale']),
       interestCreativity: parsedJson['interestCreativity'],
       interestSports: parsedJson['interestSports'],
       interestVideo: parsedJson['interestVideo'],
@@ -71,6 +84,12 @@ class UserProfileModel {
       interestTravelling: parsedJson['interestTravelling'],
       interestPet: parsedJson['interestPet'],
       introId: parsedJson['introId'],
+      intro: recording,
+      createdAt: parsedJson['createdAt'],
+      updatedAt: parsedJson['updatedAt'],
+    );
+  }
+}
 
 class OnlinePresenceModel {
   final String id;
