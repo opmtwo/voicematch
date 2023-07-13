@@ -53,6 +53,9 @@ const apsGetAll = async (query, variables, key, token = undefined, verbose = tru
 		} while (nextToken);
 		if (verbose) {
 			console.log('apsGetAll - success - found items', allItems.length);
+			if (allItems.length) {
+				console.log('apsGetAll - success - sample', JSON.stringify(allItems[0], null, 2));
+			}
 		}
 		return allItems;
 	} catch (err) {
