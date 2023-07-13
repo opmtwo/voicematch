@@ -1,14 +1,21 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
+import 'package:voicematch/components/profile_pic.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
@@ -29,6 +36,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   String? error;
   bool? isBusy;
 
+  // list of connections
+  List<ConnectionModel> connections = [];
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +47,44 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
 
   Future<void> getMatches() async {
     await EasyLoading.show(status: 'loading...');
-    // try {
-    //   //
-    // } catch (err) {
-    //   safePrint('getMatches- error - $err');
-    // }
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections');
+      safePrint('onSubmit - url $url');
+      final response = await http.get(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onSubmit - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('Received non-200 status code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('getMatches - json - ${response.body}');
+
+      // parse records
+      List<ConnectionModel> newConnections = [];
+      for (int i = 0; i < json.length; i++) {
+        newConnections.add(ConnectionModel.fromJson(json[i]));
+      }
+      log('Found ${newConnections.length} connections');
+
+      // update state
+      setState(() {
+        connections = newConnections;
+      });
+    } catch (err) {
+      safePrint('getMatches- error - $err');
+    }
     await EasyLoading.dismiss();
   }
 
@@ -135,8 +178,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                               runAlignment: WrapAlignment.spaceBetween,
                               runSpacing: gap,
                               children: List.generate(
-                                10,
+                                connections.length,
                                 (index) {
+                                  final item = connections[index];
                                   return SizedBox(
                                     width: MediaQuery.of(context).size.width /
                                         5, // Divide the width equally to accommodate four items per row
@@ -145,10 +189,20 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                         Div(
                                           [
                                             FabButton(
-                                              const IconBox(
+                                              IconBox(
                                                 // Image.asset('assets/images/avatar.png'),
                                                 Div(
-                                                  [],
+                                                  [
+                                                    if (item.member
+                                                            .pictureNormal !=
+                                                        null)
+                                                      ProfilePic(
+                                                        src: item.member
+                                                                .pictureNormal
+                                                            as String,
+                                                        isLocal: false,
+                                                      ),
+                                                  ],
                                                   w: 48,
                                                   h: 48,
                                                   bg: colorPrimary050,
@@ -174,7 +228,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                         Div(
                                           [
                                             P(
-                                              'Andrew Andrew Andrew Andrew',
+                                              item.member.givenName,
                                               lines: 1,
                                               ta: TextAlign.center,
                                               ov: TextOverflow.ellipsis,
@@ -207,8 +261,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                           [
                             Column(
                               children: List.generate(
-                                10,
+                                connections.length,
                                 (index) {
+                                  final item = connections[index];
                                   return Div(
                                     [
                                       Row(
@@ -225,13 +280,18 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                     [
                                                       // Image.asset('assets/images/avatar.png'),
                                                       FabButton(
-                                                        const IconBox(
-                                                          Div([]),
-                                                          w: 64,
-                                                          h: 64,
-                                                          bg: colorPrimary050,
-                                                          br: 64,
-                                                        ),
+                                                        Div([
+                                                          if (item.member
+                                                                  .pictureNormal !=
+                                                              null)
+                                                            ProfilePic(
+                                                              src: item.member
+                                                                      .pictureNormal
+                                                                  as String,
+                                                              isLocal: false,
+                                                              w: 64,
+                                                            )
+                                                        ]),
                                                         w: 64,
                                                         h: 64,
                                                         onPress: () {
@@ -253,15 +313,20 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
-                                                    children: const [
+                                                    children: [
                                                       Div(
                                                         [
-                                                          P(
-                                                            'People Lover People LoverPeople Lover',
-                                                            isH6: true,
-                                                            lines: 1,
-                                                            ov: TextOverflow
-                                                                .ellipsis,
+                                                          Align(
+                                                            alignment: Alignment
+                                                                .topLeft,
+                                                            child: P(
+                                                              item.member
+                                                                  .givenName,
+                                                              isH6: true,
+                                                              lines: 1,
+                                                              ov: TextOverflow
+                                                                  .ellipsis,
+                                                            ),
                                                           ),
                                                         ],
                                                         w: 150,
@@ -269,7 +334,8 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                       Div(
                                                         [
                                                           P(
-                                                            '25',
+                                                            item.member
+                                                                .ageRange,
                                                             isCaption: true,
                                                           ),
                                                         ],
