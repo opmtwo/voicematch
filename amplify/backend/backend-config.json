@@ -116,6 +116,34 @@
     }
   },
   "function": {
+    "voicematchCleanupLambda": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "voicematchc92d7b64"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "voicematchStorage"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "voicematchGraphApi"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "voicematchRestApiLambda": {
       "build": true,
       "dependsOn": [
@@ -166,6 +194,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_voicematchCleanupLambda_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "voicematchCleanupLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_voicematchCleanupLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "voicematchCleanupLambda"
+        }
+      ]
+    },
     "AMPLIFY_function_voicematchRestApiLambda_deploymentBucketName": {
       "usedBy": [
         {
@@ -175,6 +219,14 @@
       ]
     },
     "AMPLIFY_function_voicematchRestApiLambda_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "voicematchRestApiLambda"
+        }
+      ]
+    },
+    "AMPLIFY_function_voicematchRestApiLambda_snsCleanupTopicArn": {
       "usedBy": [
         {
           "category": "function",
