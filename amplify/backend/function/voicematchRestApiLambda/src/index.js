@@ -8,8 +8,8 @@ const app = require('./app');
 const server = awsServerlessExpress.createServer(app);
 
 require('./routers/onboard');
-require('./routers/me');
-// require('./routers/connections');
+require('./routers/online');
+require('./routers/connections');
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
