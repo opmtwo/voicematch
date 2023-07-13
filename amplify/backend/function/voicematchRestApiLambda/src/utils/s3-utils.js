@@ -172,14 +172,7 @@ const s3CloneObject = async (sourceBucket, sourceKey, destinationBucket, destina
 	}
 	try {
 		const s3Resource = new aws.S3();
-		const source = {
-			Bucket: sourceBucket,
-			Key: sourceKey,
-		};
-		const destinationBucketObj = s3Resource.Bucket(destinationBucket);
-		const res = await destinationBucketObj
-			.copyObject({ CopySource: `/${sourceBucket}/${sourceKey}`, Bucket: destinationBucket, Key: destinationKey })
-			.promise();
+		const res = await s3Resource.copyObject({ CopySource: `/${sourceBucket}/${sourceKey}`, Bucket: destinationBucket, Key: destinationKey }).promise();
 		if (verbose) {
 			console.log('s3CloneObject - res', res);
 		}
