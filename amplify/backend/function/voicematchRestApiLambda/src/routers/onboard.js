@@ -3,6 +3,7 @@ const sharp = require('sharp');
 const { v4 } = require('uuid');
 const { default: slugify } = require('slugify');
 const { verifyToken } = require('../middlewares/auth');
+const { safelyParseJSON } = require('../utils/helper-utils');
 const { idpGetUserAttribute, idpAdminUpdateUserAttributes } = require('../utils/idp-utils');
 const { apsQuery, apsMutation, apsGetAll } = require('../utils/aps-utils');
 const { s3GetObject, s3PutObject, s3UpdateACL } = require('../utils/s3-utils');
@@ -119,7 +120,7 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		ageRange,
 
 		distance,
-		locale,
+		locale: safelyParseJSON(locale) ?? [],
 
 		interestCreativity,
 		interestSports,
