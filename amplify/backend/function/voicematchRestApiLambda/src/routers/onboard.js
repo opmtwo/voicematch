@@ -6,7 +6,7 @@ const { verifyToken } = require('../middlewares/auth');
 const { safelyParseJSON } = require('../utils/helper-utils');
 const { idpGetUserAttribute, idpAdminUpdateUserAttributes } = require('../utils/idp-utils');
 const { apsQuery, apsMutation, apsGetAll } = require('../utils/aps-utils');
-const { s3GetObject, s3PutObject, s3UpdateACL } = require('../utils/s3-utils');
+const { s3GetObject, s3PutObject, s3UpdateACL, s3CloneObject, s3DeleteObject } = require('../utils/s3-utils');
 const { createUser, updateUser, createRecording, createConnection } = require('../gql/mutations');
 const { getUser, listUsers, getConnection } = require('../gql/queries');
 const { calculateMatchPercentage } = require('../utils/match-utils');
@@ -81,10 +81,22 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 			const introObj = await s3GetObject(BUCKETNAME, introKey);
 
 			// make recording readable
-			await s3UpdateACL(BUCKETNAME, introKey, 'public-read');
+			// await s3UpdateACL(BUCKETNAME, introKey, 'public-read');
+
+			// we will store the file in private directory
+			const introKeyPrivate = `intro-recordings/${sub}/${v4()}`;
 
 			// assing intro id
 			introId = v4();
+
+			// copy file from public directory to private directory
+			await s3CloneObject(BUCKETNAME, introKey, BUCKETNAME, introKeyPrivate);
+
+			// make recording readable
+			await s3UpdateACL(BUCKETNAME, introKeyPrivate, 'public-read');
+
+			// delete the original file
+			await s3DeleteObject(BUCKETNAME, introKey);
 
 			// store the recording data
 			const newRecording = await apsMutation(createRecording, {
@@ -92,8 +104,8 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 				owner: sub,
 				userId: sub,
 				duration: 30, // this is the duration of the recording
-				key: `public/${introKey}`,
-				url: `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/public/${introKey}`,
+				key: introKeyPrivate,
+				url: `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/${introKeyPrivate}`,
 			});
 			introModel = (await newRecording).data.createRecording;
 		} catch (err) {
