@@ -13,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
-import 'package:voicematch/components/audio_player.dart';
+import 'package:voicematch/components/audio_file_player.dart';
 import 'package:voicematch/components/current_time.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
@@ -382,7 +382,34 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                       AudioFilePlayer(
                         audioPath: recordingPath as String,
                         isLocal: true,
-                        onDelete: onDelete,
+                        iconPlay: SvgPicture.string(
+                          iconPlay(),
+                          width: 32,
+                        ),
+                        iconPause: SvgPicture.string(
+                          iconPause(),
+                          width: 24,
+                        ),
+                        iconSkipPrev: SvgPicture.string(
+                          iconRewindMinus(),
+                          height: 24,
+                        ),
+                        iconSkipNext: SvgPicture.string(
+                          iconRewindPlus(),
+                          height: 24,
+                        ),
+                        iconPrev: SvgPicture.string(
+                          iconSettings(),
+                          height: 24,
+                        ),
+                        iconNext: SvgPicture.string(
+                          iconDelete(),
+                          height: 24,
+                        ),
+                        onPrev: () {
+                          Get.toNamed(Routes.profile);
+                        },
+                        onNext: onDelete,
                         onPositionChanged: onPositionChanged,
                         onStateChanged: onStateChanged,
                       ),
