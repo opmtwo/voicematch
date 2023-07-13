@@ -71,7 +71,32 @@ class UserProfileModel {
       interestTravelling: parsedJson['interestTravelling'],
       interestPet: parsedJson['interestPet'],
       introId: parsedJson['introId'],
-      // intro: parsedJson['intro'],
+
+class OnlinePresenceModel {
+  final String id;
+  final String owner;
+  final String lastSeenAt;
+  final String createdAt;
+  final String updatedAt;
+
+  OnlinePresenceModel({
+    required this.id,
+    required this.owner,
+    required this.lastSeenAt,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory OnlinePresenceModel.fromJson(Map<String, dynamic> parsedJson) {
+    return OnlinePresenceModel(
+      id: parsedJson['id'],
+      owner: parsedJson['owner'],
+      lastSeenAt: parsedJson['lastSeenAt'],
+      createdAt: parsedJson['createdAt'],
+      updatedAt: parsedJson['updatedAt'],
+    );
+  }
+}
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
