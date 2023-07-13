@@ -97,6 +97,42 @@ class OnlinePresenceModel {
     );
   }
 }
+
+class RecordingModel {
+  final String id;
+  final String owner;
+  final String userId;
+  final double duration;
+  final String key;
+  final String url;
+  final String createdAt;
+  final String updatedAt;
+
+  RecordingModel({
+    required this.id,
+    required this.owner,
+    required this.userId,
+    required this.duration,
+    required this.key,
+    required this.url,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory RecordingModel.fromJson(Map<String, dynamic> parsedJson) {
+    return RecordingModel(
+      id: parsedJson['id'],
+      owner: parsedJson['owner'],
+      userId: parsedJson['userId'],
+      duration: double.parse(parsedJson['duration'].toString()),
+      key: parsedJson['key'],
+      url: parsedJson['url'],
+      createdAt: parsedJson['createdAt'],
+      updatedAt: parsedJson['updatedAt'],
+    );
+  }
+}
+
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
