@@ -35,6 +35,9 @@
     "apivoicematchGraphApiGraphQLAPIKeyOutput": {
       "Type": "String",
       "Default": "apivoicematchGraphApiGraphQLAPIKeyOutput"
+    },
+    "snsCleanupTopicArn": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -286,6 +289,9 @@
                   }
                 ]
               ]
+            },
+            "SNS_CLEANUP_TOPIC_ARN": {
+              "Ref": "snsCleanupTopicArn"
             }
           }
         },
@@ -298,7 +304,7 @@
         "Runtime": "nodejs16.x",
         "Layers": [],
         "Timeout": 25,
-        "MemorySize": 1536
+        "MemorySize": 1024
       }
     },
     "LambdaExecutionRole": {
