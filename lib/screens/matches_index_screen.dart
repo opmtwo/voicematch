@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
+import 'package:voicematch/components/navbar.dart';
 import 'package:voicematch/components/profile_pic.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/env.dart';
@@ -162,11 +163,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
         Div(
           [
             const Div(
-              [
-                ProgressBar(
-                  value: 4 / 4,
-                ),
-              ],
+              [],
               pt: gapTop,
             ),
             Expanded(
@@ -224,6 +221,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                                 .pictureNormal
                                                             as String,
                                                         isLocal: false,
+                                                        w: 48,
                                                       ),
                                                   ],
                                                   w: 48,
@@ -239,7 +237,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                               onPress: () {
                                                 Get.toNamed(
                                                   Routes.matchesPreview,
-                                                  parameters: {
+                                                  arguments: {
                                                     'id': item.id,
                                                   },
                                                 );
@@ -321,7 +319,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                           Get.toNamed(
                                                             Routes
                                                                 .matchesPreview,
-                                                            parameters: {
+                                                            arguments: {
                                                               'id': item.id,
                                                             },
                                                           );
@@ -404,6 +402,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                 ),
               ),
             ),
+            const Navbar(),
           ],
         ),
       ),
