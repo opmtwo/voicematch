@@ -387,14 +387,6 @@ const s3DeleteObject = async (bucket, key, verbose = true) => {
 	try {
 		const s3 = new aws.S3();
 		const res = await s3.deleteObject({ Bucket: bucket, Key: key }).promise();
-		if (verbose) {
-			console.log(`s3DeleteObject - res: ${JSON.stringify(res)}`);
-			if (res.ResponseMetadata.HTTPStatusCode === 204) {
-				console.log(`s3DeleteObject - The object ${key} was deleted successfully.`);
-			} else {
-				console.log(`s3DeleteObject - There was an error deleting the object ${key}.`);
-			}
-		}
 		return res;
 	} catch (err) {
 		if (verbose) {
