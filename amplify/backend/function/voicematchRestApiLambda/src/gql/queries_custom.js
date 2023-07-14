@@ -91,6 +91,44 @@ exports.getConnection = /* GraphQL */ `
 			owner
 			chatId
 			userId
+			user {
+				id
+				owner
+				email
+				name
+				givenName
+				familyName
+				pictureNormal
+				pictureMasked
+				gender
+				lookingFor
+				ageRange
+				distance
+				locale
+				interestCreativity
+				interestSports
+				interestVideo
+				interestMusic
+				interestTravelling
+				interestPet
+				introId
+				intro {
+					id
+					owner
+					userId
+					duration
+					key
+					url
+					createdAt
+					updatedAt
+					__typename
+				}
+				isSetupDone
+				searchTerm
+				createdAt
+				updatedAt
+				__typename
+			}
 			memberId
 			member {
 				id
