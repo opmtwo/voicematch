@@ -1,16 +1,22 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:voicematch/components/connection_header.dart';
 import 'package:voicematch/components/header.dart';
-import 'package:voicematch/components/image_masked.dart';
 import 'package:voicematch/components/message.dart';
 import 'package:voicematch/components/reveal/reveal.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/fab_button.dart';
@@ -43,54 +49,55 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   // recording duration
   Duration duration = const Duration(seconds: 0);
 
-  List<String> interests = ['Hiking Trips', 'Writing'];
+  // match connection id
+  late String id;
+
+  // connection
+  ConnectionModel? activeItem;
 
   @override
   void initState() {
     super.initState();
-    getUser();
+    setState(() {
+      id = Get.arguments['id'] as String;
+    });
+    getConnection();
   }
 
-  final List<Widget> headerChildren = [
-    Row(
-      children: [
-        Div(
-          [
-            ImageMasked(
-              url: 'assets/images/avatar.png',
-              width: 48,
-            ),
-          ],
-          mr: gap / 2,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            P(
-              'Mario',
-              isH5: true,
-              fg: colorBlack,
-            ),
-            P(
-              'Last seen today at 10:07 PM',
-              isBody2: true,
-            )
-          ],
-        ),
-      ],
-    )
-  ];
-
-  Future<void> getUser() async {
-    EasyLoading.show(status: 'loading...');
+  Future<void> getConnection() async {
+    await EasyLoading.show(status: 'loading...');
     try {
-      setState(() {
-        //
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id');
+      safePrint('getConnection - url $url');
+      final response = await http.get(url, headers: {
+        'Authorization': accessToken.toString(),
       });
-    } on AuthException catch (e) {
-      safePrint('getUser- error - ${e.message}');
+      safePrint('getConnection - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('getConnection - non-200 code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      // log('getConnection - json - ${response.body}');
+
+      // update state
+      setState(() {
+        activeItem = ConnectionModel.fromJson(json);
+      });
+    } catch (err) {
+      safePrint('getConnection- error - $err');
     }
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   void onBack() {
@@ -134,7 +141,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                 isUserFullRevealed: true,
                 isMemberHalfRevealed: true,
                 isMemberFullRevealed: true,
-                header: headerChildren,
+                header: [
+                  if (activeItem != null) ConnectionHeader(item: activeItem),
+                ],
                 submitTitle: 'Continue',
                 cancelTitle: 'cancel',
                 yesTitle: 'Yes',
@@ -161,7 +170,6 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
             Div(
               [
                 Header(
-                  children: headerChildren,
                   hasPrev: true,
                   onPrev: onBack,
                   hasNext: true,
@@ -172,6 +180,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                     fw: FontWeight.w700,
                     ta: TextAlign.center,
                   ),
+                  children: [
+                    if (activeItem != null) ConnectionHeader(item: activeItem),
+                  ],
                 ),
               ],
               mt: gapTop,
