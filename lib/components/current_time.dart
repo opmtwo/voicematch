@@ -14,7 +14,7 @@ class CurrentTime extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return P(
-      '${duration.inMinutes.toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}',
+      '${duration.inMinutes.toString().padLeft(2, '0')}:${(((duration.inMilliseconds) / 1000).round() % 60).toString().padLeft(2, '0')}',
       isBody1: true,
       ff: 'Abel',
       style: style,
