@@ -6,16 +6,8 @@ const { validateFormData, IConnection, IConnectionMessage } = require('../schema
 const { ddbUpdate, ddbDelete } = require('../utils/ddb-utils');
 const { idpAdminGetUser } = require('../utils/idp-utils');
 const { apsGetAll, apsMutation, apsQuery } = require('../utils/aps-utils');
-const {
-	getConnection,
-	listMessageByChatId,
-	listConnectionByChatId,
-	getMessageEvent,
-	listUsers,
-	getMessage,
-	listMessageEventByMessageId,
-} = require('../gql/queries');
-const { listConnectionByUserId } = require('../gql/queries_custom');
+const { listMessageByChatId, listConnectionByChatId, getMessageEvent, listUsers, getMessage, listMessageEventByMessageId } = require('../gql/queries');
+const { listConnectionByUserId, getConnection } = require('../gql/queries_custom');
 const {
 	updateConnection,
 	createConnection,
@@ -115,6 +107,10 @@ app.get('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
 	return res.status(200).json(connection.data.getConnection);
 });
 
+/**
+ * @summary
+ * accpet connection request
+ */
 app.post('/api/v1/connections/:id/accept', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -130,6 +126,10 @@ app.post('/api/v1/connections/:id/accept', verifyToken, async (req, res, next) =
 	return res.status(200).json({});
 });
 
+/**
+ * @summary
+ * decline connection request
+ */
 app.post('/api/v1/connections/:id/decline', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -145,6 +145,10 @@ app.post('/api/v1/connections/:id/decline', verifyToken, async (req, res, next) 
 	return res.status(200).json({});
 });
 
+/**
+ * @summary
+ * block connection
+ */
 app.post('/api/v1/connections/:id/block', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -163,6 +167,10 @@ app.post('/api/v1/connections/:id/block', verifyToken, async (req, res, next) =>
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * unblock connection
+ */
 app.post('/api/v1/connections/:id/unblock', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -181,6 +189,10 @@ app.post('/api/v1/connections/:id/unblock', verifyToken, async (req, res, next) 
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * mute connection
+ */
 app.post('/api/v1/connections/:id/mute', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -199,6 +211,10 @@ app.post('/api/v1/connections/:id/mute', verifyToken, async (req, res, next) => 
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * unmute connection
+ */
 app.post('/api/v1/connections/:id/unmute', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -217,6 +233,10 @@ app.post('/api/v1/connections/:id/unmute', verifyToken, async (req, res, next) =
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * pin connection
+ */
 app.post('/api/v1/connections/:id/pin', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -235,6 +255,10 @@ app.post('/api/v1/connections/:id/pin', verifyToken, async (req, res, next) => {
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * unpin connection request
+ */
 app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -253,6 +277,10 @@ app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) =>
 	return res.status(200).json(connectionUpdated.data.getConnection);
 });
 
+/**
+ * @summary
+ * get connection messages
+ */
 app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) => {
 	const { nextToken, limit } = req.query;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
@@ -265,6 +293,10 @@ app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) 
 	return res.status(200).json({ ...messages.data.listMessageByChatId });
 });
 
+/**
+ * @summary
+ * send connection message
+ */
 app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConnectionMessage), async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const { body, isSilent, type, fileSize, fileMime } = req.body;
@@ -373,10 +405,13 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 		]);
 	}
 
-	// await snsPublish(SNS_MESSAGE_TOPIC_ARN, JSON.stringify(message.data.createMessage));
 	return res.status(200).json({ message: message.data.createMessage, fileKey, fileUrl });
 });
 
+/**
+ * @summary
+ * update connection messages
+ */
 app.put('/api/v1/connections/:id/messages/:messageId', validateFormData(IConnectionMessage), verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const { messageId } = req.params;
@@ -429,16 +464,26 @@ app.put('/api/v1/connections/:id/messages/:messageId', validateFormData(IConnect
 	return res.status(200).json(message);
 });
 
+/**
+ * @summary
+ * delete connection
+ */
 app.delete('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
+	const { id } = req.params;
 	const { Username: sub } = req.user;
-	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	const connection = (await apsQuery(getConnection, { id })).data.getConnection;
 	if (connection.userId !== sub) {
 		res.status(401).json({ message: 'Unauthorized' });
 	}
-	const connectionDeleted = await apsMutation(deleteConnection, { id: req.params.id, _version: connection._version });
+	const connectionDeleted = await apsMutation(deleteConnection, { id, _version: connection._version });
+	await ddbDelete(CONNECTIONTABLE, { id });
 	return res.status(200).json(connectionDeleted.data.deleteConnection);
 });
 
+/**
+ * @summary
+ * delete all connection messages
+ */
 app.post('/api/v1/connections/:id/clear', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
@@ -447,7 +492,7 @@ app.post('/api/v1/connections/:id/clear', verifyToken, async (req, res, next) =>
 	}
 	// send sns notification to delete all connection message events
 	await snsPublish(
-		SNS_TOPIC_ARN,
+		SNS_CLEANUP_TOPIC_ARN,
 		JSON.stringify({
 			tableName: MESSAGEEVENTTABLE,
 			indexName: 'listMessageEventByChatId',
@@ -462,6 +507,10 @@ app.post('/api/v1/connections/:id/clear', verifyToken, async (req, res, next) =>
 	return res.status(200).json({});
 });
 
+/**
+ * @summary
+ * delete specific connection message
+ */
 app.delete('/api/v1/connections/:id/messages/:messageId', verifyToken, validateFormData(IConnection), async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const now = new Date().toISOString();
@@ -485,6 +534,10 @@ app.delete('/api/v1/connections/:id/messages/:messageId', verifyToken, validateF
 	return res.status(200).json(messageEvent);
 });
 
+/**
+ * @summary
+ * Delete a message for all connections
+ */
 app.delete('/api/v1/connections/:id/messages/:messageId/clear', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const { messageId } = req.params;
@@ -518,7 +571,7 @@ app.delete('/api/v1/connections/:id/messages/:messageId/clear', verifyToken, asy
 
 	// send sns notification to delete all message events
 	await snsPublish(
-		SNS_TOPIC_ARN,
+		SNS_CLEANUP_TOPIC_ARN,
 		JSON.stringify({
 			tableName: MESSAGEEVENTTABLE,
 			indexName: 'listMessageEventByMessageId',
