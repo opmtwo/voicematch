@@ -35,10 +35,9 @@ class ConnectionHeader extends StatelessWidget {
                 isH5: true,
                 fg: colorBlack,
               ),
-              if (item?.member.onlinePresence?.id != null)
+              if (item?.onlinePresence?.id != null)
                 P(
-                  gethumanTimeDiff(
-                      item?.member.onlinePresence?.lastSeenAt as String),
+                  'Last seen ${gethumanTimeDiff(item?.onlinePresence?.lastSeenAt as String).toLowerCase()}',
                   isBody2: true,
                 ),
             ],
