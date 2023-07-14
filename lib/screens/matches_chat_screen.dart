@@ -224,6 +224,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                   nextIcon: const P(
                     'Image Reveal',
                     isBody2: true,
+                    ff: 'Abel',
                     fw: FontWeight.w700,
                     ta: TextAlign.center,
                   ),
