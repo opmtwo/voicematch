@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:voicematch/components/connection_pic.dart';
 import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/components/navbar.dart';
@@ -209,31 +210,12 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                         Div(
                                           [
                                             FabButton(
-                                              IconBox(
-                                                // Image.asset('assets/images/avatar.png'),
-                                                Div(
-                                                  [
-                                                    if (item.member
-                                                            .pictureNormal !=
-                                                        null)
-                                                      ProfilePic(
-                                                        src: item.member
-                                                                .pictureNormal
-                                                            as String,
-                                                        isLocal: false,
-                                                        w: 48,
-                                                      ),
-                                                  ],
-                                                  w: 48,
-                                                  h: 48,
-                                                  bg: colorPrimary050,
-                                                  br: 48,
-                                                ),
-                                                w: 48,
-                                                h: 48,
+                                              ConnectionPic(
+                                                item: item,
+                                                w: avatarSmall,
                                               ),
-                                              w: 48,
-                                              h: 48,
+                                              w: avatarSmall,
+                                              h: avatarSmall,
                                               onPress: () {
                                                 Get.toNamed(
                                                   Routes.matchesPreview,
@@ -299,22 +281,13 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                 children: [
                                                   Div(
                                                     [
-                                                      // Image.asset('assets/images/avatar.png'),
                                                       FabButton(
-                                                        Div([
-                                                          if (item.member
-                                                                  .pictureNormal !=
-                                                              null)
-                                                            ProfilePic(
-                                                              src: item.member
-                                                                      .pictureNormal
-                                                                  as String,
-                                                              isLocal: false,
-                                                              w: 64,
-                                                            )
-                                                        ]),
-                                                        w: 64,
-                                                        h: 64,
+                                                        ConnectionPic(
+                                                          item: item,
+                                                          w: avatarMedium,
+                                                        ),
+                                                        w: avatarMedium,
+                                                        h: avatarMedium,
                                                         onPress: () {
                                                           Get.toNamed(
                                                             Routes

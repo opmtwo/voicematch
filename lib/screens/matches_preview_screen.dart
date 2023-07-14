@@ -299,7 +299,7 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                                   [
                                     ConnectionPic(
                                       item: activeItem!,
-                                      w: 128,
+                                      w: avatarLarge,
                                     ),
                                   ],
                                   mv: gap,

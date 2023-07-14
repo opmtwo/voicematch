@@ -224,8 +224,8 @@ class AvatarState extends State<Avatar> {
     );
   }
 
-  final double defaultWidth = 128;
-  final double defaultHeight = 128;
+  final double defaultWidth = avatarLarge;
+  final double defaultHeight = avatarLarge;
 
   @override
   Widget build(BuildContext context) {
