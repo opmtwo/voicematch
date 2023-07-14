@@ -242,3 +242,15 @@ class ConnectionModel {
     );
   }
 }
+
+
+enum MessageTypeEnum {
+  text,
+  image,
+  video,
+  audio,
+  document,
+  link,
+  file,
+  other,
+}
