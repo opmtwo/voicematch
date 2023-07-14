@@ -32,13 +32,14 @@ class ConnectionHeader extends StatelessWidget {
             children: [
               P(
                 item?.member.givenName,
-                isH5: true,
+                isH6: true,
                 fg: colorBlack,
               ),
               if (item?.onlinePresence?.id != null)
                 P(
                   'Last seen ${gethumanTimeDiff(item?.onlinePresence?.lastSeenAt as String).toLowerCase()}',
                   isBody2: true,
+                  fg: colorBlack,
                 ),
             ],
           ),
