@@ -5,13 +5,13 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:voicematch/components/audio_recorder.dart';
 import 'package:voicematch/components/connection_header.dart';
 import 'package:voicematch/components/header.dart';
-import 'package:voicematch/components/message.dart';
+import 'package:voicematch/components/chat_message.dart';
 import 'package:voicematch/components/reveal/reveal.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/env.dart';
@@ -19,8 +19,6 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/form/fab_button.dart';
-import 'package:voicematch/icons/icon_mic.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 
@@ -56,7 +54,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   ConnectionModel? activeItem;
 
   // messages
-  List<ConnectionModel> messages = [];
+  List<MessageEventModel> messages = [];
   bool? isMessagesLoading;
 
   @override
@@ -208,6 +206,62 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     );
   }
 
+  Future<RecordingModel> getRecordingModel(
+    String filepath,
+    Duration duration,
+  ) async {
+    final user = await Amplify.Auth.getCurrentUser();
+    final now = DateTime.now().toLocal().toIso8601String();
+    final newRecording = RecordingModel(
+      id: uuid(),
+      owner: user.userId,
+      userId: user.userId,
+      key: filepath,
+      url: filepath,
+      duration: duration.inMilliseconds.toDouble(),
+      createdAt: now,
+      updatedAt: now,
+    );
+    return newRecording;
+  }
+
+  Future<MessageEventModel> getMessageEvent({
+    MessageTypeEnum? type = MessageTypeEnum.text,
+    RecordingModel? recording,
+  }) async {
+    final id = uuid();
+    final user = await Amplify.Auth.getCurrentUser();
+    final now = DateTime.now().toLocal().toIso8601String();
+    final newMessageEventModel = MessageEventModel(
+      id: '$id-${user.userId}',
+      owner: user.userId,
+      userId: user.userId,
+      chatId: '${activeItem?.chatId}',
+      chatUserId: '${activeItem?.userId}-${activeItem?.memberId}',
+      messageId: id,
+      type: type,
+      recordingId: recording?.id,
+      recording: recording,
+      isSender: true,
+      isReceiver: false,
+      createdAt: now,
+      updatedAt: now,
+    );
+    return newMessageEventModel;
+  }
+
+  Future<void> onRecord(String filepath, Duration duration) async {
+    var newRecording = await getRecordingModel(filepath, duration);
+    MessageEventModel newMessageEvent = await getMessageEvent(
+      type: MessageTypeEnum.audio,
+      recording: newRecording,
+    );
+    final newMessages = messages + [newMessageEvent];
+    setState(() {
+      messages = newMessages;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -260,9 +314,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                           children: [
                             Div(
                               [
-                                Message(
-                                  isSender: index % 2 == 0,
-                                  recordingDuration: index + 99,
+                                ChatMessage(
+                                  connection: activeItem as ConnectionModel,
+                                  message: messages[index],
                                 ),
                               ],
                               mb: gap,
@@ -278,21 +332,8 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
             ),
             Div(
               [
-                Div(
-                  [
-                    FabButton(
-                      SvgPicture.string(
-                        iconMic(opacity: 0),
-                        height: 64,
-                      ),
-                      onPress: () {
-                        //
-                      },
-                      w: 64,
-                      h: 64,
-                      bg: isRecording ? colorSeondary : colorSeondary200,
-                    ),
-                  ],
+                AudioRecorder(
+                  onSubmit: onRecord,
                 ),
               ],
               pt: gap,
