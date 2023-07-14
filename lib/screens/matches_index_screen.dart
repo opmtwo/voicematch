@@ -331,8 +331,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                         h: avatarMedium,
                                                         onPress: () {
                                                           Get.toNamed(
-                                                            Routes
-                                                                .matchesPreview,
+                                                            Routes.matchesChat,
                                                             arguments: {
                                                               'id': item.id,
                                                             },
