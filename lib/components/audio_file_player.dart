@@ -123,6 +123,10 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
 
   Future<void> _playAudio() async {
     try {
+      setState(() {
+        isPlaying = true;
+        isComplete = false;
+      });
       if (widget.isLocal) {
         await audioPlayer.play(
           DeviceFileSource(widget.audioPath),
@@ -132,12 +136,12 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
           widget.audioPath,
         ));
       }
-      setState(() {
-        isPlaying = true;
-        isComplete = false;
-      });
     } catch (err) {
       safePrint('_playAudio - error - $err');
+      setState(() {
+        isPlaying = false;
+        isComplete = false;
+      });
     }
   }
 
