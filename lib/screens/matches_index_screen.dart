@@ -20,7 +20,6 @@ import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 import 'package:voicematch/form/fab_button.dart';
-import 'package:voicematch/form/progress_bar.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 
