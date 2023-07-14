@@ -12,6 +12,7 @@ class P extends StatelessWidget {
 
   final double? fz;
   final FontWeight? fw;
+  final String? ff;
   final double? lh;
   final double? ls;
   final TextAlign? ta;
@@ -39,6 +40,7 @@ class P extends StatelessWidget {
     this.children,
     this.style,
     this.bg,
+    this.ff,
     this.fg,
     this.fz,
     this.fw,
@@ -170,6 +172,7 @@ class P extends StatelessWidget {
           style: TextStyle(
             decoration: TextDecoration.none,
             color: fg ?? defaultFg,
+            fontFamily: ff,
             fontSize: fz ?? fontSize,
             fontWeight: fw ?? fontWeight,
             height: lh ?? lineHeight,
