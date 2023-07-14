@@ -57,6 +57,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
   // messages
   List<ConnectionModel> messages = [];
+  bool? isMessagesLoading;
 
   @override
   void initState() {
@@ -106,6 +107,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
   Future<void> getMessages() async {
     await EasyLoading.show(status: 'loading...');
+    setState(() {
+      isMessagesLoading = true;
+    });
     try {
       // get access token
       final result = await Amplify.Auth.fetchAuthSession(
@@ -137,6 +141,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     } catch (err) {
       safePrint('getMessages- error - $err');
     }
+    setState(() {
+      isMessagesLoading = false;
+    });
     await EasyLoading.dismiss();
   }
 
@@ -231,6 +238,18 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               flex: 1,
               child: ListView(
                 children: [
+                  if (messages.isEmpty && isMessagesLoading == false)
+                    const Div(
+                      [
+                        P(
+                          'No messages found. Get started by sending the first message!',
+                          isH6: true,
+                          ta: TextAlign.center,
+                        ),
+                      ],
+                      pv: gap,
+                      ph: gap,
+                    ),
                   Div(
                     List.generate(
                       messages.length,
