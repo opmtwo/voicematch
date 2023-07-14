@@ -594,6 +594,18 @@ exports.createMessage = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
 			createdAt
 			updatedAt
 			__typename
@@ -619,6 +631,18 @@ exports.updateMessage = /* GraphQL */ `
 				name
 				mime
 				size
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
 				duration
 				key
 				url
@@ -658,6 +682,18 @@ exports.deleteMessage = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
 			createdAt
 			updatedAt
 			__typename
@@ -685,6 +721,18 @@ exports.createMessageEvent = /* GraphQL */ `
 				name
 				mime
 				size
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
 				duration
 				key
 				url
@@ -727,6 +775,18 @@ exports.updateMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
 			readAt
 			createdAt
 			updatedAt
@@ -755,6 +815,18 @@ exports.deleteMessageEvent = /* GraphQL */ `
 				name
 				mime
 				size
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
 				duration
 				key
 				url

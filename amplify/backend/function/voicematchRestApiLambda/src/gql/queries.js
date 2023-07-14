@@ -551,6 +551,18 @@ exports.getMessage = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
 			createdAt
 			updatedAt
 			__typename
@@ -568,6 +580,7 @@ exports.listMessages = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				createdAt
 				updatedAt
 				__typename
@@ -595,6 +608,7 @@ exports.listMessageByChatId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				createdAt
 				updatedAt
 				__typename
@@ -622,6 +636,7 @@ exports.listMessageByUserId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				createdAt
 				updatedAt
 				__typename
@@ -659,6 +674,18 @@ exports.getMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			recordingId
+			recording {
+				id
+				owner
+				userId
+				duration
+				key
+				url
+				createdAt
+				updatedAt
+				__typename
+			}
 			readAt
 			createdAt
 			updatedAt
@@ -679,6 +706,7 @@ exports.listMessageEvents = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				readAt
 				createdAt
 				updatedAt
@@ -716,6 +744,7 @@ exports.listMessageEventByMessageId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				readAt
 				createdAt
 				updatedAt
@@ -746,6 +775,7 @@ exports.listMessageEventByUserId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				readAt
 				createdAt
 				updatedAt
@@ -776,6 +806,7 @@ exports.listMessageEventByChatId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				readAt
 				createdAt
 				updatedAt
@@ -813,6 +844,7 @@ exports.listMessageEventByChatUserId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				recordingId
 				readAt
 				createdAt
 				updatedAt
