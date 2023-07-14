@@ -43,3 +43,47 @@ String getNow({String format = 'yyyy-MM-dd'}) {
   String formattedDate = DateFormat(format).format(now);
   return formattedDate.toString();
 }
+
+String gethumanTimeDiff(String isoTimestamp) {
+  DateTime now = DateTime.now();
+  DateTime dateTime = DateTime.parse(isoTimestamp).toLocal();
+
+  String formattedDateTime;
+  if (isSameDay(dateTime, now)) {
+    // Today
+    formattedDateTime = DateFormat.jm().format(dateTime);
+    formattedDateTime = 'Today at $formattedDateTime';
+  } else if (isYesterday(dateTime, now)) {
+    // Yesterday
+    formattedDateTime = DateFormat.jm().format(dateTime);
+    formattedDateTime = 'Yesterday at $formattedDateTime';
+  } else if (isSameMonth(dateTime, now)) {
+    // Within the same month
+    int daysDifference = now.difference(dateTime).inDays;
+    formattedDateTime =
+        '$daysDifference days ago at ${DateFormat.jm().format(dateTime)}';
+  } else {
+    // Different month
+    int monthsDifference =
+        (now.year - dateTime.year) * 12 + now.month - dateTime.month;
+    formattedDateTime =
+        '$monthsDifference months ago at ${DateFormat.jm().format(dateTime)}';
+  }
+
+  return formattedDateTime;
+}
+
+bool isSameDay(DateTime dateTime1, DateTime dateTime2) {
+  return dateTime1.year == dateTime2.year &&
+      dateTime1.month == dateTime2.month &&
+      dateTime1.day == dateTime2.day;
+}
+
+bool isYesterday(DateTime dateTime1, DateTime dateTime2) {
+  DateTime yesterday = dateTime2.subtract(const Duration(days: 1));
+  return isSameDay(dateTime1, yesterday);
+}
+
+bool isSameMonth(DateTime dateTime1, DateTime dateTime2) {
+  return dateTime1.year == dateTime2.year && dateTime1.month == dateTime2.month;
+}
