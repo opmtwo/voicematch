@@ -123,6 +123,8 @@ type Message @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	body: String
 	uploadId: ID
 	upload: Upload @hasOne(fields: ["uploadId"])
+	recordingId: ID
+	recording: Recording @hasOne(fields: ["recordingId"])
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
