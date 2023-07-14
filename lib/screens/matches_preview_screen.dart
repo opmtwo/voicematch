@@ -234,6 +234,42 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
     return newTimer;
   }
 
+  Future<void> onPinToggle(String id) async {
+    EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      final bool shouldPin = activeItem?.isPinned == true ? false : true;
+
+      // update profile via oboard api
+      final url = Uri.parse(
+          '${apiEndPoint}api/v1/connections/$id/${shouldPin ? "pin" : "unpin"}');
+      safePrint('onPin - url $url');
+      final response = await http.post(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onPin - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('onPin - non 200 code - ${response.statusCode}');
+      }
+
+      // refresh connection
+      await getConnection();
+    } catch (err) {
+      safePrint('onPin - error $err');
+      setState(() {
+        error = err.toString();
+      });
+    }
+    EasyLoading.dismiss();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -413,12 +449,16 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                         ),
                         FabButton(
                           SvgPicture.string(
-                            iconHeart(),
+                            iconHeart(
+                              code: activeItem?.isPinned == true
+                                  ? colorPrimary
+                                  : colorGrey900,
+                            ),
                             width: 24,
                           ),
                           bg: colorWhite,
                           onPress: () {
-                            Get.toNamed(Routes.matchesMatch);
+                            onPinToggle(activeItem?.id as String);
                           },
                         ),
                         FabButton(
@@ -428,7 +468,9 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                           ),
                           bg: colorWhite,
                           onPress: () {
-                            //
+                            Get.toNamed(Routes.matchesMatch, arguments: {
+                              'id': activeItem?.id as String,
+                            });
                           },
                         ),
                       ],
