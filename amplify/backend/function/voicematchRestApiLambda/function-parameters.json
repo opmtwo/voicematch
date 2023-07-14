@@ -66,5 +66,11 @@
         "Subscription"
       ]
     }
-  }
+  },
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "snsCleanupTopicArn",
+      "environmentVariableName": "SNS_CLEANUP_TOPIC_ARN"
+    }
+  ]
 }
