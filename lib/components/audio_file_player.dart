@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -82,6 +84,11 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
   // current time
   Duration? currentAudioTime;
 
+  // audio stream subscriptions
+  StreamSubscription<PlayerState>? playerStateSubscription;
+  StreamSubscription<Duration>? positionSubscription;
+  StreamSubscription<void>? completeSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -91,12 +98,16 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
   @override
   void dispose() {
     audioPlayer.dispose();
+    playerStateSubscription?.cancel();
+    positionSubscription?.cancel();
+    completeSubscription?.cancel();
     super.dispose();
   }
 
   Future<void> init() async {
     audioPlayer = AudioPlayer();
-    audioPlayer.onPlayerStateChanged.listen((PlayerState state) async {
+    playerStateSubscription =
+        audioPlayer.onPlayerStateChanged.listen((PlayerState state) async {
       widget.onStateChanged(state);
       if ([PlayerState.paused, PlayerState.stopped, PlayerState.completed]
           .contains(state)) {
@@ -105,7 +116,8 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
         });
       }
     });
-    audioPlayer.onPositionChanged.listen((Duration duration) {
+    positionSubscription =
+        audioPlayer.onPositionChanged.listen((Duration duration) {
       if (isComplete) {
         return;
       }
@@ -114,7 +126,7 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
         currentAudioTime = duration;
       });
     });
-    audioPlayer.onPlayerComplete.listen((event) {
+    completeSubscription = audioPlayer.onPlayerComplete.listen((event) {
       setState(() {
         isComplete = true;
       });
