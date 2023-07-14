@@ -27,6 +27,13 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "function": {
+    "voicematchCleanupLambda": {
+      "Arn": "string",
+      "LambdaExecutionRole": "string",
+      "LambdaExecutionRoleArn": "string",
+      "Name": "string",
+      "Region": "string"
+    },
     "voicematchRestApiLambda": {
       "Arn": "string",
       "LambdaExecutionRole": "string",
