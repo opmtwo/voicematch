@@ -243,6 +243,84 @@ class ConnectionModel {
   }
 }
 
+class MessageEventModel {
+  final String id;
+  final String owner;
+  final String messageId;
+  final String userId;
+  final String chatId;
+  final String chatUserId;
+  final MessageTypeEnum? type;
+  final String? body;
+  // final String uploadId;
+  // final String upload;
+  final String? recordingId;
+  final RecordingModel? recording;
+  final String? fileKey;
+  final int? fileSize;
+  final String? fileMime;
+  final String? deliveredAt;
+  final String? readAt;
+  final bool? isSender;
+  final bool? isReceiver;
+  final String createdAt;
+  final String updatedAt;
+
+  MessageEventModel({
+    required this.id,
+    required this.owner,
+    required this.messageId,
+    required this.userId,
+    required this.chatId,
+    required this.chatUserId,
+    this.type,
+    this.body,
+    // final String uploadId;
+    // final String upload;
+    this.recordingId,
+    this.recording,
+    this.fileKey,
+    this.fileSize,
+    this.fileMime,
+    this.deliveredAt,
+    this.readAt,
+    this.isSender,
+    this.isReceiver,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory MessageEventModel.fromJson(Map<String, dynamic> parsedJson) {
+    RecordingModel? recording;
+    if (parsedJson['intro']?['id'] != null) {
+      recording = RecordingModel.fromJson(parsedJson['recording']);
+    }
+
+    return MessageEventModel(
+      id: parsedJson['id'],
+      owner: parsedJson['owner'],
+      messageId: parsedJson['messageId'],
+      userId: parsedJson['userId'],
+      chatId: parsedJson['chatId'],
+      chatUserId: parsedJson['chatUserId'],
+      type: parsedJson['type'],
+      body: parsedJson['body'],
+      // uploadId: parsedJson['uploadId'],
+      // upload: parsedJson['upload'],
+      recordingId: parsedJson['recordingId'],
+      recording: recording,
+      fileKey: parsedJson['fileKey'],
+      fileSize: parsedJson['fileSize'],
+      fileMime: parsedJson['fileMime'],
+      deliveredAt: parsedJson['deliveredAt'],
+      readAt: parsedJson['readAt'],
+      isSender: parsedJson['isSender'],
+      isReceiver: parsedJson['isReceiver'],
+      createdAt: parsedJson['createdAt'],
+      updatedAt: parsedJson['updatedAt'],
+    );
+  }
+}
 
 enum MessageTypeEnum {
   text,
