@@ -55,6 +55,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   // connection
   ConnectionModel? activeItem;
 
+  // messages
+  List<ConnectionModel> messages = [];
+
   @override
   void initState() {
     super.initState();
@@ -62,10 +65,11 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       id = Get.arguments['id'] as String;
     });
     getConnection();
+    getMessages();
   }
 
   Future<void> getConnection() async {
-    await EasyLoading.show(status: 'loading...');
+    // await EasyLoading.show(status: 'loading...');
     try {
       // get access token
       final result = await Amplify.Auth.fetchAuthSession(
@@ -88,7 +92,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      // log('getConnection - json - ${response.body}');
+      log('getConnection - json - ${response.body}');
 
       // update state
       setState(() {
@@ -96,6 +100,42 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       });
     } catch (err) {
       safePrint('getConnection- error - $err');
+    }
+    // await EasyLoading.dismiss();
+  }
+
+  Future<void> getMessages() async {
+    await EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id/messages');
+      safePrint('getMessages - url $url');
+      final response = await http.get(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('getMessages - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('getMessages - non-200 code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('getMessages - json - ${response.body}');
+
+      // update state
+      // setState(() {
+      //   activeItem = ConnectionModel.fromJson(json);
+      // });
+    } catch (err) {
+      safePrint('getMessages- error - $err');
     }
     await EasyLoading.dismiss();
   }
@@ -193,7 +233,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                 children: [
                   Div(
                     List.generate(
-                      20,
+                      messages.length,
                       (index) {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
