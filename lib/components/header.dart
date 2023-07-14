@@ -45,6 +45,8 @@ class Header extends StatelessWidget {
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: FabButton(
+                      w: avatarSmall,
+                      h: avatarSmall,
                       // alignment: Alignment.centerLeft,
                       prevIcon ??
                           SvgPicture.string(
@@ -57,6 +59,7 @@ class Header extends StatelessWidget {
                   ),
                 ),
               ],
+              mr: gap / 2,
             ),
             Expanded(
               flex: 1,
@@ -71,6 +74,8 @@ class Header extends StatelessWidget {
                   child: Align(
                     // alignment: Alignment.topRight,
                     child: FabButton(
+                      w: avatarSmall,
+                      h: avatarSmall,
                       alignment: Alignment.centerRight,
                       nextIcon ??
                           const Icon(
@@ -83,6 +88,7 @@ class Header extends StatelessWidget {
                   ),
                 ),
               ],
+              ml: gap / 2,
             ),
           ],
         ),
