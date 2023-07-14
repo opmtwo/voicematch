@@ -5,12 +5,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:voicematch/components/avatar.dart';
+import 'package:voicematch/components/header.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
-import 'package:voicematch/form/progress_bar.dart';
 import 'package:voicematch/icons/icon_right.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
@@ -121,18 +121,18 @@ class ProfileScreenState extends State<ProfileScreen> {
         Get.toNamed(Routes.setupRecording);
       }
     },
-    {
-      'id': 'logout',
-      'label': 'Logout',
-      'callback': () async {
-        try {
-          await Amplify.Auth.signOut();
-          Get.toNamed(Routes.signIn);
-        } catch (err) {
-          safePrint('logout - error - $err');
-        }
-      }
-    }
+    // {
+    //   'id': 'logout',
+    //   'label': 'Logout',
+    //   'callback': () async {
+    //     try {
+    //       await Amplify.Auth.signOut();
+    //       Get.toNamed(Routes.signIn);
+    //     } catch (err) {
+    //       safePrint('logout - error - $err');
+    //     }
+    //   }
+    // }
   ];
 
   @override
@@ -315,9 +315,19 @@ class ProfileScreenState extends State<ProfileScreen> {
       body: AppLayout(
         Div(
           [
-            const Div(
+            Div(
               [
-                ProgressBar(value: 1),
+                Header(
+                  hasPrev: true,
+                  onPrev: onBack,
+                  hasNext: true,
+                  children: const [
+                    P(
+                      'Profile Settings',
+                      isH6: true,
+                    )
+                  ],
+                ),
               ],
               mt: gapTop,
             ),
@@ -339,7 +349,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                               mb: gap,
                             )
                           ],
-                          mt: gapTop,
+                          // mt: gapTop,
                         ),
                         Div(
                           List.generate(
