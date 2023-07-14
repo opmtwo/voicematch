@@ -1,17 +1,23 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/components/image_masked.dart';
+import 'package:http/http.dart' as http;
+import 'package:voicematch/components/connection_pic.dart';
+import 'package:voicematch/components/connection_tags.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
-import 'package:voicematch/form/progress_bar.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 
@@ -27,37 +33,55 @@ class MatchesMatchScreenState extends State<MatchesMatchScreen> {
   String? error;
   bool? isBusy;
 
-  // recording?
-  bool isRecording = false;
-  bool isRecorded = false;
+  // match connection id
+  late String id;
 
-  // recording path
-  String? recordingPath;
-
-  // timer
-  Timer? timer;
-
-  // recording duration
-  Duration duration = const Duration(seconds: 0);
-
-  List<String> interests = ['Hiking Trips', 'Writing'];
+  // connection
+  ConnectionModel? activeItem;
 
   @override
   void initState() {
     super.initState();
-    getUser();
+    setState(() {
+      id = Get.arguments['id'] as String;
+    });
+    getConnection();
   }
 
-  Future<void> getUser() async {
-    EasyLoading.show(status: 'loading...');
+  Future<void> getConnection() async {
+    await EasyLoading.show(status: 'loading...');
     try {
-      setState(() {
-        //
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id');
+      safePrint('getConnection - url $url');
+      final response = await http.get(url, headers: {
+        'Authorization': accessToken.toString(),
       });
-    } on AuthException catch (e) {
-      safePrint('getUser- error - ${e.message}');
+      safePrint('getConnection - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('getConnection - non-200 code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('getConnection - json - ${response.body}');
+
+      // update state
+      setState(() {
+        activeItem = ConnectionModel.fromJson(json);
+      });
+    } catch (err) {
+      safePrint('getConnection- error - $err');
     }
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   void onBack() {
@@ -71,11 +95,7 @@ class MatchesMatchScreenState extends State<MatchesMatchScreen> {
         Div(
           [
             const Div(
-              [
-                ProgressBar(
-                  value: 4 / 4,
-                ),
-              ],
+              [],
               mt: gapTop,
             ),
             Expanded(
@@ -83,95 +103,71 @@ class MatchesMatchScreenState extends State<MatchesMatchScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Div(
-                    [
-                      Logo(),
-                    ],
-                    mb: gap,
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'Congratulations',
-                        isH5: true,
-                        fw: FontWeight.w600,
-                      ),
-                    ],
-                    mb: gap / 2,
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'You have a match',
-                        isBody1: true,
-                        fw: FontWeight.w600,
-                      ),
-                    ],
-                  ),
-                  Div(
-                    [
-                      ImageMasked(
-                        url: 'assets/images/avatar.png',
-                        width: 160,
-                        height: 160,
-                      ),
-                    ],
-                    mv: gap,
-                    br: 99,
-                    shadow: [
-                      BoxShadow(
-                        color: colorBlack.withOpacity(0.1),
-                        spreadRadius: 10,
-                        blurRadius: 50,
-                      )
-                    ],
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'Mario',
-                        isH5: true,
-                        fg: colorBlack,
-                      ),
-                    ],
-                  ),
-                  const Div(
-                    [
-                      P(
-                        'You’re both interested in - ',
-                        isBody2: true,
-                        fg: colorBlack,
-                      ),
-                    ],
-                    mb: gap / 2,
-                  ),
-                  Div(
-                    [
-                      Wrap(
-                        runSpacing: gap / 2,
-                        spacing: gap / 2,
-                        children: List.generate(
-                          interests.length,
-                          (index) {
-                            return const Div(
-                              [
-                                P(
-                                  'Hiking Trips',
-                                  isBody1: true,
-                                  fg: colorBlack,
-                                ),
-                              ],
-                              ph: gap / 2,
-                              pv: gap / 2,
-                              bg: colorSeondary,
-                              br: 99,
-                            );
-                          },
+                  if (activeItem?.id.isNotEmpty == true)
+                    Div(
+                      [
+                        const Div(
+                          [
+                            Logo(),
+                          ],
+                          mb: gap,
                         ),
-                      ),
-                    ],
-                    mb: gap,
-                  ),
+                        const Div(
+                          [
+                            P(
+                              'Congratulations',
+                              isH5: true,
+                              fw: FontWeight.w600,
+                            ),
+                          ],
+                          mb: gap / 2,
+                        ),
+                        const Div(
+                          [
+                            P(
+                              'You have a match',
+                              isBody1: true,
+                              fw: FontWeight.w600,
+                            ),
+                          ],
+                        ),
+                        Div(
+                          [
+                            ConnectionPic(
+                              item: activeItem as ConnectionModel,
+                              w: avatarExtraLarge,
+                            ),
+                          ],
+                          mv: gap,
+                          br: 99,
+                          shadow: [
+                            BoxShadow(
+                              color: colorBlack.withOpacity(0.1),
+                              spreadRadius: 10,
+                              blurRadius: 50,
+                            )
+                          ],
+                        ),
+                        Div(
+                          [
+                            P(
+                              activeItem?.member.givenName,
+                              isH5: true,
+                              fg: colorBlack,
+                            ),
+                          ],
+                        ),
+                        Div(
+                          [
+                            ConnectionTags(
+                              label: 'You’re both interested in - ',
+                              item: activeItem as ConnectionModel,
+                              isMatchOnly: true,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                 ],
                 // ph: gap,
               ),
