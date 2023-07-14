@@ -16,6 +16,7 @@ class CurrentTime extends StatelessWidget {
     return P(
       '${duration.inMinutes.toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}',
       isBody1: true,
+      ff: 'Abel',
       style: style,
     );
   }
