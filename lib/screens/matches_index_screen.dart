@@ -3,17 +3,15 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:voicematch/components/connection_pic.dart';
-import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/components/navbar.dart';
-import 'package:voicematch/components/profile_pic.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
@@ -38,16 +36,19 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   String? error;
   bool? isBusy;
 
-  // list of connections
+  // list of matched connections
   List<ConnectionModel> connections = [];
+
+  // list of pinned connections
+  List<ConnectionModel> pinnedConnections = [];
 
   @override
   void initState() {
     super.initState();
-    getMatches();
+    getConnections();
   }
 
-  Future<void> getMatches() async {
+  Future<void> getConnections() async {
     await EasyLoading.show(status: 'loading...');
     try {
       // get access token
@@ -71,7 +72,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      log('getMatches - json - ${response.body}');
+      // log('getConnections - json - ${response.body}');
 
       // parse records
       List<ConnectionModel> newConnections = [];
@@ -83,9 +84,12 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
       // update state
       setState(() {
         connections = newConnections;
+        pinnedConnections = newConnections
+            .where((element) => element.isPinned == true)
+            .toList();
       });
     } catch (err) {
-      safePrint('getMatches- error - $err');
+      safePrint('getConnections- error - $err');
     }
     await EasyLoading.dismiss();
   }
@@ -129,32 +133,66 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
     EasyLoading.dismiss();
   }
 
+  Future<void> onUnpin(String id) async {
+    EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id/unpin');
+      safePrint('onUnpin - url $url');
+      final response = await http.post(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onUnpin - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('onUnpin - non 200 code - ${response.statusCode}');
+      }
+
+      // update state
+      getConnections();
+    } on AuthException catch (e) {
+      safePrint('onUnpin - error ${e.message}');
+      setState(() {
+        error = e.message;
+      });
+    }
+    EasyLoading.dismiss();
+  }
+
   Future<void> onUnmatch(String id) async {
-    showCupertinoDialog(
-      barrierDismissible: true,
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: const Text("Unmatch selection"),
-        content: const Text(
-            "Are you sure you want unmatch this selection. This action can't be undone!"),
-        actions: <Widget>[
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            child: const Text("Yes"),
-            onPressed: () {
-              Navigator.pop(context);
-              onDelete(id);
-            },
-          ),
-          CupertinoDialogAction(
-            child: const Text("No"),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
+    // showCupertinoDialog(
+    //   barrierDismissible: true,
+    //   context: context,
+    //   builder: (context) => CupertinoAlertDialog(
+    //     title: const Text("Unmatch selection"),
+    //     content: const Text(
+    //         "Are you sure you want unmatch this selection. This action can't be undone!"),
+    //     actions: <Widget>[
+    //       CupertinoDialogAction(
+    //         isDefaultAction: true,
+    //         child: const Text("Yes"),
+    //         onPressed: () {
+    //           Navigator.pop(context);
+    //           onDelete(id);
+    //         },
+    //       ),
+    //       CupertinoDialogAction(
+    //         child: const Text("No"),
+    //         onPressed: () {
+    //           Navigator.pop(context);
+    //         },
+    //       ),
+    //     ],
+    //   ),
+    // );
+    onUnpin(id);
   }
 
   @override
@@ -176,22 +214,24 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                   children: [
                     Div(
                       [
-                        const Div(
-                          [
-                            Logo(),
-                          ],
-                          mv: gap,
-                        ),
-                        const Div(
-                          [
-                            P(
-                              'Here are your matches',
-                              isH5: true,
-                              fw: FontWeight.w600,
-                            ),
-                          ],
-                          mb: gapBottom,
-                        ),
+                        if (connections.isNotEmpty)
+                          const Div(
+                            [
+                              Logo(),
+                            ],
+                            mv: gap,
+                          ),
+                        if (connections.isNotEmpty)
+                          const Div(
+                            [
+                              P(
+                                'Here are your matches',
+                                isH5: true,
+                                fw: FontWeight.w600,
+                              ),
+                            ],
+                            mb: gapBottom,
+                          ),
                         Div(
                           [
                             Wrap(
@@ -246,27 +286,28 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                             ),
                           ],
                         ),
-                        const Div(
-                          [
-                            Align(
-                              alignment: Alignment.topLeft,
-                              child: P(
-                                'Conversations',
-                                isH5: true,
-                                fw: FontWeight.w600,
+                        if (pinnedConnections.isNotEmpty)
+                          const Div(
+                            [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: P(
+                                  'Conversations',
+                                  isH5: true,
+                                  fw: FontWeight.w600,
+                                ),
                               ),
-                            ),
-                          ],
-                          mt: gapTop,
-                          mb: gap,
-                        ),
+                            ],
+                            mt: gapTop,
+                            mb: gap,
+                          ),
                         Div(
                           [
                             Column(
                               children: List.generate(
-                                connections.length,
+                                pinnedConnections.length,
                                 (index) {
-                                  final item = connections[index];
+                                  final item = pinnedConnections[index];
                                   return Div(
                                     [
                                       Row(
