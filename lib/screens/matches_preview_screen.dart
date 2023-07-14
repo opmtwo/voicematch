@@ -104,7 +104,7 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      log('getConnection - json - ${response.body}');
+      // log('getConnection - json - ${response.body}');
 
       // parse records
       // List<ConnectionModel> newConnections = [];
