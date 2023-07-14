@@ -13,6 +13,12 @@ class AudioFilePlayer extends StatefulWidget {
   // local file?
   final bool isLocal;
 
+  // width
+  final double? width;
+
+  // height
+  final double? height;
+
   // delete callback
   final VoidCallback? onPrev;
 
@@ -57,6 +63,8 @@ class AudioFilePlayer extends StatefulWidget {
     required this.onStateChanged,
     required this.iconPlay,
     required this.iconPause,
+    this.width,
+    this.height,
     this.iconPrev,
     this.iconNext,
     this.iconSkipPrev,
@@ -218,29 +226,39 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
             widget.iconPrev!,
             bg: colorTransparent,
             onPress: widget.onPrev,
+            w: widget.width,
+            h: widget.height,
           ),
         if (widget.iconSkipPrev != null)
           FabButton(
             widget.iconSkipPrev!,
             bg: colorTransparent,
             onPress: _skipBackward,
+            w: widget.width,
+            h: widget.height,
           ),
         FabButton(
           isPlaying ? widget.iconPause : widget.iconPlay,
           onPress: isPlaying ? _pauseAudio : _playAudio,
           bg: isPlaying ? widget.iconPauseBg : widget.iconPlayBg,
+          w: widget.width,
+          h: widget.height,
         ),
         if (widget.iconSkipNext != null)
           FabButton(
             widget.iconSkipNext!,
             bg: colorTransparent,
             onPress: _skipForward,
+            w: widget.width,
+            h: widget.height,
           ),
         if (widget.iconNext != null)
           FabButton(
             widget.iconNext!,
             bg: colorTransparent,
             onPress: widget.onNext,
+            w: widget.width,
+            h: widget.height,
           ),
       ],
     );
