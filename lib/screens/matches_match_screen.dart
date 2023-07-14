@@ -180,7 +180,7 @@ class MatchesMatchScreenState extends State<MatchesMatchScreen> {
                       'speak now',
                       onPress: () {
                         Get.toNamed(Routes.matchesChat, arguments: {
-                          'id': 123,
+                          'id': id,
                         });
                       },
                     ),
