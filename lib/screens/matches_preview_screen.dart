@@ -1,17 +1,28 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:record/record.dart';
-import 'package:voicematch/components/image_masked.dart';
+import 'package:voicematch/components/audio_file_player.dart';
+import 'package:voicematch/components/connection_pic.dart';
+import 'package:voicematch/components/connection_tags.dart';
+import 'package:voicematch/components/current_time.dart';
 import 'package:voicematch/components/wave.dart';
 import 'package:voicematch/constants/colors.dart';
+import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
+import 'package:voicematch/form/circular_progress_bar.dart';
 import 'package:voicematch/form/fab_button.dart';
 import 'package:voicematch/icons/icon_close.dart';
 import 'package:voicematch/icons/icon_heart.dart';
@@ -20,10 +31,8 @@ import 'package:voicematch/icons/icon_play.dart';
 import 'package:voicematch/icons/icon_skip_left.dart';
 import 'package:voicematch/icons/icon_skip_right.dart';
 import 'package:voicematch/icons/icon_star.dart';
-import 'package:voicematch/icons/icon_wave.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
-import 'package:voicematch/utils/svg_utils.dart';
 
 class MatchesPreviewScreen extends StatefulWidget {
   const MatchesPreviewScreen({Key? key}) : super(key: key);
@@ -37,7 +46,11 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
   bool isBusy = false;
   String? error;
 
-  List<String> interests = ['Hiking Trips', 'Writing'];
+  // match connection id
+  late String id;
+
+  // connection
+  ConnectionModel? activeItem;
 
   // recording?
   bool isRecording = false;
@@ -52,12 +65,82 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
   // recording duration
   Duration duration = const Duration(seconds: 0);
 
+  // playback state
+  PlayerState playbackState = PlayerState.stopped;
+
+  // playback duration
+  Duration playbackDuration = const Duration(seconds: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      id = Get.arguments['id'];
+    });
+    getConnection();
+  }
+
+  Future<void> getConnection() async {
+    await EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id');
+      safePrint('getConnection - url $url');
+      final response = await http.get(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('getConnection - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('getConnection - non-200 code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('getConnection - json - ${response.body}');
+
+      // parse records
+      // List<ConnectionModel> newConnections = [];
+      // for (int i = 0; i < json.length; i++) {
+      //   newConnections.add(ConnectionModel.fromJson(json[i]));
+      // }
+      // log('Found ${newConnections.length} connections');
+
+      // update state
+      setState(() {
+        activeItem = ConnectionModel.fromJson(json);
+      });
+    } catch (err) {
+      safePrint('getConnection- error - $err');
+    }
+    await EasyLoading.dismiss();
+  }
+
   Future<void> onContinue() async {
     EasyLoading.show(status: 'Loading');
     setState(() {
       error = null;
     });
     EasyLoading.dismiss();
+  }
+
+  void onPositionChanged(Duration duration) {
+    setState(() {
+      playbackDuration = duration;
+    });
+  }
+
+  void onStateChanged(PlayerState state) {
+    setState(() {
+      playbackState = state;
+    });
   }
 
   void onStart() async {
@@ -179,190 +262,133 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Div(
-                            [
-                              const Div(
-                                [
-                                  P(
-                                    'Interst Match',
-                                    fg: colorBlack,
-                                  ),
-                                ],
-                              ),
-                              const Div(
-                                [
-                                  P(
-                                    '65%',
-                                    fg: colorBlack,
-                                    fw: FontWeight.w700,
-                                  ),
-                                ],
-                                ph: gap,
-                                br: 99,
-                                bg: colorSeondary700,
-                              ),
-                              const Div(
-                                [
-                                  ImageMasked(
-                                    url: 'assets/images/avatar.png',
-                                    width: 160,
-                                    height: 160,
-                                  ),
-                                ],
-                                mv: gap,
-                              ),
-                              const Div(
-                                [
-                                  P(
-                                    'Interested in',
-                                    fg: colorBlack,
-                                  ),
-                                ],
-                                mb: gap / 2,
-                              ),
-                              Div(
-                                [
-                                  Wrap(
-                                    runSpacing: gap / 2,
-                                    spacing: gap / 2,
-                                    children: List.generate(
-                                      interests.length,
-                                      (index) {
-                                        return const Div(
-                                          [
-                                            P(
-                                              'Hiking Trips',
-                                              isBody1: true,
-                                              fg: colorBlack,
-                                            ),
-                                          ],
-                                          ph: gap / 2,
-                                          pv: gap / 2,
-                                          bg: colorSeondary,
-                                          br: 99,
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ],
-                                mb: gap,
-                              ),
-                              const Div(
-                                [
-                                  P(
-                                    'You are listening to',
-                                    fg: colorBlack,
-                                  ),
-                                ],
-                              ),
-                              const Div(
-                                [
-                                  P(
-                                    'Mario',
-                                    isH5: true,
-                                    fg: colorBlack,
-                                  ),
-                                ],
-                                mv: gap / 2,
-                              ),
-                              Div(
-                                [
-                                  Wave(
-                                    value: duration.inMilliseconds.toDouble(),
-                                    total: recordingDuration * 1000,
-                                  ),
-                                ],
-                              ),
-                              Div(
-                                [
-                                  Align(
-                                    alignment: Alignment.topRight,
-                                    child: P(
-                                      '${duration.inMinutes.toString().padLeft(2, '0')}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}',
-                                      isBody2: true,
+                          if (activeItem != null)
+                            Div(
+                              [
+                                Div(
+                                  [
+                                    const P(
+                                      'Interst Match',
                                       fg: colorBlack,
                                     ),
-                                  ),
-                                ],
-                                w: 256,
-                              ),
-                              Div(
-                                [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Div(
-                                        [
-                                          FabButton(
-                                            SvgPicture.string(
-                                              iconSkipLeft(),
-                                              color: colorSeondary100,
-                                            ),
-                                            w: 50,
-                                            h: 50,
-                                            bg: colorTransparent,
-                                            onPress: () {
-                                              //
-                                            },
-                                          ),
-                                        ],
+                                    CircularProgressBar(
+                                      value: 0.54,
+                                      w: 48,
+                                      h: 48,
+                                      caption: P(
+                                        '${activeItem?.matchPercentage.toInt()}%',
+                                        fz: 9,
+                                        fw: FontWeight.bold,
                                       ),
-                                      Div(
-                                        [
-                                          FabButton(
-                                            SvgPicture.string(
-                                              isRecording
-                                                  ? iconPause()
-                                                  : iconPlay(),
-                                              color: colorWhite,
-                                            ),
-                                            w: 50,
-                                            h: 50,
-                                            bg: colorSeondary200,
-                                            onPress: () {
-                                              isRecording
-                                                  ? onPause()
-                                                  : duration.inMicroseconds == 0
-                                                      ? onStart()
-                                                      : onResume();
-                                            },
-                                          ),
-                                        ],
-                                        mh: gap,
+                                    ),
+                                  ],
+                                ),
+                                // Div(
+                                //   [
+                                //     P(
+                                //       '${activeItem?.matchPercentage.toInt()}%',
+                                //       fg: colorBlack,
+                                //       fw: FontWeight.w700,
+                                //     ),
+                                //   ],
+                                //   ph: gap,
+                                //   br: 99,
+                                //   bg: colorSeondary700,
+                                // ),
+                                Div(
+                                  [
+                                    ConnectionPic(
+                                      item: activeItem!,
+                                      w: 128,
+                                    ),
+                                  ],
+                                  mv: gap,
+                                ),
+                                ConnectionTags(
+                                  item: activeItem as ConnectionModel,
+                                  label: 'Interested in',
+                                ),
+                                const Div(
+                                  [
+                                    P(
+                                      'You are listening to',
+                                      fg: colorBlack,
+                                    ),
+                                  ],
+                                ),
+                                Div(
+                                  [
+                                    P(
+                                      activeItem?.member.givenName as String,
+                                      isH5: true,
+                                      fg: colorBlack,
+                                    ),
+                                  ],
+                                  mv: gap / 2,
+                                ),
+                                Div(
+                                  [
+                                    Wave(
+                                      value: playbackDuration.inMilliseconds
+                                          .toDouble(),
+                                      total: recordingDuration * 1000,
+                                    ),
+                                  ],
+                                ),
+                                Div(
+                                  [
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: CurrentTime(
+                                        duration: playbackDuration,
                                       ),
-                                      Div(
-                                        [
-                                          FabButton(
-                                            SvgPicture.string(
-                                              iconSkipRight(),
-                                              color: colorSeondary100,
-                                            ),
-                                            w: 50,
-                                            h: 50,
-                                            bg: colorTransparent,
-                                            onPress: () {
-                                              //
-                                            },
-                                          ),
-                                        ],
+                                    ),
+                                  ],
+                                  w: 256,
+                                ),
+                                if (activeItem?.member.intro?.url != null)
+                                  Div(
+                                    [
+                                      AudioFilePlayer(
+                                        audioPath: activeItem?.member.intro?.url
+                                            as String,
+                                        isLocal: false,
+                                        iconPlay: SvgPicture.string(
+                                          iconPlay(code: colorWhite),
+                                          width: 36,
+                                        ),
+                                        iconPlayBg: colorSeondary200,
+                                        iconPause: SvgPicture.string(
+                                          iconPause(code: colorWhite),
+                                          width: 16,
+                                        ),
+                                        iconPauseBg: colorSeondary200,
+                                        iconSkipPrev: SvgPicture.string(
+                                          iconSkipLeft(),
+                                          height: 24,
+                                        ),
+                                        iconSkipNext: SvgPicture.string(
+                                          iconSkipRight(),
+                                          height: 24,
+                                        ),
+                                        onPositionChanged: onPositionChanged,
+                                        onStateChanged: onStateChanged,
                                       ),
                                     ],
-                                  )
-                                ],
-                                mv: gap,
-                              ),
-                            ],
-                            pv: gap,
-                            bg: colorWhite,
-                            br: radiusLarge,
-                            shadow: [
-                              BoxShadow(
-                                color: colorBlack.withOpacity(0.2),
-                                blurRadius: 10.0,
-                                spreadRadius: 5.0,
-                              ),
-                            ],
-                          ),
+                                    w: 200,
+                                  ),
+                              ],
+                              pv: gap,
+                              bg: colorWhite,
+                              br: radiusLarge,
+                              shadow: [
+                                BoxShadow(
+                                  color: colorBlack.withOpacity(0.2),
+                                  blurRadius: 10.0,
+                                  spreadRadius: 5.0,
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ],
@@ -381,7 +407,8 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                           ),
                           bg: colorWhite,
                           onPress: () {
-                            Get.toNamed(Routes.matchesIndex);
+                            // Get.toNamed(Routes.matchesIndex);
+                            Get.back();
                           },
                         ),
                         FabButton(
