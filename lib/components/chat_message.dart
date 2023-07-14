@@ -145,7 +145,6 @@ class _ChatMessageState extends State<ChatMessage> {
         if (widget.message.recording?.id != null)
           Div(
             [
-              P(widget.message.recording?.duration.toString()),
               Align(
                 alignment: widget.message.isSender == true
                     ? Alignment.topLeft
