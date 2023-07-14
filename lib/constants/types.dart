@@ -157,6 +157,7 @@ class ConnectionModel {
   final String owner;
   final String chatId;
   final String userId;
+  final UserProfileModel? user;
   final String memberId;
   final UserProfileModel member;
   final OnlinePresenceModel? onlinePresence;
@@ -183,6 +184,7 @@ class ConnectionModel {
     required this.userId,
     required this.memberId,
     required this.member,
+    this.user,
     this.onlinePresence,
     this.isSender,
     this.isReceiver,
@@ -208,11 +210,17 @@ class ConnectionModel {
           OnlinePresenceModel.fromJson(parsedJson['onlinePresence']);
     }
 
+    UserProfileModel? user;
+    if (parsedJson['user']?['id'] != null) {
+      user = UserProfileModel.fromJson(parsedJson['user']);
+    }
+
     return ConnectionModel(
       id: parsedJson['id'],
       owner: parsedJson['owner'],
       chatId: parsedJson['chatId'],
       userId: parsedJson['userId'],
+      user: user,
       memberId: parsedJson['memberId'],
       member: UserProfileModel.fromJson(parsedJson['member']),
       onlinePresence: onlinePresence,
