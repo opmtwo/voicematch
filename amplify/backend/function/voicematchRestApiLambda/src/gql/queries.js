@@ -686,7 +686,10 @@ exports.getMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			deliveredAt
 			readAt
+			isSender
+			isReceiver
 			createdAt
 			updatedAt
 			__typename
@@ -707,7 +710,10 @@ exports.listMessageEvents = /* GraphQL */ `
 				body
 				uploadId
 				recordingId
+				deliveredAt
 				readAt
+				isSender
+				isReceiver
 				createdAt
 				updatedAt
 				__typename
@@ -745,7 +751,10 @@ exports.listMessageEventByMessageId = /* GraphQL */ `
 				body
 				uploadId
 				recordingId
+				deliveredAt
 				readAt
+				isSender
+				isReceiver
 				createdAt
 				updatedAt
 				__typename
@@ -776,7 +785,10 @@ exports.listMessageEventByUserId = /* GraphQL */ `
 				body
 				uploadId
 				recordingId
+				deliveredAt
 				readAt
+				isSender
+				isReceiver
 				createdAt
 				updatedAt
 				__typename
@@ -807,7 +819,10 @@ exports.listMessageEventByChatId = /* GraphQL */ `
 				body
 				uploadId
 				recordingId
+				deliveredAt
 				readAt
+				isSender
+				isReceiver
 				createdAt
 				updatedAt
 				__typename
@@ -845,7 +860,10 @@ exports.listMessageEventByChatUserId = /* GraphQL */ `
 				body
 				uploadId
 				recordingId
+				deliveredAt
 				readAt
+				isSender
+				isReceiver
 				createdAt
 				updatedAt
 				__typename

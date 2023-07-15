@@ -740,7 +740,10 @@ exports.createMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			deliveredAt
 			readAt
+			isSender
+			isReceiver
 			createdAt
 			updatedAt
 			__typename
@@ -787,7 +790,10 @@ exports.updateMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			deliveredAt
 			readAt
+			isSender
+			isReceiver
 			createdAt
 			updatedAt
 			__typename
@@ -834,7 +840,10 @@ exports.deleteMessageEvent = /* GraphQL */ `
 				updatedAt
 				__typename
 			}
+			deliveredAt
 			readAt
+			isSender
+			isReceiver
 			createdAt
 			updatedAt
 			__typename
