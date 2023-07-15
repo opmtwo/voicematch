@@ -144,10 +144,6 @@ type MessageEvent @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	upload: Upload @hasOne(fields: ["uploadId"])
 	recordingId: ID
 	recording: Recording @hasOne(fields: ["recordingId"])
-	readAt: AWSDateTime
-	fileKey: String
-	fileSize: Int
-	fileMime: String
 	deliveredAt: AWSDateTime
 	readAt: AWSDateTime
 	isSender: Boolean
