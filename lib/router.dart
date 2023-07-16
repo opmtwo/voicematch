@@ -1,5 +1,5 @@
 import 'package:get/route_manager.dart';
-import 'package:voicematch/screens/home_screen.dart';
+// import 'package:voicematch/screens/home_screen.dart';
 import 'package:voicematch/screens/intro_screen.dart';
 import 'package:voicematch/screens/matches_chat_screen.dart';
 import 'package:voicematch/screens/matches_index_screen.dart';
@@ -91,10 +91,10 @@ final appPages = [
     name: Routes.signOut,
     page: () => const SignOutScreen(),
   ),
-  GetPage(
-    name: Routes.home,
-    page: () => const HomeScreen(),
-  ),
+  // GetPage(
+  //   name: Routes.home,
+  //   page: () => const HomeScreen(),
+  // ),
   GetPage(
     name: Routes.setupIntro,
     page: () => const SetupIntroScreen(),
