@@ -300,8 +300,8 @@ app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) 
 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
 	const messages = await apsQuery(listMessageEventByChatUserId, {
 		chatUserId: `${connection.chatId}-${sub}`,
-		nextToken: nextToken || undefined,
-		limit: limit || 10,
+		nextToken: nextToken?.trim()?.length ? nextToken : undefined,
+		limit: limit || 100,
 		sortDirection: 'DESC',
 	});
 	return res.status(200).json({ ...messages.data.listMessageEventByChatUserId });
