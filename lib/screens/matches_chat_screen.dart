@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,8 @@ import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
+import 'package:uuid/uuid.dart';
+import 'package:voicematch/utils/user_utils.dart';
 
 class MatchesChatScreen extends StatefulWidget {
   const MatchesChatScreen({Key? key}) : super(key: key);
@@ -91,7 +94,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      log('getConnection - json - ${response.body}');
+      // log('getConnection - json - ${response.body}');
 
       // update state
       setState(() {
@@ -219,7 +222,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     final user = await Amplify.Auth.getCurrentUser();
     final now = DateTime.now().toLocal().toIso8601String();
     final newRecording = RecordingModel(
-      id: uuid(),
+      id: const Uuid().v4().toString(),
       owner: user.userId,
       userId: user.userId,
       key: filepath,
@@ -232,10 +235,10 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   }
 
   Future<MessageEventModel> getMessageEvent({
-    MessageTypeEnum? type = MessageTypeEnum.text,
+    String? type = 'text',
     RecordingModel? recording,
   }) async {
-    final id = uuid();
+    final id = const Uuid().v4().toString();
     final user = await Amplify.Auth.getCurrentUser();
     final now = DateTime.now().toLocal().toIso8601String();
     final newMessageEventModel = MessageEventModel(
@@ -259,7 +262,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   Future<void> onRecord(String filepath, Duration duration) async {
     var newRecording = await getRecordingModel(filepath, duration);
     MessageEventModel newMessageEvent = await getMessageEvent(
-      type: MessageTypeEnum.audio,
+      type: 'audio',
       recording: newRecording,
     );
     final newMessages = messages + [newMessageEvent];
@@ -388,6 +391,69 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     }
   }
 
+  Future<MessageEventModel?> onPublish(
+    String id, {
+    // MessageTypeEnum? type = 'text',
+    // String? body = '',
+    // String? filepath,
+    // int? duration,
+    bool isSilent = false,
+  }) async {
+    await EasyLoading.show(status: 'loading...');
+    final MessageEventModel? localMessage =
+        messages.firstWhereOrNull((element) => element.id == id);
+    if (localMessage == null) {
+      Get.snackbar('onPublish - error', 'Message not found');
+      return null;
+    }
+
+    try {
+      // upload recording file and save recording entry
+      RecordingModel? recording;
+      if (localMessage.recording?.url.startsWith('file://') == true &&
+          localMessage.recording?.duration != null) {
+        final recordingKey = await uploadRecordingFile(
+          localMessage.recording?.url as String,
+        );
+        recording = await createRecording(
+          recordingKey,
+          localMessage.recording?.duration.round().toInt() as int,
+        );
+      }
+
+      // save message entry
+      MessageEventModel? message = await createMessage(
+        type: localMessage.type,
+        body: localMessage.body ?? '',
+        recordingId: recording?.id,
+        isSilent: isSilent,
+      );
+
+      if (message?.id == null) {
+        log('onPublish - something went wrong trying to save the recording');
+        return null;
+      }
+
+      // if we reached this far then we only can replace the model if we want
+      // by replace the model I mean replace the dummy model with the real one
+      // may not be needed as the user will already have a local model in place
+      List<MessageEventModel> newMessages = messages;
+      for (int i = 0; i < messages.length; i++) {
+        if (messages[i].id != localMessage.id) {
+          continue;
+        }
+        newMessages[i] = message as MessageEventModel;
+      }
+      setState(() {
+        messages = newMessages;
+      });
+    } catch (err) {
+      safePrint('onPublish - error - $err');
+    }
+    await EasyLoading.dismiss();
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -443,6 +509,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                                 ChatMessage(
                                   connection: activeItem as ConnectionModel,
                                   message: messages[index],
+                                  onPublish: onPublish,
                                 ),
                               ],
                               mb: gap,
