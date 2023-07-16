@@ -20,6 +20,7 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
+import 'package:voicematch/form/button.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 import 'package:uuid/uuid.dart';
@@ -58,7 +59,12 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
   // messages
   List<MessageEventModel> messages = [];
+
+  // messages loading?
   bool? isMessagesLoading;
+
+  // messages nextToken
+  String? nextToken;
 
   // Create a ScrollController
   final ScrollController _scrollController = ScrollController();
@@ -109,7 +115,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     // await EasyLoading.dismiss();
   }
 
-  Future<void> getMessages() async {
+  Future<void> getMessages({bool? isLoadMore = false}) async {
     await EasyLoading.show(status: 'loading...');
     setState(() {
       isMessagesLoading = true;
@@ -122,7 +128,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       final accessToken = result.userPoolTokens?.accessToken;
 
       // update profile via oboard api
-      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id/messages');
+      final url = Uri.parse(
+        '${apiEndPoint}api/v1/connections/$id/messages?nextToken=${nextToken ?? ''}',
+      );
       safePrint('getMessages - url $url');
       final response = await http.get(url, headers: {
         'Authorization': accessToken.toString(),
@@ -144,19 +152,26 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
         newMessages.add(MessageEventModel.fromJson(json['items'][i]));
       }
 
-      // update state
+      // if load more then prepend to list else reset entire list
       setState(() {
-        messages = newMessages;
+        if (isLoadMore == true) {
+          messages = newMessages + messages;
+        } else {
+          messages = newMessages;
+        }
+        nextToken = json['nextToken'];
       });
 
       // Scroll to the bottom of the ListView
-      Future.delayed(const Duration(milliseconds: 100), () {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent + 100,
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOut,
-        );
-      });
+      if (isLoadMore != true) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent + 100,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+          );
+        });
+      }
     } catch (err) {
       safePrint('getMessages- error - $err');
     }
@@ -530,6 +545,22 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                         pv: gap,
                         ph: gap,
                       ),
+                    if (nextToken != null)
+                      Div(
+                        [
+                          Button(
+                            'Load More',
+                            height: gap * 2,
+                            bg: colorSeondary200,
+                            // fg: colorSeondary500,
+                            onPress: () {
+                              getMessages(isLoadMore: true);
+                            },
+                          ),
+                        ],
+                        w: 150,
+                        mv: gap,
+                      ),
                     Div(
                       List.generate(
                         messages.length,
@@ -552,6 +583,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                         },
                       ),
                       mh: gap,
+                      mv: gapTop,
                     ),
                   ],
                 ),
