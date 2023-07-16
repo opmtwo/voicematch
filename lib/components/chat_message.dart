@@ -188,11 +188,16 @@ class _ChatMessageState extends State<ChatMessage> {
                     ? MainAxisAlignment.start
                     : MainAxisAlignment.end,
                 children: [
-                  CurrentTime(
-                    duration: Duration(
-                      milliseconds:
-                          widget.message.recording?.duration.toInt() as int,
-                    ),
+                  Div(
+                    [
+                      CurrentTime(
+                        duration: Duration(
+                          milliseconds:
+                              widget.message.recording?.duration.toInt() as int,
+                        ),
+                      ),
+                    ],
+                    pv: gap / 4,
                   ),
                   if (isLocalMessage == true)
                     Div(
