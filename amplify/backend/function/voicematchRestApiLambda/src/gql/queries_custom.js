@@ -196,3 +196,56 @@ exports.getConnection = /* GraphQL */ `
 		}
 	}
 `;
+
+exports.listMessageEventByChatUserId = /* GraphQL */ `
+	query ListMessageEventByChatUserId(
+		$chatUserId: ID!
+		$createdAt: ModelStringKeyConditionInput
+		$sortDirection: ModelSortDirection
+		$filter: ModelMessageEventFilterInput
+		$limit: Int
+		$nextToken: String
+	) {
+		listMessageEventByChatUserId(
+			chatUserId: $chatUserId
+			createdAt: $createdAt
+			sortDirection: $sortDirection
+			filter: $filter
+			limit: $limit
+			nextToken: $nextToken
+		) {
+			items {
+				id
+				owner
+				messageId
+				userId
+				chatId
+				chatUserId
+				type
+				body
+				uploadId
+				recordingId
+				recording {
+					id
+					owner
+					userId
+					duration
+					key
+					url
+					createdAt
+					updatedAt
+					__typename
+				}
+				deliveredAt
+				readAt
+				isSender
+				isReceiver
+				createdAt
+				updatedAt
+				__typename
+			}
+			nextToken
+			__typename
+		}
+	}
+`;
