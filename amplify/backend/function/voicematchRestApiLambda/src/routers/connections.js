@@ -6,8 +6,16 @@ const { validateFormData, IConnection, IConnectionMessage } = require('../schema
 const { ddbUpdate, ddbDelete } = require('../utils/ddb-utils');
 const { idpAdminGetUser } = require('../utils/idp-utils');
 const { apsGetAll, apsMutation, apsQuery } = require('../utils/aps-utils');
-const { listMessageByChatId, listConnectionByChatId, getMessageEvent, listUsers, getMessage, listMessageEventByMessageId } = require('../gql/queries');
-const { listConnectionByUserId, getConnection } = require('../gql/queries_custom');
+const {
+	listMessageByChatId,
+	listConnectionByChatId,
+	getMessageEvent,
+	listUsers,
+	getMessage,
+	listMessageEventByMessageId,
+	getRecording,
+} = require('../gql/queries');
+const { listConnectionByUserId, getConnection, listMessageEventByChatUserId } = require('../gql/queries_custom');
 const {
 	updateConnection,
 	createConnection,
@@ -107,6 +115,11 @@ app.get('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
 	return res.status(200).json(connection.data.getConnection);
 });
 
+app.get('/api/v1/connections/:id/duration', verifyToken, async (req, res, next) => {
+	const connection = await apsGetAll(listMessageEventByChatUserId, { id: req.params.id }, 'listMessageEventByChatUserId');
+	return res.status(200).json(connection.data.getConnection);
+});
+
 /**
  * @summary
  * accpet connection request
@@ -115,7 +128,7 @@ app.post('/api/v1/connections/:id/accept', verifyToken, async (req, res, next) =
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const now = new Date();
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
@@ -134,7 +147,7 @@ app.post('/api/v1/connections/:id/decline', verifyToken, async (req, res, next) 
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const now = new Date();
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
@@ -153,7 +166,7 @@ app.post('/api/v1/connections/:id/block', verifyToken, async (req, res, next) =>
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -175,7 +188,7 @@ app.post('/api/v1/connections/:id/unblock', verifyToken, async (req, res, next) 
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -197,7 +210,7 @@ app.post('/api/v1/connections/:id/mute', verifyToken, async (req, res, next) => 
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -219,7 +232,7 @@ app.post('/api/v1/connections/:id/unmute', verifyToken, async (req, res, next) =
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -241,7 +254,7 @@ app.post('/api/v1/connections/:id/pin', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -263,7 +276,7 @@ app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) =>
 	const { Username: sub } = req.user;
 	const connection = await apsQuery(getConnection, { id: req.params.id });
 	if (connection.data.getConnection.userId !== sub) {
-		return res.status(401).json({ message: 'Unauthorized' });
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
 	for (let i = 0; i < connections.length; i++) {
@@ -282,15 +295,16 @@ app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) =>
  * get connection messages
  */
 app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) => {
+	const { Username: sub } = req.user;
 	const { nextToken, limit } = req.query;
-	const connection = await apsQuery(getConnection, { id: req.params.id });
-	const messages = await apsQuery(listMessageByChatId, {
-		chatId: connection.data.getConnection.chatId,
+	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	const messages = await apsQuery(listMessageEventByChatUserId, {
+		chatUserId: `${connection.chatId}-${sub}`,
 		nextToken: nextToken || undefined,
 		limit: limit || 10,
 		sortDirection: 'DESC',
 	});
-	return res.status(200).json({ ...messages.data.listMessageByChatId });
+	return res.status(200).json({ ...messages.data.listMessageEventByChatUserId });
 });
 
 /**
@@ -299,29 +313,45 @@ app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) 
  */
 app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConnectionMessage), async (req, res, next) => {
 	const { Username: sub } = req.user;
-	const { body, isSilent, type, fileSize, fileMime } = req.body;
-	const connectionUser = await apsQuery(getConnection, { id: req.params.id });
-	const { chatId, memberId } = connectionUser.data.getConnection;
+	const { body, isSilent, type, recordingId } = req.body;
 
-	const connections = await apsGetAll(listConnectionByChatId, { chatId }, 'listConnectionByChatId');
-	for (let i = 0; i < connections.length; i++) {
-		const { isAccepted, isDeclined, isBlocked } = connections[i];
-		// declined?
-		if (isDeclined === true) {
-			return res.status(401).json({ message: 'Connection request rejected' });
-		}
-		// blocked?
-		if (isBlocked === true) {
-			return res.status(401).json({ message: 'Connection blocked' });
-		}
+	// get connection
+	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	const { chatId, memberId } = connection;
+
+	// verify ownership
+	if (connection.owner !== sub) {
+		return res.status(403).json({ message: 'Unauthorized' });
 	}
 
-	let fileKey;
-	let fileUrl;
-	if (fileSize) {
-		const today = new Date().toISOString().split('T')[0];
-		fileKey = `uploads/${sub}/${today}/${v4()}`;
-		fileUrl = await s3CreatePresignedPostCommand(BUCKETNAME, fileKey, fileSize, fileMime);
+	// const connections = await apsGetAll(listConnectionByChatId, { chatId }, 'listConnectionByChatId');
+	// for (let i = 0; i < connections.length; i++) {
+	// 	const { isAccepted, isDeclined, isBlocked } = connections[i];
+	// 	// declined?
+	// 	if (isDeclined === true) {
+	// 		return res.status(403).json({ message: 'Connection request rejected' });
+	// 	}
+	// 	// blocked?
+	// 	if (isBlocked === true) {
+	// 		return res.status(403).json({ message: 'Connection blocked' });
+	// 	}
+	// }
+
+	// let fileKey;
+	// let fileUrl;
+	// if (fileSize) {
+	// 	const today = new Date().toISOString().split('T')[0];
+	// 	fileKey = `uploads/${sub}/${today}/${v4()}`;
+	// 	fileUrl = await s3CreatePresignedPostCommand(BUCKETNAME, fileKey, fileSize, fileMime);
+	// }
+
+	// Verify recording - must belong to the current user
+	let recording;
+	if (recordingId) {
+		recording = (await apsQuery(getRecording, { id: recordingId })).data.getRecording;
+		if (recording.owner !== sub) {
+			return res.status(403).json({ message: 'Unauthorized' });
+		}
 	}
 
 	// generate unique message id
@@ -331,51 +361,39 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 	const results = await Promise.all([
 		apsMutation(createMessage, {
 			id: messageId,
-			userId: sub,
 			owner: sub,
+			userId: sub,
 			chatId,
-			roomId: chatId,
-			memberId,
-			roomParticipantId: chatId,
+			type,
 			body,
-			fileKey,
-			fileSize,
-			fileMime,
-			isSilent,
+			// isSilent,
+			recordingId,
 		}),
 		apsMutation(createMessageEvent, {
-			messageId,
-			userId: sub,
 			owner: sub,
+			userId: sub,
+			messageId,
 			chatId,
-			roomId: chatId,
-			memberId,
-			roomParticipantId: chatId,
-			body,
+			chatUserId: `${chatId}-${sub}`,
 			type,
-			fileKey,
-			fileSize,
-			fileMime,
-			isSilent,
+			body,
+			// isSilent,
 			isSender: true,
 			isReceiver: false,
+			recordingId,
 		}),
 		apsMutation(createMessageEvent, {
 			messageId,
 			userId: memberId,
 			owner: memberId,
 			chatId,
-			roomId: chatId,
-			memberId: sub,
-			roomParticipantId: chatId,
+			chatUserId: `${chatId}-${memberId}`,
 			body,
 			type,
-			fileKey,
-			fileSize,
-			fileMime,
-			isSilent,
+			// isSilent,
 			isSender: false,
 			isReceiver: true,
+			recordingId,
 		}),
 	]);
 
@@ -405,185 +423,186 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 		]);
 	}
 
-	return res.status(200).json({ message: message.data.createMessage, fileKey, fileUrl });
+	// return res.status(200).json({ message: message.data.createMessage, fileKey, fileUrl });
+	return res.status(200).json(senderMessageEvent.data.createMessageEvent);
 });
 
-/**
- * @summary
- * update connection messages
- */
-app.put('/api/v1/connections/:id/messages/:messageId', validateFormData(IConnectionMessage), verifyToken, async (req, res, next) => {
-	const { Username: sub } = req.user;
-	const { messageId } = req.params;
-	const { body, isUploaded } = req.body;
+// /**
+//  * @summary
+//  * update connection messages
+//  */
+// app.put('/api/v1/connections/:id/messages/:messageId', validateFormData(IConnectionMessage), verifyToken, async (req, res, next) => {
+// 	const { Username: sub } = req.user;
+// 	const { messageId } = req.params;
+// 	const { body, isUploaded } = req.body;
 
-	// get connection
-	const connectionUser = await apsQuery(getConnection, { id: req.params.id });
-	const { chatId } = connectionUser.data.getConnection;
+// 	// get connection
+// 	const connectionUser = await apsQuery(getConnection, { id: req.params.id });
+// 	const { chatId } = connectionUser.data.getConnection;
 
-	const connections = await apsGetAll(listConnectionByChatId, { chatId }, 'listConnectionByChatId');
-	for (let i = 0; i < connections.length; i++) {
-		const { isAccepted, isDeclined, isBlocked } = connections[i];
-		// declined?
-		if (isDeclined === true) {
-			return res.status(401).json({ message: 'Connection request rejected' });
-		}
-		// blocked?
-		if (isBlocked === true) {
-			return res.status(401).json({ message: 'Connection blocked' });
-		}
-	}
+// 	const connections = await apsGetAll(listConnectionByChatId, { chatId }, 'listConnectionByChatId');
+// 	for (let i = 0; i < connections.length; i++) {
+// 		const { isAccepted, isDeclined, isBlocked } = connections[i];
+// 		// declined?
+// 		if (isDeclined === true) {
+// 			return res.status(403).json({ message: 'Connection request rejected' });
+// 		}
+// 		// blocked?
+// 		if (isBlocked === true) {
+// 			return res.status(403).json({ message: 'Connection blocked' });
+// 		}
+// 	}
 
-	// create message
-	const message = (await apsQuery(getMessage, { id: messageId })).data.getMessage;
+// 	// create message
+// 	const message = (await apsQuery(getMessage, { id: messageId })).data.getMessage;
 
-	// must be message author / room admin / room owner
-	if (sub !== message.owner) {
-		return res.status(401).json({ error: 'Unauthorized' });
-	}
+// 	// must be message author / room admin / room owner
+// 	if (sub !== message.owner) {
+// 		return res.status(403).json({ error: 'Unauthorized' });
+// 	}
 
-	// update the message
-	await apsMutation(updateMessage, { id: messageId, _version: message._version, body, isUploaded });
+// 	// update the message
+// 	await apsMutation(updateMessage, { id: messageId, _version: message._version, body, isUploaded });
 
-	// get all message events
-	const messageEvents = await apsGetAll(listMessageEventByMessageId, { messageId, limit: LIMIT }, 'listMessageEventByMessageId');
+// 	// get all message events
+// 	const messageEvents = await apsGetAll(listMessageEventByMessageId, { messageId, limit: LIMIT }, 'listMessageEventByMessageId');
 
-	// update all existing message events
-	let promises = [];
-	for (let i = 0; i < messageEvents.length; i++) {
-		const { id, _version } = messageEvents[i];
-		promises.push(apsMutation(updateMessageEvent, { id, _version, body, isUploaded }));
-		if (promises.length > BATCH_SIZE) {
-			await Promise.all(promises);
-			promises = [];
-		}
-	}
-	await Promise.all(promises);
+// 	// update all existing message events
+// 	let promises = [];
+// 	for (let i = 0; i < messageEvents.length; i++) {
+// 		const { id, _version } = messageEvents[i];
+// 		promises.push(apsMutation(updateMessageEvent, { id, _version, body, isUploaded }));
+// 		if (promises.length > BATCH_SIZE) {
+// 			await Promise.all(promises);
+// 			promises = [];
+// 		}
+// 	}
+// 	await Promise.all(promises);
 
-	// all done
-	return res.status(200).json(message);
-});
+// 	// all done
+// 	return res.status(200).json(message);
+// });
 
-/**
- * @summary
- * delete connection
- */
-app.delete('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
-	const { id } = req.params;
-	const { Username: sub } = req.user;
-	const connection = (await apsQuery(getConnection, { id })).data.getConnection;
-	if (connection.userId !== sub) {
-		res.status(401).json({ message: 'Unauthorized' });
-	}
-	const connectionDeleted = await apsMutation(deleteConnection, { id, _version: connection._version });
-	await ddbDelete(CONNECTIONTABLE, { id });
-	return res.status(200).json(connectionDeleted.data.deleteConnection);
-});
+// /**
+//  * @summary
+//  * delete connection
+//  */
+// app.delete('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
+// 	const { id } = req.params;
+// 	const { Username: sub } = req.user;
+// 	const connection = (await apsQuery(getConnection, { id })).data.getConnection;
+// 	if (connection.userId !== sub) {
+// 		res.status(403).json({ message: 'Unauthorized' });
+// 	}
+// 	const connectionDeleted = await apsMutation(deleteConnection, { id, _version: connection._version });
+// 	await ddbDelete(CONNECTIONTABLE, { id });
+// 	return res.status(200).json(connectionDeleted.data.deleteConnection);
+// });
 
-/**
- * @summary
- * delete all connection messages
- */
-app.post('/api/v1/connections/:id/clear', verifyToken, async (req, res, next) => {
-	const { Username: sub } = req.user;
-	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
-	if (connection.userId !== sub) {
-		res.status(401).json({ message: 'Unauthorized' });
-	}
-	// send sns notification to delete all connection message events
-	await snsPublish(
-		SNS_CLEANUP_TOPIC_ARN,
-		JSON.stringify({
-			tableName: MESSAGEEVENTTABLE,
-			indexName: 'listMessageEventByChatId',
-			keyConditionExpression: '#chatId = :chatId',
-			expressionAttributeNames: { '#chatId': 'chatId' },
-			expressionAttributeValues: { ':chatId': connection.chatId },
-			checks: {
-				userId: sub,
-			},
-		})
-	);
-	return res.status(200).json({});
-});
+// /**
+//  * @summary
+//  * delete all connection messages for the current user
+//  */
+// app.post('/api/v1/connections/:id/clear', verifyToken, async (req, res, next) => {
+// 	const { Username: sub } = req.user;
+// 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+// 	if (connection.userId !== sub) {
+// 		res.status(403).json({ message: 'Unauthorized' });
+// 	}
+// 	// send sns notification to delete all connection message events
+// 	await snsPublish(
+// 		SNS_CLEANUP_TOPIC_ARN,
+// 		JSON.stringify({
+// 			tableName: MESSAGEEVENTTABLE,
+// 			indexName: 'listMessageEventByChatId',
+// 			keyConditionExpression: '#chatId = :chatId',
+// 			expressionAttributeNames: { '#chatId': 'chatId' },
+// 			expressionAttributeValues: { ':chatId': connection.chatId },
+// 			checks: {
+// 				userId: sub,
+// 			},
+// 		})
+// 	);
+// 	return res.status(200).json({});
+// });
 
-/**
- * @summary
- * delete specific connection message
- */
-app.delete('/api/v1/connections/:id/messages/:messageId', verifyToken, validateFormData(IConnection), async (req, res, next) => {
-	const { Username: sub } = req.user;
-	const now = new Date().toISOString();
+// /**
+//  * @summary
+//  * delete specific connection message
+//  */
+// app.delete('/api/v1/connections/:id/messages/:messageId', verifyToken, validateFormData(IConnection), async (req, res, next) => {
+// 	const { Username: sub } = req.user;
+// 	const now = new Date().toISOString();
 
-	// find existing message event if any
-	const eventId = `${req.params.messageId}-${sub}`;
+// 	// find existing message event if any
+// 	const eventId = `${req.params.messageId}-${sub}`;
 
-	// create or update message event
-	let messageEvent;
-	try {
-		messageEvent = (await apsQuery(getMessageEvent, { id: eventId })).data.getMessageEvent;
-		messageEvent = (await apsMutation(updateMessageEvent, { id: eventId, _version: messageEvent._version, isDeleted: true, deletedAt: now })).data
-			.createMessageEvent;
-	} catch (err) {
-		messageEvent = (
-			await apsMutation(createMessageEvent, { id: eventId, messageId: req.params.messageId, userId: sub, owner: sub, isDeleted: true, deletedAt: now })
-		).data.createMessageEvent;
-	}
+// 	// create or update message event
+// 	let messageEvent;
+// 	try {
+// 		messageEvent = (await apsQuery(getMessageEvent, { id: eventId })).data.getMessageEvent;
+// 		messageEvent = (await apsMutation(updateMessageEvent, { id: eventId, _version: messageEvent._version, isDeleted: true, deletedAt: now })).data
+// 			.createMessageEvent;
+// 	} catch (err) {
+// 		messageEvent = (
+// 			await apsMutation(createMessageEvent, { id: eventId, messageId: req.params.messageId, userId: sub, owner: sub, isDeleted: true, deletedAt: now })
+// 		).data.createMessageEvent;
+// 	}
 
-	// all done
-	return res.status(200).json(messageEvent);
-});
+// 	// all done
+// 	return res.status(200).json(messageEvent);
+// });
 
-/**
- * @summary
- * Delete a message for all connections
- */
-app.delete('/api/v1/connections/:id/messages/:messageId/clear', verifyToken, async (req, res, next) => {
-	const { Username: sub } = req.user;
-	const { messageId } = req.params;
+// /**
+//  * @summary
+//  * Delete a message for all connections
+//  */
+// app.delete('/api/v1/connections/:id/messages/:messageId/clear', verifyToken, async (req, res, next) => {
+// 	const { Username: sub } = req.user;
+// 	const { messageId } = req.params;
 
-	// make sure current the current user is message owner
-	let message;
-	try {
-		message = (await apsQuery(getMessage, { id: messageId })).data.getMessage;
-		if (message.owner !== sub) {
-			return res.status(401).json({ error: 'Unauthorized' });
-		}
-	} catch (err) {
-		console.log('Error trying to fetch message', err);
-		return res.status(404).json({ error: 'Not found' });
-	}
+// 	// make sure current the current user is message owner
+// 	let message;
+// 	try {
+// 		message = (await apsQuery(getMessage, { id: messageId })).data.getMessage;
+// 		if (message.owner !== sub) {
+// 			return res.status(403).json({ error: 'Unauthorized' });
+// 		}
+// 	} catch (err) {
+// 		console.log('Error trying to fetch message', err);
+// 		return res.status(404).json({ error: 'Not found' });
+// 	}
 
-	// get all message events
-	const messageEvents = await apsGetAll(listMessageEventByMessageId, { messageId, limit: LIMIT }, 'listMessageEventByMessageId');
+// 	// get all message events
+// 	const messageEvents = await apsGetAll(listMessageEventByMessageId, { messageId, limit: LIMIT }, 'listMessageEventByMessageId');
 
-	// update all existing message events
-	let promises = [];
-	for (let i = 0; i < messageEvents.length; i++) {
-		const { id, _version } = messageEvents[i];
-		promises.push(apsMutation(deleteMessageEvent, { id, _version }));
-		if (promises.length > BATCH_SIZE) {
-			await Promise.all(promises);
-			promises = [];
-		}
-	}
-	await Promise.all(promises);
+// 	// update all existing message events
+// 	let promises = [];
+// 	for (let i = 0; i < messageEvents.length; i++) {
+// 		const { id, _version } = messageEvents[i];
+// 		promises.push(apsMutation(deleteMessageEvent, { id, _version }));
+// 		if (promises.length > BATCH_SIZE) {
+// 			await Promise.all(promises);
+// 			promises = [];
+// 		}
+// 	}
+// 	await Promise.all(promises);
 
-	// send sns notification to delete all message events
-	await snsPublish(
-		SNS_CLEANUP_TOPIC_ARN,
-		JSON.stringify({
-			tableName: MESSAGEEVENTTABLE,
-			indexName: 'listMessageEventByMessageId',
-			keyConditionExpression: '#messageId = :messageId',
-			expressionAttributeNames: { '#messageId': 'messageId' },
-			expressionAttributeValues: { ':messageId': messageId },
-		})
-	);
+// 	// send sns notification to delete all message events
+// 	await snsPublish(
+// 		SNS_CLEANUP_TOPIC_ARN,
+// 		JSON.stringify({
+// 			tableName: MESSAGEEVENTTABLE,
+// 			indexName: 'listMessageEventByMessageId',
+// 			keyConditionExpression: '#messageId = :messageId',
+// 			expressionAttributeNames: { '#messageId': 'messageId' },
+// 			expressionAttributeValues: { ':messageId': messageId },
+// 		})
+// 	);
 
-	// delete message from ddb
-	await ddbDelete(MESSAGETABLE, { id: messageId });
+// 	// delete message from ddb
+// 	await ddbDelete(MESSAGETABLE, { id: messageId });
 
-	// all done
-	return res.status(200).json({});
-});
+// 	// all done
+// 	return res.status(200).json({});
+// });
