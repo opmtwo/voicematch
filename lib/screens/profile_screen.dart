@@ -298,7 +298,7 @@ class ProfileScreenState extends State<ProfileScreen> {
         interestMusic,
         interestTravelling,
         interestPet,
-      ].takeWhile((value) => value.isNotEmpty).join(', ');
+      ].where((value) => value.trim().isNotEmpty).join(', ');
     }
     if (id == 'intro') {
       return '$recordingDuration seconds';
