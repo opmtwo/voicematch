@@ -399,13 +399,20 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     // int? duration,
     bool isSilent = false,
   }) async {
-    await EasyLoading.show(status: 'loading...');
+    // await EasyLoading.show(status: 'loading...');
     final MessageEventModel? localMessage =
         messages.firstWhereOrNull((element) => element.id == id);
     if (localMessage == null) {
       Get.snackbar('onPublish - error', 'Message not found');
       return null;
     }
+
+    final index = messages.indexWhere((element) => element.id == id);
+    final newMessages = messages;
+    newMessages[index].isBusy = true;
+    setState(() {
+      messages = newMessages;
+    });
 
     try {
       // upload recording file and save recording entry
@@ -450,7 +457,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     } catch (err) {
       safePrint('onPublish - error - $err');
     }
-    await EasyLoading.dismiss();
+    // await EasyLoading.dismiss();
     return null;
   }
 
