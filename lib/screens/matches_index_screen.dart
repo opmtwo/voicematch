@@ -387,7 +387,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                   'Unmatch'.toUpperCase(),
                                                   height: 40,
                                                   // bg: colorOnSurfaceMediumEmphasis,
-                                                  bg: colorBlack,
+                                                  bg: colorOnSurfaceMediumEmphasis,
                                                   onPress: () {
                                                     safePrint(
                                                         'item.id ${item.id}');
