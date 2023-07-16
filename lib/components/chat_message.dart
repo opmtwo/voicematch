@@ -11,17 +11,21 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
+import 'package:voicematch/form/fab_button.dart';
 import 'package:voicematch/icons/icon_pause.dart';
 import 'package:voicematch/icons/icon_play.dart';
+import 'package:voicematch/icons/icon_send.dart';
 
 class ChatMessage extends StatefulWidget {
   final MessageEventModel message;
   final ConnectionModel connection;
+  final Function(String id) onPublish;
 
   const ChatMessage({
     Key? key,
     required this.message,
     required this.connection,
+    required this.onPublish,
   }) : super(key: key);
 
   @override
@@ -68,7 +72,29 @@ class _ChatMessageState extends State<ChatMessage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLocalMessage = widget.message.recording?.url.startsWith('file://');
+
     final List<Widget> children = [
+      if (isLocalMessage == true)
+        Div(
+          [
+            FabButton(
+              SvgPicture.string(
+                iconSend(),
+                color: colorWhite,
+                width: avatarSmall,
+              ),
+              w: avatarSmall,
+              h: avatarSmall,
+              bg: colorSeondary700,
+              onPress: () {
+                widget.onPublish(widget.message.id);
+              },
+            ),
+          ],
+          ml: widget.message.isSender == true ? gap / 2 : null,
+          mr: widget.message.isReceiver == true ? gap / 2 : null,
+        ),
       Div(
         [
           ConnectionPic(
@@ -110,7 +136,7 @@ class _ChatMessageState extends State<ChatMessage> {
           Wave(
             value: playbackDuration.inMilliseconds.toDouble(),
             total: widget.message.recording?.duration.toDouble() as double,
-            w: (MediaQuery.of(context).size.width * 0.75) -
+            w: (MediaQuery.of(context).size.width * 0.7) -
                 ((40 * 2) + (gap * 4)),
             bg: const Color(0xFFC3D1FF),
             alt: true,
@@ -138,7 +164,7 @@ class _ChatMessageState extends State<ChatMessage> {
               pv: gap / 2,
               bg: colorBlack.withOpacity(0.05),
               br: 16,
-              w: MediaQuery.of(context).size.width * 0.75,
+              w: MediaQuery.of(context).size.width * 0.8,
             ),
           ],
         ),
@@ -149,11 +175,15 @@ class _ChatMessageState extends State<ChatMessage> {
                 alignment: widget.message.isSender == true
                     ? Alignment.topLeft
                     : Alignment.topRight,
-                child: CurrentTime(
-                  duration: Duration(
-                    milliseconds:
-                        widget.message.recording?.duration.toInt() as int,
-                  ),
+                child: Div(
+                  [
+                    CurrentTime(
+                      duration: Duration(
+                        milliseconds:
+                            widget.message.recording?.duration.toInt() as int,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
