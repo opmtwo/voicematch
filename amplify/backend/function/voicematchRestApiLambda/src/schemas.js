@@ -65,6 +65,11 @@ const IConnectionMessage = joi
 			otherwise: joi.string().optional().max(100),
 		}),
 		isUploaded: joi.bool().optional(),
+
+const IRecording = joi
+	.object({
+		key: joi.string().max(1000).required(),
+		duration: joi.number().integer().min(0).required(),
 	})
 	.options({ abortEarly: false });
 
@@ -76,4 +81,5 @@ module.exports = {
 	IMessage,
 	IConnection,
 	IConnectionMessage,
+	IRecording,
 };
