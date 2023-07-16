@@ -383,12 +383,16 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                         audioPath: recordingPath as String,
                         isLocal: true,
                         iconPlay: SvgPicture.string(
-                          iconPlay(),
+                          iconPlay(
+                            code: colorWhite,
+                          ),
                           width: 32,
                         ),
                         iconPause: SvgPicture.string(
-                          iconPause(),
-                          width: 24,
+                          iconPause(
+                            code: colorWhite,
+                          ),
+                          width: 16,
                         ),
                         iconSkipPrev: SvgPicture.string(
                           iconRewindMinus(),
