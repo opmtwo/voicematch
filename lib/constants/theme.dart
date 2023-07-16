@@ -7,7 +7,7 @@ const double radius = 4;
 const double radiusMedium = radius * 2;
 const double radiusLarge = radius * 5;
 
-const int recordingDuration = 5;
+const int recordingDuration = 30;
 
 const double avatarExtraSmall = 32;
 const double avatarSmall = 48;
