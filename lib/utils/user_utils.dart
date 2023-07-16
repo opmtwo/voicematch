@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:get/get.dart';
 import 'package:voicematch/router.dart';
+import 'package:voicematch/utils/date_utils.dart';
+import 'package:uuid/uuid.dart';
 
 bool isPasswordValid(String value) {
   RegExp regex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[\S]{8,}$');
@@ -33,5 +37,33 @@ Future<void> redirectUser() async {
       Routes.setupIntro,
       (route) => false,
     );
+  }
+}
+
+Future<String> uploadRecordingFile(String path) async {
+  final user = await Amplify.Auth.getCurrentUser();
+  final uuid = const Uuid().v4().toString();
+  final today = getNow(format: 'yyyy-MM-dd');
+  final key = '${user.username}/recordings/$today/$uuid';
+  final localFile = File.fromUri(Uri.parse(path));
+  safePrint('uploadRecordingFile - key = $key');
+  try {
+    final UploadFileResult result = await Amplify.Storage.uploadFile(
+      local: localFile,
+      key: key,
+      onProgress: (progress) {
+        // safePrint(
+        //     'Fraction completed: ${progress.getFractionCompleted()}');
+      },
+      options: UploadFileOptions(
+        contentType: 'audio/mp4',
+      ),
+    );
+    final s3Key = 'public/${result.key}';
+    safePrint('uploadRecordingFile - success - $s3Key');
+    return s3Key;
+  } on StorageException catch (err) {
+    safePrint('uploadRecordingFile - error - $err');
+    rethrow;
   }
 }
