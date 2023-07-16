@@ -63,6 +63,11 @@ Future<String> uploadFile(String path) async {
           const CognitoUserAttributeKey.custom('custom:intro_recording'),
       value: 'public/$key',
     );
+    await Amplify.Auth.updateUserAttribute(
+      userAttributeKey:
+          const CognitoUserAttributeKey.custom('custom:intro_duration'),
+      value: recordingDuration.toString(),
+    );
     safePrint('Successfully updated intro recording user profile: $uuid');
     return key;
   } on StorageException catch (err) {
@@ -274,7 +279,8 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       final accessToken = result.userPoolTokens?.accessToken;
 
       // update profile via oboard api
-      final url = Uri.parse('${apiEndPoint}api/v1/onboard?recording=true');
+      final url = Uri.parse(
+          '${apiEndPoint}api/v1/onboard?recording=true&duration=$recordingDuration');
       safePrint('onSubmit - url $url');
       final response = await http.post(url, body: jsonEncode({}), headers: {
         'Authorization': accessToken.toString(),
