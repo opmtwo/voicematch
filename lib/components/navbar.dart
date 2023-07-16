@@ -81,7 +81,7 @@ class Navbar extends StatelessWidget {
                           opacity: isActive ? 1 : 1,
                           child: SvgPicture.string(
                             data['icon'],
-                            color: isActive ? colorWhite : colorSeondary500,
+                            color: isActive ? colorSeondary200 : colorGrey900,
                             width: data['width'],
                           ),
                         ),
@@ -92,7 +92,7 @@ class Navbar extends StatelessWidget {
                               P(
                                 data["title"],
                                 fw: FontWeight.w600,
-                                fg: isActive ? colorWhite : colorSeondary500,
+                                fg: isActive ? colorSeondary200 : colorGrey900,
                               ),
                             ],
                             mv: 5,
@@ -107,7 +107,7 @@ class Navbar extends StatelessWidget {
                         opacity: isActive ? 1 : 0,
                         child: const Div(
                           [],
-                          bg: colorWhite,
+                          bg: colorSeondary200,
                           w: 5,
                           h: 5,
                           br: 99,
