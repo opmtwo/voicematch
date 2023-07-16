@@ -39,6 +39,8 @@ class Button extends StatelessWidget {
   final double? fz;
   final FontWeight? fw;
 
+  final double? ls;
+
   final List<BoxShadow>? boxShadow;
 
   static const double defaultHeight = 56;
@@ -80,6 +82,7 @@ class Button extends StatelessWidget {
     this.bw,
     this.fw,
     this.fz,
+    this.ls,
     this.iconBg,
     this.iconFg,
   }) : super(key: key);
@@ -151,6 +154,7 @@ class Button extends StatelessWidget {
                               fontSize: fz ?? deafultFontSize,
                               fontWeight: fw ?? defaultFontWeight,
                               color: fg ?? defaultFg,
+                              letterSpacing: ls ?? 1.25,
                             ),
                           ),
                         ),
