@@ -60,6 +60,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   List<MessageEventModel> messages = [];
   bool? isMessagesLoading;
 
+  // Create a ScrollController
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -144,6 +147,15 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       // update state
       setState(() {
         messages = newMessages;
+      });
+
+      // Scroll to the bottom of the ListView
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent + 100,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
       });
     } catch (err) {
       safePrint('getMessages- error - $err');
@@ -260,15 +272,27 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   }
 
   Future<void> onRecord(String filepath, Duration duration) async {
-    var newRecording = await getRecordingModel(filepath, duration);
-    MessageEventModel newMessageEvent = await getMessageEvent(
+    // create new local record model
+    final newRecording = await getRecordingModel(filepath, duration);
+
+    // create new local message event model
+    final newMessageEvent = await getMessageEvent(
       type: 'audio',
       recording: newRecording,
     );
+
+    // append the the end of existing messages
     final newMessages = messages + [newMessageEvent];
     setState(() {
       messages = newMessages;
     });
+
+    // Scroll to the bottom of the ListView
+    await _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent + 100,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   /// @summary
@@ -490,44 +514,47 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
             ),
             Expanded(
               flex: 1,
-              child: ListView(
-                children: [
-                  if (messages.isEmpty && isMessagesLoading == false)
-                    const Div(
-                      [
-                        P(
-                          'No messages found. Get started by sending the first message!',
-                          isH6: true,
-                          ta: TextAlign.center,
-                        ),
-                      ],
-                      pv: gap,
-                      ph: gap,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: [
+                    if (messages.isEmpty && isMessagesLoading == false)
+                      const Div(
+                        [
+                          P(
+                            'No messages found. Get started by sending the first message!',
+                            isH6: true,
+                            ta: TextAlign.center,
+                          ),
+                        ],
+                        pv: gap,
+                        ph: gap,
+                      ),
+                    Div(
+                      List.generate(
+                        messages.length,
+                        (index) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Div(
+                                [
+                                  ChatMessage(
+                                    connection: activeItem as ConnectionModel,
+                                    message: messages[index],
+                                    onPublish: onPublish,
+                                  ),
+                                ],
+                                mb: gap,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      mh: gap,
                     ),
-                  Div(
-                    List.generate(
-                      messages.length,
-                      (index) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Div(
-                              [
-                                ChatMessage(
-                                  connection: activeItem as ConnectionModel,
-                                  message: messages[index],
-                                  onPublish: onPublish,
-                                ),
-                              ],
-                              mb: gap,
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    mh: gap,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Div(
