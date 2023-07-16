@@ -262,6 +262,61 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     });
   }
 
+  /// @summary
+  /// Save recording
+  ///
+  /// @param key - s3 recording file key
+  /// @param duration - recording duration in ms
+  Future<RecordingModel?> createRecording(String key, int duration) async {
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/recordings');
+      safePrint('createRecording - url $url');
+      final response = await http.post(url,
+          body: jsonEncode({
+            'key': key,
+            'duration': duration,
+          }),
+          headers: {
+            'Authorization': accessToken.toString(),
+            'Content-Type': 'application/json',
+          });
+      safePrint('createRecording - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('onCreate - non-200 code: ${response.statusCode}');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('createRecording - json - ${response.body}');
+
+      // parse data
+      final recording = RecordingModel.fromJson(json);
+
+      // // create new messages
+      // final newMessages = messages;
+      // newMessages.add(recording);
+
+      // // update state
+      // setState(() {
+      //   messages = newMessages;
+      // });
+
+      return recording;
+    } catch (err) {
+      safePrint('createRecording - error - $err');
+      rethrow;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
