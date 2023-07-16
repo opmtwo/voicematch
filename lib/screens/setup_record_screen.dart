@@ -15,12 +15,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:voicematch/components/audio_file_player.dart';
 import 'package:voicematch/components/current_time.dart';
-import 'package:voicematch/components/icon_box.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/form/progress_bar_alt.dart';
 import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/options.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
@@ -95,6 +93,12 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   // recording path
   String? recordingPath;
 
+  // current recording url
+  String? userRecordingUrl;
+
+  // current recording url
+  int? userRecordingDuration;
+
   // timer
   Timer? timer;
 
@@ -118,14 +122,32 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     try {
       List<AuthUserAttribute> attributes =
           await Amplify.Auth.fetchUserAttributes();
-      // String givenName = attributes
-      //         .firstWhereOrNull((element) =>
-      //             element.userAttributeKey == CognitoUserAttributeKey.givenName)
-      //         ?.value ??
-      //     '';
+      String attrRecordingUrl = attributes
+              .firstWhereOrNull((element) =>
+                  element.userAttributeKey ==
+                  const CognitoUserAttributeKey.custom(
+                      'custom:intro_recording_url'))
+              ?.value ??
+          '';
+      String attrRecordingDuration = attributes
+              .firstWhereOrNull((element) =>
+                  element.userAttributeKey ==
+                  const CognitoUserAttributeKey.custom('custom:intro_duration'))
+              ?.value ??
+          '';
       setState(() {
-        //
+        userRecordingUrl = attrRecordingUrl;
+        if (attrRecordingDuration.isNotEmpty) {
+          userRecordingDuration = int.parse(attrRecordingDuration);
+        }
       });
+      if (userRecordingUrl != null && userRecordingDuration != null) {
+        setState(() {
+          isRecorded = true;
+        });
+      }
+      safePrint(
+          'userRecordingUrl $userRecordingUrl, userRecordingDuration $userRecordingDuration');
     } on AuthException catch (e) {
       safePrint('initUser- error - ${e.message}');
     }
@@ -382,12 +404,20 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
                     ],
                     mb: gap,
                   ),
-                if (isRecorded && recordingPath != null)
+                if (isRecorded &&
+                    ((recordingPath != null &&
+                            recordingPath?.trim().isNotEmpty == true) ||
+                        (userRecordingUrl != null &&
+                            userRecordingUrl?.trim().isNotEmpty == true)))
                   Div(
                     [
                       AudioFilePlayer(
-                        audioPath: recordingPath as String,
-                        isLocal: true,
+                        audioPath: recordingPath != null &&
+                                recordingPath?.trim().isNotEmpty == true
+                            ? recordingPath as String
+                            : userRecordingUrl as String,
+                        isLocal: recordingPath != null &&
+                            recordingPath?.trim().isNotEmpty == true,
                         iconPlay: SvgPicture.string(
                           iconPlay(
                             code: colorWhite,

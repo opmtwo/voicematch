@@ -181,7 +181,7 @@ app.post('/api/v1/onboard/done', verifyToken, async (req, res, next) => {
 	// this is supposed to be called only once
 	if (userProfile.isSetupDone === true) {
 		console.log('Setup already complete - exit');
-		return res.status(200).json({});
+		// return res.status(200).json({});
 	}
 
 	/**
