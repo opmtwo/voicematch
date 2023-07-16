@@ -250,6 +250,7 @@ class MessageEventModel {
   final String userId;
   final String chatId;
   final String chatUserId;
+  bool? isBusy;
   final String? type;
   final String? body;
   // final String uploadId;
@@ -273,6 +274,7 @@ class MessageEventModel {
     required this.userId,
     required this.chatId,
     required this.chatUserId,
+    this.isBusy,
     this.type,
     this.body,
     // final String uploadId;
