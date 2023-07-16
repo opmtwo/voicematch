@@ -165,11 +165,14 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       // Scroll to the bottom of the ListView
       if (isLoadMore != true) {
         Future.delayed(const Duration(milliseconds: 100), () {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent + 100,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOut,
-          );
+          if (_scrollController.position.pixels <
+              _scrollController.position.maxScrollExtent) {
+            _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent + 100,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOut,
+            );
+          }
         });
       }
     } catch (err) {
@@ -303,11 +306,14 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     });
 
     // Scroll to the bottom of the ListView
-    await _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent + 100,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
+    if (_scrollController.position.pixels <
+        _scrollController.position.maxScrollExtent) {
+      await _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent + 100,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
   }
 
   /// @summary
