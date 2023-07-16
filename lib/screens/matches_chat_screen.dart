@@ -132,10 +132,16 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       final json = await jsonDecode(response.body);
       log('getMessages - json - ${response.body}');
 
+      // parse results
+      List<MessageEventModel> newMessages = [];
+      for (int i = 0; i < json['items'].length; i++) {
+        newMessages.add(MessageEventModel.fromJson(json['items'][i]));
+      }
+
       // update state
-      // setState(() {
-      //   activeItem = ConnectionModel.fromJson(json);
-      // });
+      setState(() {
+        messages = newMessages;
+      });
     } catch (err) {
       safePrint('getMessages- error - $err');
     }
@@ -313,6 +319,71 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       return recording;
     } catch (err) {
       safePrint('createRecording - error - $err');
+      rethrow;
+    }
+  }
+
+  /// @summary
+  /// Save recording
+  ///
+  /// @param key - s3 recording file key
+  /// @param duration - recording duration in ms
+  Future<MessageEventModel?> createMessage({
+    String? body,
+    String? recordingId,
+    String? type = 'text',
+    bool isSilent = false,
+  }) async {
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      // update profile via oboard api
+      final url = Uri.parse('${apiEndPoint}api/v1/connections/$id/messages');
+      safePrint('createMessage - url $url');
+      final response = await http.post(url,
+          body: jsonEncode({
+            'body': body ?? '',
+            'recordingId': recordingId,
+            'type': type,
+            'isSilent': isSilent,
+          }),
+          headers: {
+            'Authorization': accessToken.toString(),
+            'Content-Type': 'application/json',
+          });
+      safePrint('createMessage - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        final errorData = await jsonDecode(response.body);
+        throw Exception(
+            'onCreate - non-200 code: ${response.statusCode} - $errorData');
+      }
+
+      // decode response
+      final json = await jsonDecode(response.body);
+      log('createMessage - json - ${response.body}');
+
+      // parse data
+      final newMessageEvent = MessageEventModel.fromJson(json);
+
+      // // create new messages
+      // final newMessages = messages;
+      // newMessages.add(newMessageEvent);
+
+      // // update state
+      // setState(() {
+      //   messages = newMessages;
+      // });
+
+      // all done
+      return newMessageEvent;
+    } catch (err) {
+      safePrint('createMessage- error - ${err.toString()}');
       rethrow;
     }
   }
