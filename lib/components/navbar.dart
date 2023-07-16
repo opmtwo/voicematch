@@ -1,4 +1,8 @@
+import 'dart:developer';
+
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:voicematch/constants/colors.dart';
@@ -33,6 +37,16 @@ class Navbar extends StatelessWidget {
       'title': 'Sign out',
       'icon': iconSignOut(),
       'width': 20.0,
+      'onPress': () async {
+        await EasyLoading.show(status: 'Loading');
+        try {
+          await Amplify.Auth.signOut();
+        } catch (err) {
+          log('signOut - error - $err');
+        }
+        Get.offNamedUntil(Routes.signIn, (route) => false);
+        EasyLoading.dismiss();
+      }
     },
   ];
 
@@ -48,9 +62,13 @@ class Navbar extends StatelessWidget {
               var data = options[i];
               bool isActive = i == index;
               void onTap() {
-                Get.toNamed(
-                  data['url'],
-                );
+                if (data['onPress'] != null) {
+                  data['onPress']();
+                } else {
+                  Get.toNamed(
+                    data['url'],
+                  );
+                }
               }
 
               return Column(
