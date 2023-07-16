@@ -10,6 +10,7 @@ const server = awsServerlessExpress.createServer(app);
 require('./routers/onboard');
 require('./routers/online');
 require('./routers/connections');
+require('./routers/recordings');
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
