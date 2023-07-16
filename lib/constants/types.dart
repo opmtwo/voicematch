@@ -250,7 +250,7 @@ class MessageEventModel {
   final String userId;
   final String chatId;
   final String chatUserId;
-  final MessageTypeEnum? type;
+  final String? type;
   final String? body;
   // final String uploadId;
   // final String upload;
@@ -292,7 +292,7 @@ class MessageEventModel {
 
   factory MessageEventModel.fromJson(Map<String, dynamic> parsedJson) {
     RecordingModel? recording;
-    if (parsedJson['intro']?['id'] != null) {
+    if (parsedJson['recording']?['id'] != null) {
       recording = RecordingModel.fromJson(parsedJson['recording']);
     }
 
