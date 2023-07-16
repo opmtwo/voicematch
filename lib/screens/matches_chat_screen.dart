@@ -500,6 +500,14 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     return null;
   }
 
+  /// Used to remove local messages
+  Future<MessageEventModel?> onDelete(String id) async {
+    setState(() {
+      messages = messages.takeWhile((value) => value.id != id).toList();
+    });
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -574,6 +582,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                                     connection: activeItem as ConnectionModel,
                                     message: messages[index],
                                     onPublish: onPublish,
+                                    onDelete: onDelete,
                                   ),
                                 ],
                                 mb: gap,

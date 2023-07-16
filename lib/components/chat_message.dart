@@ -11,6 +11,7 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/form/fab_button.dart';
+import 'package:voicematch/icons/icon_delete.dart';
 import 'package:voicematch/icons/icon_pause.dart';
 import 'package:voicematch/icons/icon_play.dart';
 import 'package:voicematch/icons/icon_send.dart';
@@ -19,12 +20,14 @@ class ChatMessage extends StatefulWidget {
   final MessageEventModel message;
   final ConnectionModel connection;
   final Function(String id) onPublish;
+  final Function(String id) onDelete;
 
   const ChatMessage({
     Key? key,
     required this.message,
     required this.connection,
     required this.onPublish,
+    required this.onDelete,
   }) : super(key: key);
 
   @override
@@ -180,21 +183,38 @@ class _ChatMessageState extends State<ChatMessage> {
         if (widget.message.recording?.id != null)
           Div(
             [
-              Align(
-                alignment: widget.message.isSender == true
-                    ? Alignment.topLeft
-                    : Alignment.topRight,
-                child: Div(
-                  [
-                    CurrentTime(
-                      duration: Duration(
-                        milliseconds:
-                            widget.message.recording?.duration.toInt() as int,
-                      ),
+              Row(
+                mainAxisAlignment: widget.message.isSender == true
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.end,
+                children: [
+                  CurrentTime(
+                    duration: Duration(
+                      milliseconds:
+                          widget.message.recording?.duration.toInt() as int,
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                  if (isLocalMessage == true)
+                    Div(
+                      [
+                        FabButton(
+                          SvgPicture.string(
+                            iconDelete(),
+                            width: 20,
+                            color: colorGrey,
+                          ),
+                          w: avatarExtraSmall,
+                          h: avatarExtraSmall,
+                          bg: colorTransparent,
+                          onPress: () {
+                            widget.onDelete(widget.message.id);
+                          },
+                        )
+                      ],
+                      mh: gap,
+                    ),
+                ],
+              )
             ],
             w: MediaQuery.of(context).size.width * 0.6,
             ph: gap,
