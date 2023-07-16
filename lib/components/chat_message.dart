@@ -10,7 +10,6 @@ import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/fab_button.dart';
 import 'package:voicematch/icons/icon_pause.dart';
 import 'package:voicematch/icons/icon_play.dart';
@@ -79,17 +78,27 @@ class _ChatMessageState extends State<ChatMessage> {
         Div(
           [
             FabButton(
-              SvgPicture.string(
-                iconSend(),
-                color: colorWhite,
-                width: avatarSmall,
-              ),
+              isBusy == true || widget.message.isBusy == true
+                  ? Transform.scale(
+                      scale: 0.75,
+                      child: const CircularProgressIndicator(
+                        color: colorWhite,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : SvgPicture.string(
+                      iconSend(),
+                      color: colorWhite,
+                      width: avatarSmall,
+                    ),
               w: avatarSmall,
               h: avatarSmall,
               bg: colorSeondary700,
-              onPress: () {
-                widget.onPublish(widget.message.id);
-              },
+              onPress: isBusy == true || widget.message.isBusy == true
+                  ? null
+                  : () {
+                      widget.onPublish(widget.message.id);
+                    },
             ),
           ],
           ml: widget.message.isSender == true ? gap / 2 : null,
