@@ -414,7 +414,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                 ),
               ),
             ),
-            const Navbar(),
+            const Navbar(index: 0),
           ],
         ),
       ),
