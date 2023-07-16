@@ -63,6 +63,7 @@ class _VoiceMatchState extends State<VoiceMatch> {
     await _initAuth();
     // let amplify load before trying to init auth state
     // await Future.delayed(const Duration(milliseconds: 1500), _initAuth);
+    await logoutIfNotRemember();
   }
 
   void configLoading() {
@@ -141,6 +142,16 @@ class _VoiceMatchState extends State<VoiceMatch> {
     Future.delayed(const Duration(milliseconds: 500), () {
       FlutterNativeSplash.remove();
     });
+  }
+
+  Future<void> logoutIfNotRemember() async {
+    final isRemember = storage.getItem('isRemember');
+    safePrint('logoutIfNotRemember - isRemember = $isRemember');
+    if (isRemember != 'yes') {
+      safePrint('logoutIfNotRemember - remember me not set - logging out');
+      await Amplify.Auth.signOut();
+      await Get.toNamed(Routes.welcome);
+    }
   }
 
   // This widget is the root of your application.

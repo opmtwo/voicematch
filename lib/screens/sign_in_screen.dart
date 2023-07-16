@@ -102,7 +102,9 @@ class SignInScreenState extends State<SignInScreen> {
         // set remember option in local storage
         // will be used to sign out if remember option is set to false
         // this is done in main.dart file
-        await storage.setItem('isRemember', isRemember);
+        await storage.setItem('isRemember', isRemember == true ? 'yes' : 'no');
+        safePrint(
+            "storage.getItem('isRemember') - ${storage.getItem('isRemember')}");
       }
 
       // check if profile setup is pending
