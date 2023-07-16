@@ -185,7 +185,11 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   }
 
   void onBack() {
-    Navigator.pop(context);
+    // Navigator.pop(context);
+    Get.offNamedUntil(
+      Routes.matchesIndex,
+      (route) => false,
+    );
   }
 
   void onSubmit() {
