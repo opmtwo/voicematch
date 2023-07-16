@@ -272,6 +272,13 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     String? err = '';
     bool isValid = true;
 
+    // user has not recorded a new audio and existing audio recording is present
+    if (userRecordingUrl != null &&
+        userRecordingUrl?.trim().isNotEmpty == true &&
+        (recordingPath == null || recordingPath?.trim().isEmpty == true)) {
+      return isValid;
+    }
+
     err = isRecorded && recordingPath != null
         ? null
         : 'Please record your audio to continue';
@@ -289,6 +296,16 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     if (await isFormValid() != true) {
       return;
     }
+
+    // user has not recorded a new audio and existing audio recording is present
+    if (userRecordingUrl != null &&
+        userRecordingUrl?.trim().isNotEmpty == true &&
+        (recordingPath == null || recordingPath?.trim().isEmpty == true)) {
+      safePrint('Using existing audio recording - skip');
+      Get.toNamed(Routes.setupDone);
+      return;
+    }
+
     EasyLoading.show(status: 'loading...');
     try {
       safePrint('recordingPath $recordingPath');
