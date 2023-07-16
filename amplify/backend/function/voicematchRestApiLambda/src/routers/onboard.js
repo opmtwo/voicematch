@@ -15,8 +15,8 @@ const { REGION, STORAGE_VOICEMATCHSTORAGE_BUCKETNAME: BUCKETNAME, AUTH_VOICEMATC
 
 app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
-	const { avatar, recording } = req.query;
-	console.log({ avatar, recording });
+	const { avatar, recording, duration } = req.query;
+	console.log({ avatar, recording, duration });
 
 	// get profile info
 	const email = await idpGetUserAttribute(req.user, 'email', undefined);
@@ -98,14 +98,24 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 			// delete the original file
 			await s3DeleteObject(BUCKETNAME, introKey);
 
+			// public intro url
+			const url = `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/${introKeyPrivate}`;
+
+			// update cognito attribute
+			await idpAdminUpdateUserAttributes(USERPOOLID, sub, {
+				'custom:intro_duration': duration,
+				'custom:intro_recording': introKeyPrivate,
+				'custom:intro_recording_url': url,
+			});
+
 			// store the recording data
 			const newRecording = await apsMutation(createRecording, {
 				id: introId,
 				owner: sub,
 				userId: sub,
-				duration: 30, // this is the duration of the recording
+				duration, // this is the duration of the recording
 				key: introKeyPrivate,
-				url: `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/${introKeyPrivate}`,
+				url,
 			});
 			introModel = (await newRecording).data.createRecording;
 		} catch (err) {
