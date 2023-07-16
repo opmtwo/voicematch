@@ -54,9 +54,9 @@ const IConnection = joi
 
 const IConnectionMessage = joi
 	.object({
-		body: joi.string().min(1).max(40000).required(),
+		body: joi.string().optional().min(0).max(10000),
 		isSilent: joi.bool().optional().default(false),
-		type: joi.string().optional().valid('image', 'video', 'audio', 'document', 'link', 'file', 'other'),
+		type: joi.string().optional().valid('text', 'image', 'video', 'audio', 'document', 'link', 'file', 'other'),
 		fileKey: joi.string().optional().max(1000),
 		fileSize: joi.number().optional().min(1),
 		fileMime: joi.string().when('fileSize', {
@@ -65,6 +65,9 @@ const IConnectionMessage = joi
 			otherwise: joi.string().optional().max(100),
 		}),
 		isUploaded: joi.bool().optional(),
+		recordingId: joi.string().optional().max(1000),
+	})
+	.options({ abortEarly: false });
 
 const IRecording = joi
 	.object({
