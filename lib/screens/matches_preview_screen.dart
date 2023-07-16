@@ -308,7 +308,10 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                                       fg: colorBlack,
                                     ),
                                     CircularProgressBar(
-                                      value: 0.54,
+                                      value: (activeItem?.matchPercentage
+                                                  .toInt() ??
+                                              0) /
+                                          100,
                                       w: 48,
                                       h: 48,
                                       caption: P(
