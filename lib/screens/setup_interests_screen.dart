@@ -92,32 +92,32 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
   onChange(String id, String value) {
     if (id == 'creativity') {
       setState(() {
-        interestCreativity = value;
+        interestCreativity = interestCreativity == value ? '' : value;
       });
     }
     if (id == 'sports') {
       setState(() {
-        interestSports = value;
+        interestSports = interestSports == value ? '' : value;
       });
     }
     if (id == 'video') {
       setState(() {
-        interestVideo = value;
+        interestVideo = interestVideo == value ? '' : value;
       });
     }
     if (id == 'music') {
       setState(() {
-        interestMusic = value;
+        interestMusic = interestMusic == value ? '' : value;
       });
     }
     if (id == 'travelling') {
       setState(() {
-        interestTravelling = value;
+        interestTravelling = interestTravelling == value ? '' : value;
       });
     }
     if (id == 'pets') {
       setState(() {
-        interestPet = value;
+        interestPet = interestPet == value ? '' : value;
       });
     }
   }
@@ -251,33 +251,48 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
     String? err = '';
     bool isValid = true;
 
-    err = interestCreativity.isNotEmpty
+    final selectedInterests = [
+      interestCreativity,
+      interestSports,
+      interestVideo,
+      interestMusic,
+      interestTravelling,
+      interestPet,
+    ].where((value) => value.trim().isNotEmpty);
+
+    err = selectedInterests.isNotEmpty
         ? null
-        : 'Please select creativity interest';
-    setState(() => interestCreativityError = err);
+        : 'Please select one or more interests';
+    setState(() => error = err);
     isValid = err == null ? isValid : false;
 
-    err = interestSports.isNotEmpty ? null : 'Please select sports interest';
-    setState(() => interestSportsError = err);
-    isValid = err == null ? isValid : false;
+    // err = interestCreativity.isNotEmpty
+    //     ? null
+    //     : 'Please select creativity interest';
+    // setState(() => interestCreativityError = err);
+    // isValid = err == null ? isValid : false;
 
-    err = interestVideo.isNotEmpty ? null : 'Please select film & tv interest';
-    setState(() => interestVideoError = err);
-    isValid = err == null ? isValid : false;
+    // err = interestSports.isNotEmpty ? null : 'Please select sports interest';
+    // setState(() => interestSportsError = err);
+    // isValid = err == null ? isValid : false;
 
-    err = interestMusic.isNotEmpty ? null : 'Please select music interest';
-    setState(() => interestMusicError = err);
-    isValid = err == null ? isValid : false;
+    // err = interestVideo.isNotEmpty ? null : 'Please select film & tv interest';
+    // setState(() => interestVideoError = err);
+    // isValid = err == null ? isValid : false;
 
-    err = interestTravelling.isNotEmpty
-        ? null
-        : 'Please select travelling interest';
-    setState(() => interestTravellingError = err);
-    isValid = err == null ? isValid : false;
+    // err = interestMusic.isNotEmpty ? null : 'Please select music interest';
+    // setState(() => interestMusicError = err);
+    // isValid = err == null ? isValid : false;
 
-    err = interestPet.isNotEmpty ? null : 'Please select pets interest';
-    setState(() => interestPetError = err);
-    isValid = err == null ? isValid : false;
+    // err = interestTravelling.isNotEmpty
+    //     ? null
+    //     : 'Please select travelling interest';
+    // setState(() => interestTravellingError = err);
+    // isValid = err == null ? isValid : false;
+
+    // err = interestPet.isNotEmpty ? null : 'Please select pets interest';
+    // setState(() => interestPetError = err);
+    // isValid = err == null ? isValid : false;
 
     return isValid;
   }
@@ -287,6 +302,9 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
   }
 
   Future<void> onSubmit() async {
+    setState(() {
+      error = null;
+    });
     final isValid = await isFormValid();
     if (!isValid) {
       return;
@@ -438,7 +456,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                                             alignment:
                                                 WrapAlignment.spaceBetween,
                                             runSpacing: gap / 2,
-                                            spacing: gap / 4,
+                                            spacing: gap / 2,
                                             children: List.generate(
                                               items.length,
                                               (j) {
@@ -532,6 +550,18 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
             ),
             Div(
               [
+                if (error != null)
+                  Div(
+                    [
+                      P(
+                        error,
+                        isBody1: true,
+                        fg: colorPrimary,
+                        fw: FontWeight.w600,
+                      ),
+                    ],
+                    mb: gap,
+                  ),
                 Button(
                   'next',
                   onPress: onSubmit,
