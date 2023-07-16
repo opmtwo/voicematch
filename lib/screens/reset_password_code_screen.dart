@@ -113,6 +113,9 @@ class ResetPasswordCodeScreenState extends State<ResetPasswordCodeScreen> {
     EasyLoading.show(status: 'Loading');
     try {
       await Amplify.Auth.resetPassword(username: username);
+      setState(() {
+        isResent = true;
+      });
     } on AuthException catch (e) {
       safePrint(e.message);
       setState(() {
@@ -240,9 +243,13 @@ class ResetPasswordCodeScreenState extends State<ResetPasswordCodeScreen> {
                         if (isResent)
                           Div(
                             [
-                              P(
-                                'Verification code was resent to your email $email',
-                                fg: colorWhite,
+                              Align(
+                                alignment: Alignment.center,
+                                child: P(
+                                  'Verification code was resent to your email\n$email',
+                                  fg: colorWhite,
+                                  ta: TextAlign.center,
+                                ),
                               ),
                             ],
                             mv: gap,
