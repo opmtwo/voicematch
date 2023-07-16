@@ -51,7 +51,7 @@ class AppLinks extends StatelessWidget {
                     // print('Terms tapped');
                     try {
                       launchUrl(
-                        Uri.parse('https://www.tekvoicematch.com/terms/'),
+                        Uri.parse('https://www.voicematch.com/terms/'),
                         mode: LaunchMode.platformDefault,
                       );
                     } catch (e) {
@@ -72,7 +72,7 @@ class AppLinks extends StatelessWidget {
                     // print('Privacy Policy tapped');
                     try {
                       launchUrl(
-                        Uri.parse('https://www.tekvoicematch.com/privacy/'),
+                        Uri.parse('https://www.voicematch.com/privacy/'),
                         mode: LaunchMode.platformDefault,
                       );
                     } catch (e) {
