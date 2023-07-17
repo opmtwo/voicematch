@@ -35,6 +35,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   String? error;
   bool? isBusy;
 
+  // limit pull down to refresh
+  bool? _isRefreshing;
+
   // list of matched connections
   List<ConnectionModel> connections = [];
 
@@ -197,225 +200,242 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppLayout(
-        Div(
-          [
-            const Div(
-              [],
-              pt: gapTop,
-            ),
-            Expanded(
-              flex: 1,
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView(
-                  children: [
-                    Div(
-                      [
-                        if (connections.isNotEmpty)
-                          const Div(
-                            [
-                              Logo(),
-                            ],
-                            mv: gap,
-                          ),
-                        if (connections.isNotEmpty)
-                          const Div(
-                            [
-                              P(
-                                'Here are your matches',
-                                isH5: true,
-                                fw: FontWeight.w600,
-                              ),
-                            ],
-                            mb: gapBottom,
-                          ),
-                        Div(
-                          [
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              runAlignment: WrapAlignment.spaceBetween,
-                              runSpacing: gap,
-                              children: List.generate(
-                                connections.length,
-                                (index) {
-                                  final item = connections[index];
-                                  return SizedBox(
-                                    width: MediaQuery.of(context).size.width /
-                                        5, // Divide the width equally to accommodate four items per row
-                                    child: Column(
-                                      children: [
-                                        Div(
-                                          [
-                                            FabButton(
-                                              ConnectionPic(
-                                                item: item,
-                                                w: avatarSmall,
-                                              ),
-                                              w: avatarSmall,
-                                              h: avatarSmall,
-                                              onPress: () {
-                                                Get.toNamed(
-                                                  Routes.matchesPreview,
-                                                  arguments: {
-                                                    'id': item.id,
-                                                  },
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                          mb: gap / 2,
-                                        ),
-                                        Div(
-                                          [
-                                            P(
-                                              item.member.givenName,
-                                              lines: 1,
-                                              ta: TextAlign.center,
-                                              ov: TextOverflow.ellipsis,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          if (_isRefreshing == true) {
+            return;
+          }
+          setState(() {
+            _isRefreshing = true;
+          });
+          await getConnections();
+          setState(() {
+            _isRefreshing = false;
+          });
+        },
+        child: AppLayout(
+          Div(
+            [
+              const Div(
+                [],
+                pt: gapTop,
+              ),
+              Expanded(
+                flex: 1,
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView(
+                    children: [
+                      Div(
+                        [
+                          if (connections.isNotEmpty)
+                            const Div(
+                              [
+                                Logo(),
+                              ],
+                              mv: gap,
                             ),
-                          ],
-                        ),
-                        if (pinnedConnections.isNotEmpty)
-                          const Div(
-                            [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: P(
-                                  'Conversations',
+                          if (connections.isNotEmpty)
+                            const Div(
+                              [
+                                P(
+                                  'Here are your matches',
                                   isH5: true,
                                   fw: FontWeight.w600,
                                 ),
-                              ),
-                            ],
-                            mt: gapTop,
-                            mb: gap,
-                          ),
-                        Div(
-                          [
-                            Column(
-                              children: List.generate(
-                                pinnedConnections.length,
-                                (index) {
-                                  final item = pinnedConnections[index];
-                                  return Div(
-                                    [
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                              ],
+                              mb: gapBottom,
+                            ),
+                          Div(
+                            [
+                              Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                runAlignment: WrapAlignment.spaceBetween,
+                                runSpacing: gap,
+                                children: List.generate(
+                                  connections.length,
+                                  (index) {
+                                    final item = connections[index];
+                                    return SizedBox(
+                                      width: MediaQuery.of(context).size.width /
+                                          5, // Divide the width equally to accommodate four items per row
+                                      child: Column(
                                         children: [
                                           Div(
                                             [
-                                              Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Div(
-                                                    [
-                                                      FabButton(
-                                                        ConnectionPic(
-                                                          item: item,
-                                                          w: avatarMedium,
-                                                        ),
-                                                        w: avatarMedium,
-                                                        h: avatarMedium,
-                                                        onPress: () {
-                                                          Get.toNamed(
-                                                            Routes.matchesChat,
-                                                            arguments: {
-                                                              'id': item.id,
-                                                            },
-                                                          );
-                                                        },
-                                                      ),
-                                                    ],
-                                                    mr: gap,
-                                                  ),
-                                                  Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Div(
-                                                        [
-                                                          Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: P(
-                                                              item.member
-                                                                  .givenName,
-                                                              isH6: true,
-                                                              lines: 1,
-                                                              ov: TextOverflow
-                                                                  .ellipsis,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                        w: 150,
-                                                      ),
-                                                      Div(
-                                                        [
-                                                          P(
-                                                            item.member
-                                                                .ageRange,
-                                                            isCaption: true,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  )
-                                                ],
+                                              FabButton(
+                                                ConnectionPic(
+                                                  item: item,
+                                                  w: avatarSmall,
+                                                ),
+                                                w: avatarSmall,
+                                                h: avatarSmall,
+                                                onPress: () {
+                                                  Get.toNamed(
+                                                    Routes.matchesPreview,
+                                                    arguments: {
+                                                      'id': item.id,
+                                                    },
+                                                  );
+                                                },
                                               ),
                                             ],
+                                            mb: gap / 2,
                                           ),
                                           Div(
                                             [
-                                              SizedBox(
-                                                width: 100,
-                                                child: Button(
-                                                  'Unmatch'.toUpperCase(),
-                                                  height: 40,
-                                                  // bg: colorOnSurfaceMediumEmphasis,
-                                                  bg: colorOnSurfaceMediumEmphasis,
-                                                  onPress: () {
-                                                    safePrint(
-                                                        'item.id ${item.id}');
-                                                    onUnmatch(item.id);
-                                                  },
-                                                ),
+                                              P(
+                                                item.member.givenName,
+                                                lines: 1,
+                                                ta: TextAlign.center,
+                                                ov: TextOverflow.ellipsis,
                                               ),
                                             ],
                                           ),
                                         ],
-                                      )
-                                    ],
-                                    mb: gap,
-                                  );
-                                },
+                                      ),
+                                    );
+                                  },
+                                ),
                               ),
+                            ],
+                          ),
+                          if (pinnedConnections.isNotEmpty)
+                            const Div(
+                              [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: P(
+                                    'Conversations',
+                                    isH5: true,
+                                    fw: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                              mt: gapTop,
+                              mb: gap,
                             ),
-                          ],
-                        ),
-                      ],
-                      ph: gap,
-                    ),
-                  ],
+                          Div(
+                            [
+                              Column(
+                                children: List.generate(
+                                  pinnedConnections.length,
+                                  (index) {
+                                    final item = pinnedConnections[index];
+                                    return Div(
+                                      [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Div(
+                                              [
+                                                Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Div(
+                                                      [
+                                                        FabButton(
+                                                          ConnectionPic(
+                                                            item: item,
+                                                            w: avatarMedium,
+                                                          ),
+                                                          w: avatarMedium,
+                                                          h: avatarMedium,
+                                                          onPress: () {
+                                                            Get.toNamed(
+                                                              Routes
+                                                                  .matchesChat,
+                                                              arguments: {
+                                                                'id': item.id,
+                                                              },
+                                                            );
+                                                          },
+                                                        ),
+                                                      ],
+                                                      mr: gap,
+                                                    ),
+                                                    Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Div(
+                                                          [
+                                                            Align(
+                                                              alignment:
+                                                                  Alignment
+                                                                      .topLeft,
+                                                              child: P(
+                                                                item.member
+                                                                    .givenName,
+                                                                isH6: true,
+                                                                lines: 1,
+                                                                ov: TextOverflow
+                                                                    .ellipsis,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                          w: 150,
+                                                        ),
+                                                        Div(
+                                                          [
+                                                            P(
+                                                              item.member
+                                                                  .ageRange,
+                                                              isCaption: true,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                            Div(
+                                              [
+                                                SizedBox(
+                                                  width: 100,
+                                                  child: Button(
+                                                    'Unmatch'.toUpperCase(),
+                                                    height: 40,
+                                                    // bg: colorOnSurfaceMediumEmphasis,
+                                                    bg: colorOnSurfaceMediumEmphasis,
+                                                    onPress: () {
+                                                      safePrint(
+                                                          'item.id ${item.id}');
+                                                      onUnmatch(item.id);
+                                                    },
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                      mb: gap,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                        ph: gap,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const Navbar(index: 0),
-          ],
+              const Navbar(index: 0),
+            ],
+          ),
         ),
       ),
     );
