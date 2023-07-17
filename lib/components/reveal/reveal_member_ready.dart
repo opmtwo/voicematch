@@ -34,7 +34,7 @@ class RevealMemberReady extends StatelessWidget {
       Div(
         [
           P(
-            'Done! Mario can see you now and will get a notification that you revealed yourself.',
+            'Done! ${connection.member.givenName} can see you now and will get a notification that you revealed yourself.',
             fg: colorOnSurfaceMediumEmphasis,
             isH6: true,
             ta: TextAlign.center,
