@@ -130,6 +130,55 @@ app.get('/api/v1/connections/:id/duration', verifyToken, async (req, res, next) 
 	});
 });
 
+app.post('/api/v1/connections/:id/reveal', verifyToken, async (req, res, next) => {
+	const { Username: sub } = req.user;
+	const { isRevealed } = req.body;
+
+	// validate owner
+	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	if (connection.userId !== sub) {
+		return res.status(403).json({ message: 'Unauthorized' });
+	}
+
+	// now
+	const now = new Date().toISOString();
+
+	// all chat connections - should be 2
+	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.chatId }, 'listConnectionByChatId');
+
+	//
+	let promises = [];
+	for (let i = 0; i < connections.length; i++) {
+		const { id, _version, owner, isUserRevealed, isMemberRevealed } = connections[i];
+
+		// user already reavealed?
+		if (owner === sub && isUserRevealed) {
+			console.log('User already revealed - skip');
+			continue;
+		}
+
+		// member already reavealed?
+		if (owner === connection.memberId && isMemberRevealed) {
+			console.log('Member already revealed - skip');
+			continue;
+		}
+		let params = {};
+		if (owner === sub) {
+			params = { isUserRevealed: isRevealed, userRevealedAt: now };
+		} else {
+			params = { isMemberRevealed: isRevealed, memberRevealedAt: now };
+		}
+
+		// add promise
+		promises.push(apsMutation(updateConnection, { id, _version, ...params }));
+	}
+
+	// run promises
+	await Promise.all(promises);
+
+	// all done
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
