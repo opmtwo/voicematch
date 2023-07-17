@@ -446,7 +446,10 @@ class _MatchesPreviewScreenState extends State<MatchesPreviewScreen> {
                           ),
                           bg: colorWhite,
                           onPress: () {
-                            // Get.toNamed(Routes.matchesIndex);
+                            // Get.offNamedUntil(
+                            //   Routes.matchesIndex,
+                            //   (route) => false,
+                            // );
                             Get.back();
                           },
                         ),
