@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/image_masked.dart';
+import 'package:voicematch/components/connection_pic.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 
 class RevealReady extends StatelessWidget {
+  final ConnectionModel connection;
   final Duration duration;
 
   final String submitTitle;
@@ -18,6 +20,7 @@ class RevealReady extends StatelessWidget {
 
   const RevealReady({
     Key? key,
+    required this.connection,
     required this.duration,
     required this.submitTitle,
     required this.cancelTitle,
@@ -33,7 +36,7 @@ class RevealReady extends StatelessWidget {
           P(
             'Great! You talked for more than 10 Minutes. Would you like to reveal yourself fully?',
             fg: colorOnSurfaceMediumEmphasis,
-            isH5: true,
+            isH6: true,
             ta: TextAlign.center,
           ),
         ],
@@ -41,35 +44,35 @@ class RevealReady extends StatelessWidget {
       Div(
         [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Div(
                 [
-                  ImageMasked(
-                    url: 'assets/images/avatar.png',
-                    width: 80,
-                  )
+                  ConnectionPic(
+                    item: connection,
+                    w: avatarMedium,
+                  ),
                 ],
               ),
-              Div(
+              const Div(
                 [
                   Logo(),
                 ],
               ),
               Div(
                 [
-                  ImageMasked(
-                    url: 'assets/images/avatar.png',
-                    width: 80,
-                  )
+                  ConnectionPic(
+                    item: connection,
+                    w: avatarMedium,
+                  ),
                 ],
               ),
             ],
           )
         ],
-        mv: gapTop,
+        pv: gapBottom,
       ),
-      Div(
+      const Div(
         [
           P(
             'Show him those pretty teeths?',
@@ -78,7 +81,7 @@ class RevealReady extends StatelessWidget {
             ta: TextAlign.center,
           ),
         ],
-        // ph: gap * 2,
+        pb: gapBottom,
       ),
       Div(
         [
@@ -88,7 +91,8 @@ class RevealReady extends StatelessWidget {
               Div(
                 [
                   Button(
-                    'Yes',
+                    submitTitle,
+                    onPress: onSubmit,
                   ),
                 ],
                 w: 80,
@@ -96,7 +100,8 @@ class RevealReady extends StatelessWidget {
               Div(
                 [
                   Button(
-                    'No',
+                    cancelTitle,
+                    onPress: onCancel,
                   ),
                 ],
                 w: 80,
@@ -104,7 +109,6 @@ class RevealReady extends StatelessWidget {
             ],
           ),
         ],
-        mt: gapTop,
       ),
     ]);
   }
