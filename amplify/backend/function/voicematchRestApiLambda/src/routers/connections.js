@@ -31,6 +31,7 @@ const { snsPublish } = require('../utils/sns-utils');
 const { s3CreatePresignedPostCommand } = require('../utils/s3-utils');
 
 const { LIMIT, LIMIT_SEARCH_RESULTS, BATCH_SIZE } = require('../consts');
+const { removeProfilePic } = require('../utils/helper-utils');
 
 const {
 	AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID,
@@ -43,12 +44,21 @@ const {
 
 app.get('/api/v1/connections', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get all connections
 	const connections = await apsGetAll(listConnectionByUserId, { userId: sub, sortDirection: 'DESC' }, 'listConnectionByUserId');
-	return res.status(200).json(connections.filter((_filter) => _filter._deleted !== true));
+
+	// remove normal profile pic if required
+	removeProfilePic(connections);
+
+	// all done
+	return res.status(200).json(connections);
 });
 
 app.get('/api/v1/connections/search', verifyToken, async (req, res, next) => {
 	const { q } = req.query;
+
+	// search all users
 	const users = await apsGetAll(
 		listUsers,
 		{
@@ -59,6 +69,13 @@ app.get('/api/v1/connections/search', verifyToken, async (req, res, next) => {
 		},
 		'listUsers'
 	);
+
+	// remove normal profile pic
+	for (let i = 0; i < users.length; i++) {
+		delete users[i].pictureNormal;
+	}
+
+	// all done
 	return res.status(200).json(users.slice(0, LIMIT_SEARCH_RESULTS));
 });
 
@@ -66,6 +83,7 @@ app.post('/api/v1/connections', verifyToken, validateFormData(IConnection), asyn
 	const { Username: sub } = req.user;
 	const { memberId } = req.body;
 
+	// validate member - must be a valid cognito user
 	let member;
 	try {
 		member = await idpAdminGetUser(USERPOOLID, memberId);
@@ -73,11 +91,14 @@ app.post('/api/v1/connections', verifyToken, validateFormData(IConnection), asyn
 		return res.status(422).json({ message: 'Member not found' });
 	}
 
+	// prepare connection ids for user and member
 	const connectionIdUser = `${sub}-${memberId}`;
 	const connectionIdMember = `${memberId}-${sub}`;
 
+	// prepare chat id
 	const chatId = [sub, memberId].sort().join('-');
 
+	// create or update connection user
 	let connectionUser = (await apsQuery(getConnection, { id: connectionIdUser })).data.getConnection;
 	if (!connectionUser?.id) {
 		connectionUser = (
@@ -89,6 +110,7 @@ app.post('/api/v1/connections', verifyToken, validateFormData(IConnection), asyn
 		connectionUser = (await apsMutation(updateConnection, { id: connectionIdUser, _version: connectionUser._version })).data.updateConnection;
 	}
 
+	// create or update connection member
 	let connectionMember = (await apsQuery(getConnection, { id: connectionIdMember })).data.getConnection;
 	if (!connectionMember?.id) {
 		connectionMember = (
@@ -107,23 +129,44 @@ app.post('/api/v1/connections', verifyToken, validateFormData(IConnection), asyn
 		connectionUser = (await apsMutation(updateConnection, { id: connectionIdMember, _version: connectionMember._version })).data.updateConnection;
 	}
 
+	// remove normal profile pic if required
+	removeProfilePic(connectionUser);
+
+	// all done
 	return res.status(200).json(connectionUser);
 });
 
 app.get('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
-	const connection = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connection.data.getConnection);
+	// get connection
+	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connection);
+
+	// all done
+	return res.status(200).json(connection);
 });
 
 app.get('/api/v1/connections/:id/duration', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// this is the user specific chat id - used to fetch data from ddb
 	const chatUserId = `${connection.chatId}-${sub}`;
+
+	// get all chat messages
 	const connections = await apsGetAll(listMessageEventByChatUserId, { chatUserId }, 'listMessageEventByChatUserId');
+
+	// find total duration in ms
 	let duration = 0;
 	for (let i = 0; i < connections.length; i++) {
 		duration += connections[i]?.recording?.duration || 0;
 	}
+
+	// remove normal profile pic if required
+	removeProfilePic(connection);
+
+	// all done
 	return res.status(200).json({
 		connection,
 		duration,
@@ -176,8 +219,13 @@ app.post('/api/v1/connections/:id/reveal', verifyToken, async (req, res, next) =
 	// run promises
 	await Promise.all(promises);
 
-	// all done
+	// fetch updated connection
 	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
 	return res.status(200).json(connectionUpdated);
 });
 
@@ -187,16 +235,32 @@ app.post('/api/v1/connections/:id/reveal', verifyToken, async (req, res, next) =
  */
 app.post('/api/v1/connections/:id/accept', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// current timestamp
 	const now = new Date();
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connection users
 	for (let i = 0; i < connections.length; i++) {
-		const { id, _version } = connections[i];
+		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
+		if (owner !== sub) {
+			continue;
+		}
 		await apsMutation(updateConnection, { id, _version, isAccepted: true, isDeclined: false, acceptedAt: now });
 	}
+
+	// all done
 	return res.status(200).json({});
 });
 
@@ -206,16 +270,30 @@ app.post('/api/v1/connections/:id/accept', verifyToken, async (req, res, next) =
  */
 app.post('/api/v1/connections/:id/decline', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
 	const now = new Date();
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
-		const { id, _version } = connections[i];
+		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
+		if (owner !== sub) {
+			continue;
+		}
 		await apsMutation(updateConnection, { id, _version, isAccepted: false, isDeclined: true, declinedAt: now });
 	}
+
+	// all done
 	return res.status(200).json({});
 });
 
@@ -225,20 +303,36 @@ app.post('/api/v1/connections/:id/decline', verifyToken, async (req, res, next) 
  */
 app.post('/api/v1/connections/:id/block', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
 		await apsMutation(updateConnection, { id, _version, isBlocked: true, blockedAt: new Date().toISOString() });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -247,20 +341,36 @@ app.post('/api/v1/connections/:id/block', verifyToken, async (req, res, next) =>
  */
 app.post('/api/v1/connections/:id/unblock', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
 		await apsMutation(updateConnection, { id, _version, isBlocked: false, blockedAt: null });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -269,20 +379,36 @@ app.post('/api/v1/connections/:id/unblock', verifyToken, async (req, res, next) 
  */
 app.post('/api/v1/connections/:id/mute', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
 		await apsMutation(updateConnection, { id, _version, isMuted: true, mutedAt: new Date().toISOString() });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -291,20 +417,36 @@ app.post('/api/v1/connections/:id/mute', verifyToken, async (req, res, next) => 
  */
 app.post('/api/v1/connections/:id/unmute', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
 		await apsMutation(updateConnection, { id, _version, isMuted: false, mutedAt: null });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -313,20 +455,36 @@ app.post('/api/v1/connections/:id/unmute', verifyToken, async (req, res, next) =
  */
 app.post('/api/v1/connections/:id/pin', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
 		await apsMutation(updateConnection, { id, _version, isPinned: true, pinnedAt: new Date().toISOString() });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -335,20 +493,37 @@ app.post('/api/v1/connections/:id/pin', verifyToken, async (req, res, next) => {
  */
 app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
+
+	// get connection
 	const connection = await apsQuery(getConnection, { id: req.params.id });
+
+	// validate ownership
 	if (connection.data.getConnection.userId !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
+
+	// get all connection users
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.data.getConnection.chatId }, 'listConnectionByChatId');
+
+	// update all connections after owner check
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner } = connections[i];
+		// make sure the connection is owned by the current user
 		if (owner !== sub) {
 			continue;
 		}
+		// update the connection
 		await apsMutation(updateConnection, { id, _version, isPinned: false, pinnedAt: null });
 	}
-	const connectionUpdated = await apsQuery(getConnection, { id: req.params.id });
-	return res.status(200).json(connectionUpdated.data.getConnection);
+
+	// fetch updated connection
+	const connectionUpdated = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// remove normal profile pic if required
+	removeProfilePic(connectionUpdated);
+
+	// all done
+	return res.status(200).json(connectionUpdated);
 });
 
 /**
@@ -358,13 +533,19 @@ app.post('/api/v1/connections/:id/unpin', verifyToken, async (req, res, next) =>
 app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) => {
 	const { Username: sub } = req.user;
 	const { nextToken, limit } = req.query;
+
+	// get connection
 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+
+	// get latest messages in descending order and use nextToken if available
 	const messages = await apsQuery(listMessageEventByChatUserId, {
 		chatUserId: `${connection.chatId}-${sub}`,
 		nextToken: nextToken?.trim()?.length ? nextToken : undefined,
 		limit: limit || 100,
 		sortDirection: 'DESC',
 	});
+
+	// all done
 	return res.status(200).json({ ...messages.data.listMessageEventByChatUserId });
 });
 
@@ -384,27 +565,6 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 	if (connection.owner !== sub) {
 		return res.status(403).json({ message: 'Unauthorized' });
 	}
-
-	// const connections = await apsGetAll(listConnectionByChatId, { chatId }, 'listConnectionByChatId');
-	// for (let i = 0; i < connections.length; i++) {
-	// 	const { isAccepted, isDeclined, isBlocked } = connections[i];
-	// 	// declined?
-	// 	if (isDeclined === true) {
-	// 		return res.status(403).json({ message: 'Connection request rejected' });
-	// 	}
-	// 	// blocked?
-	// 	if (isBlocked === true) {
-	// 		return res.status(403).json({ message: 'Connection blocked' });
-	// 	}
-	// }
-
-	// let fileKey;
-	// let fileUrl;
-	// if (fileSize) {
-	// 	const today = new Date().toISOString().split('T')[0];
-	// 	fileKey = `uploads/${sub}/${today}/${v4()}`;
-	// 	fileUrl = await s3CreatePresignedPostCommand(BUCKETNAME, fileKey, fileSize, fileMime);
-	// }
 
 	// Verify recording - must belong to the current user
 	let recording;
