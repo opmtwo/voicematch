@@ -72,6 +72,7 @@ Future<String> uploadRecordingFile(String path) async {
 
 Future<Map<String, String>?> getHeaders({
   Map<String, String>? defaultHeaders,
+  bool? verbose = false,
 }) async {
   try {
     // get access token
@@ -82,8 +83,11 @@ Future<Map<String, String>?> getHeaders({
     final headers = {
       ...defaultHeaders ?? {},
       'Authorization': accessToken.toString(),
+      'Content-Type': 'application/json',
     };
-    log('getHeaders - result - $headers');
+    if (verbose == true) {
+      log('getHeaders - result - $headers');
+    }
     return headers;
   } catch (err) {
     log('getHeaders - error - $err');
