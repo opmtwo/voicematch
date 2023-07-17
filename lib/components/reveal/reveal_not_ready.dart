@@ -39,7 +39,7 @@ class RevealNotReady extends StatelessWidget {
             P(
               'You talked for ${duration.inMinutes} min with ${connection.member.givenName}, You need to at least 10 Min Conversation to reveal yourself',
               fg: colorOnSurfaceMediumEmphasis,
-              isH5: true,
+              isH6: true,
               ta: TextAlign.center,
             ),
           ],
