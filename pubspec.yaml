@@ -90,6 +90,9 @@ dependencies:
 
   # https://pub.dev/packages/get_storage/install
   localstorage: ^4.0.0+1
+  
+  # https://pub.dev/packages/flutter_launcher_icons/install
+  flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
   flutter_test:
@@ -327,3 +330,25 @@ flutter_native_splash:
   #info_plist_files:
   #  - 'ios/Runner/Info-Debug.plist'
   #  - 'ios/Runner/Info-Release.plist'
+
+flutter_icons:
+  image_path: "assets/icons/icon.png"
+  android: true # can specify file name here e.g. "ic_launcher"
+  ios: true # can specify file name here e.g. "My-Launcher-Icon"
+  # adaptive_icon_background: "assets/images/christmas-background.png" # only available for Android 8.0 devices and above
+  # adaptive_icon_foreground: "assets/images/icon-foreground-432x432.png" # only available for Android 8.0 devices and above
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  remove_alpha_ios: true
+  background_color_ios: "#ffffff"
+  web:
+    generate: false
+    # image_path: "assets/images/icon-1024x1024.png"
+    # background_color: "#hexcode"
+    # theme_color: "#hexcode"
+  windows:
+    generate: false
+    # image_path: "assets/images/icon-1024x1024.png"
+    # icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: false
+    # image_path: "assets/images/icon-1024x1024.png"
