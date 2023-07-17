@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/image_masked.dart';
+import 'package:voicematch/components/connection_pic.dart';
 import 'package:voicematch/components/logo.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 
 class RevealDone extends StatelessWidget {
+  final ConnectionModel connection;
   final Duration duration;
 
   final String submitTitle;
@@ -18,6 +20,7 @@ class RevealDone extends StatelessWidget {
 
   const RevealDone({
     Key? key,
+    required this.connection,
     required this.duration,
     required this.submitTitle,
     required this.cancelTitle,
@@ -32,9 +35,9 @@ class RevealDone extends StatelessWidget {
         Div(
           [
             P(
-              'Mario decided to reveal himself fully as well. Would you like to keep dating?',
+              '${connection.member.givenName} decided to reveal himself fully as well. Would you like to keep dating?',
               fg: colorOnSurfaceMediumEmphasis,
-              isH5: true,
+              isH6: true,
               ta: TextAlign.center,
             ),
           ],
@@ -46,40 +49,40 @@ class RevealDone extends StatelessWidget {
               children: [
                 Div(
                   [
-                    ImageMasked(
-                      url: 'assets/images/avatar.png',
-                      width: 80,
-                    )
+                    ConnectionPic(
+                      item: connection,
+                      isUser: true,
+                      w: avatarMedium,
+                    ),
                   ],
                 ),
-                Div(
+                const Div(
                   [
                     Logo(),
                   ],
                 ),
                 Div(
                   [
-                    ImageMasked(
-                      url: 'assets/images/avatar.png',
-                      width: 80,
-                    )
+                    ConnectionPic(
+                      item: connection,
+                      w: avatarMedium,
+                    ),
                   ],
                 ),
               ],
             )
           ],
-          mv: gapTop,
+          mv: gapBottom,
         ),
-        Div(
+        const Div(
           [
             P(
               'Keep Dating?',
-              isH4: true,
+              isH5: true,
               fg: colorBlack,
               ta: TextAlign.center,
             ),
           ],
-          // ph: gap * 2,
         ),
         Div(
           [
@@ -89,7 +92,8 @@ class RevealDone extends StatelessWidget {
                 Div(
                   [
                     Button(
-                      'Yes',
+                      submitTitle,
+                      onPress: onSubmit,
                     ),
                   ],
                   w: 80,
@@ -97,7 +101,8 @@ class RevealDone extends StatelessWidget {
                 Div(
                   [
                     Button(
-                      'No',
+                      cancelTitle,
+                      onPress: onCancel,
                     ),
                   ],
                   w: 80,
