@@ -162,7 +162,6 @@ class _RevealState extends State<Reveal> {
 
   Future<void> onRevealUserReadySubmit() async {
     onReveal(true);
-    //
   }
 
   Future<void> onRevealUserReadyCancel() async {
@@ -291,6 +290,7 @@ class _RevealState extends State<Reveal> {
                                   if (connection?.isUserRevealed == true &&
                                       connection?.isMemberRevealed == true)
                                     RevealDone(
+                                      connection: connection as ConnectionModel,
                                       duration: duration,
                                       submitTitle: 'Yes',
                                       cancelTitle: 'No',
