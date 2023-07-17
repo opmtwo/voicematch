@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,10 +8,11 @@ import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:http/http.dart' as http;
 import 'package:voicematch/components/header.dart';
 import 'package:voicematch/components/reveal/reveal_done.dart';
-import 'package:voicematch/components/reveal/reveal_full.dart';
-import 'package:voicematch/components/reveal/reveal_half.dart';
+import 'package:voicematch/components/reveal/reveal_member_ready.dart';
+import 'package:voicematch/components/reveal/reveal_no.dart';
 import 'package:voicematch/components/reveal/reveal_not_ready.dart';
 import 'package:voicematch/components/reveal/reveal_ready.dart';
+import 'package:voicematch/components/reveal/reveal_user_ready.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/env.dart';
 import 'package:voicematch/constants/theme.dart';
@@ -54,6 +54,9 @@ class _RevealState extends State<Reveal> {
   // duration
   Duration duration = const Duration(seconds: 0);
 
+  // reveal cancelled?
+  bool isCancelled = false;
+
   @override
   void initState() {
     super.initState();
@@ -66,19 +69,10 @@ class _RevealState extends State<Reveal> {
     });
     await EasyLoading.show(status: 'loading...');
     try {
-      // get access token
-      final result = await Amplify.Auth.fetchAuthSession(
-        options: CognitoSessionOptions(getAWSCredentials: true),
-      ) as CognitoAuthSession;
-      final accessToken = result.userPoolTokens?.accessToken;
-
-      // update profile via oboard api
       final url =
           Uri.parse('${apiEndPoint}api/v1/connections/${widget.id}/duration');
       safePrint('getConnection - url $url');
-      final response = await http.get(url, headers: {
-        'Authorization': accessToken.toString(),
-      });
+      final response = await http.get(url, headers: await getHeaders());
       safePrint('getConnection - status code = ${response.statusCode}');
 
       // non 200 response code
@@ -93,7 +87,7 @@ class _RevealState extends State<Reveal> {
       // update state
       setState(() {
         connection = ConnectionModel.fromJson(json['connection']);
-        duration = Duration(milliseconds: json['duration']);
+        duration = Duration(milliseconds: json['duration'] * 100);
       });
     } catch (err) {
       safePrint('getConnection- error - $err');
@@ -104,14 +98,22 @@ class _RevealState extends State<Reveal> {
     });
   }
 
-  Future<void> onReveal() async {
+  Future<void> onReveal(bool isRevealed) async {
     await EasyLoading.show(status: 'loading...');
     try {
       final url =
-          Uri.parse('${apiEndPoint}api/v1/connections/$widget.id/reveal');
-      safePrint('onRevealSubmit - url $url');
-      final response = await http.post(url, headers: await getHeaders());
-      safePrint('onRevealSubmit - status code = ${response.statusCode}');
+          Uri.parse('${apiEndPoint}api/v1/connections/${widget.id}/reveal');
+      safePrint('onReveal - url $url');
+      final response = await http.post(
+        url,
+        headers: await getHeaders(),
+        body: jsonEncode(
+          {
+            'isRevealed': isRevealed,
+          },
+        ),
+      );
+      safePrint('onReveal - status code = ${response.statusCode}');
 
       // non 200 response code
       if (response.statusCode != 200) {
@@ -120,14 +122,14 @@ class _RevealState extends State<Reveal> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      // log('onRevealSubmit - json - ${response.body}');
+      log('onReveal - json - ${response.body}');
 
       // update state
       setState(() {
-        // activeItem = ConnectionModel.fromJson(json);
+        connection = ConnectionModel.fromJson(json);
       });
     } catch (err) {
-      safePrint('onRevealSubmit- error - $err');
+      safePrint('onReveal- error - $err');
     }
     await EasyLoading.dismiss();
   }
@@ -141,35 +143,46 @@ class _RevealState extends State<Reveal> {
   }
 
   Future<void> onRevealReadySubmit() async {
-    //
+    onReveal(true);
   }
 
   Future<void> onRevealReadyCancel() async {
+    setState(() {
+      isCancelled = true;
+    });
+  }
+
+  Future<void> onRevealNoSubmit() async {
+    Navigator.pop(context);
+  }
+
+  Future<void> onRevealNoCancel() async {
+    Navigator.pop(context);
+  }
+
+  Future<void> onRevealUserReadySubmit() async {
+    onReveal(true);
     //
   }
 
-  Future<void> onRevealHalfReadySubmit() async {
-    //
+  Future<void> onRevealUserReadyCancel() async {
+    Navigator.pop(context);
   }
 
-  Future<void> onRevealHalfReadyCancel() async {
-    //
+  Future<void> onRevealMemberReadySubmit() async {
+    Navigator.pop(context);
   }
 
-  Future<void> onRevealFullReadySubmit() async {
-    //
-  }
-
-  Future<void> onRevealFullReadyCancel() async {
-    //
+  Future<void> onRevealMemberReadyCancel() async {
+    Navigator.pop(context);
   }
 
   Future<void> onRevealedSubmit() async {
-    //
+    Navigator.pop(context);
   }
 
   Future<void> onRevealedCancel() async {
-    //
+    Navigator.pop(context);
   }
 
   @override
@@ -212,75 +225,90 @@ class _RevealState extends State<Reveal> {
                       [
                         Div(
                           [
-                            // not ready for reveal yet
-                            if (duration.inMinutes < 10)
-                              RevealNotReady(
-                                connection: connection as ConnectionModel,
-                                duration: duration,
-                                submitTitle: 'Continue',
-                                cancelTitle: 'Cancel',
-                                onSubmit: onRevealNotReadySubmit,
-                                onCancel: onRevealNotReadyCancel,
+                            Flexible(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  // not ready for reveal yet
+                                  if (duration.inMinutes < 10)
+                                    RevealNotReady(
+                                      connection: connection as ConnectionModel,
+                                      duration: duration,
+                                      submitTitle: 'Continue',
+                                      cancelTitle: 'Cancel',
+                                      onSubmit: onRevealNotReadySubmit,
+                                      onCancel: onRevealNotReadyCancel,
+                                    ),
+                                  // user ready to be revealed but no action taken yet
+                                  if (duration.inMinutes > 10 &&
+                                      duration.inMinutes < 20 &&
+                                      connection?.isUserRevealed == null &&
+                                      isCancelled == false)
+                                    RevealReady(
+                                      connection: connection as ConnectionModel,
+                                      duration: duration,
+                                      submitTitle: 'Yes',
+                                      cancelTitle: 'No',
+                                      onSubmit: onRevealReadySubmit,
+                                      onCancel: onRevealReadyCancel,
+                                    ),
+                                  // user has decided not to reveal
+                                  if (duration.inMinutes > 10 &&
+                                      duration.inMinutes < 20 &&
+                                      connection?.isUserRevealed == null &&
+                                      isCancelled == true)
+                                    RevealNo(
+                                      connection: connection as ConnectionModel,
+                                      duration: duration,
+                                      submitTitle: 'Continue',
+                                      cancelTitle: 'No',
+                                      onSubmit: onRevealNoSubmit,
+                                      onCancel: onRevealNoCancel,
+                                    ),
+                                  // user needs to be revealed - but not revealed yet
+                                  if (duration.inMinutes > 20 &&
+                                      connection?.isUserRevealed != true)
+                                    RevealUserReady(
+                                      connection: connection as ConnectionModel,
+                                      duration: duration,
+                                      submitTitle: 'Yes',
+                                      cancelTitle: 'No',
+                                      onSubmit: onRevealUserReadySubmit,
+                                      onCancel: onRevealUserReadyCancel,
+                                    ),
+                                  // user revealed - member reveal is pending
+                                  if (connection?.isUserRevealed == true &&
+                                      connection?.isMemberRevealed != true)
+                                    RevealMemberReady(
+                                      connection: connection as ConnectionModel,
+                                      duration: duration,
+                                      submitTitle: 'Continue',
+                                      cancelTitle: 'No',
+                                      onSubmit: onRevealMemberReadySubmit,
+                                      onCancel: onRevealMemberReadyCancel,
+                                    ),
+                                  // user and member both revealed
+                                  if (connection?.isUserRevealed == true &&
+                                      connection?.isMemberRevealed == true)
+                                    RevealDone(
+                                      duration: duration,
+                                      submitTitle: 'Yes',
+                                      cancelTitle: 'No',
+                                      onSubmit: onRevealedSubmit,
+                                      onCancel: onRevealedCancel,
+                                    ),
+                                ],
                               ),
-                            // user ready to be revealed but not action taken yet
-                            if (duration.inMinutes > 10 &&
-                                connection?.isUserRevealed == null)
-                              RevealReady(
-                                duration: duration,
-                                submitTitle: 'Yes',
-                                cancelTitle: 'No',
-                                onSubmit: onRevealReadySubmit,
-                                onCancel: onRevealReadyCancel,
-                              ),
-                            // user has decided not to reveal
-                            if (duration.inMinutes > 10 &&
-                                duration.inMinutes < 20 &&
-                                connection?.isUserRevealed == false)
-                              RevealHalf(
-                                duration: duration,
-                                submitTitle: 'Yes',
-                                cancelTitle: 'No',
-                                onSubmit: onRevealHalfReadySubmit,
-                                onCancel: onRevealHalfReadyCancel,
-                              ),
-                            // user needs to be revealed - but not revealed yet
-                            if (duration.inMinutes > 20 &&
-                                connection?.isUserRevealed == false)
-                              RevealHalf(
-                                duration: duration,
-                                submitTitle: 'Yes',
-                                cancelTitle: 'No',
-                                onSubmit: onRevealFullReadySubmit,
-                                onCancel: onRevealFullReadyCancel,
-                              ),
-                            // user revealed
-                            if (connection?.isUserRevealed == true &&
-                                connection?.isMemberRevealed != true)
-                              RevealFull(
-                                duration: duration,
-                                submitTitle: 'Yes',
-                                cancelTitle: 'No',
-                                onSubmit: onRevealReadySubmit,
-                                onCancel: onRevealReadyCancel,
-                              ),
-                            // user and member both revealed
-                            if (connection?.isUserRevealed == true &&
-                                connection?.isMemberRevealed == true)
-                              RevealDone(
-                                duration: duration,
-                                submitTitle: 'Yes',
-                                cancelTitle: 'No',
-                                onSubmit: onRevealedSubmit,
-                                onCancel: onRevealedCancel,
-                              ),
+                            ),
                           ],
+                          h: 560,
                           ph: gap,
                           pv: gapBottom,
                           bg: colorWhite,
                           br: radiusLarge,
                         ),
                       ],
-                      pb: gap,
+                      h: 560,
                       ph: gap / 2,
                       shadow: [
                         BoxShadow(
