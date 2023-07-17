@@ -11,6 +11,6 @@ const int recordingDuration = 30;
 
 const double avatarExtraSmall = 32;
 const double avatarSmall = 48;
-const double avatarMedium = 64;
-const double avatarLarge = 124;
+const double avatarMedium = 80;
+const double avatarLarge = 128;
 const double avatarExtraLarge = 160;
