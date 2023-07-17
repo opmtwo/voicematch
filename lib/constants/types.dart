@@ -174,6 +174,10 @@ class ConnectionModel {
   final String? mutedAt;
   final String? pinnedAt;
   final double matchPercentage;
+  final bool? isUserRevealed;
+  final String? userRevealedAt;
+  final bool? isMemberRevealed;
+  final String? memberRevealedAt;
   final String createdAt;
   final String updatedAt;
 
@@ -199,6 +203,10 @@ class ConnectionModel {
     this.mutedAt,
     this.pinnedAt,
     required this.matchPercentage,
+    this.isUserRevealed,
+    this.userRevealedAt,
+    this.isMemberRevealed,
+    this.memberRevealedAt,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -237,6 +245,10 @@ class ConnectionModel {
       mutedAt: parsedJson['mutedAt'],
       pinnedAt: parsedJson['pinnedAt'],
       matchPercentage: double.parse(parsedJson['matchPercentage'].toString()),
+      isUserRevealed: parsedJson['isUserRevealed'],
+      userRevealedAt: parsedJson['userRevealedAt'],
+      isMemberRevealed: parsedJson['isMemberRevealed'],
+      memberRevealedAt: parsedJson['memberRevealedAt'],
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
