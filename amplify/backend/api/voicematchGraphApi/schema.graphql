@@ -110,6 +110,10 @@ type Connection @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	mutedAt: AWSDateTime
 	pinnedAt: AWSDateTime
 	matchPercentage: Float
+	isUserRevealed: Boolean
+	userRevealedAt: AWSDateTime
+	isMemberRevealed: Boolean
+	memberRevealedAt: AWSDateTime
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
