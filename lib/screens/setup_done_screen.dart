@@ -170,7 +170,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
                 )
               ],
               ph: gap,
-              pb: gapBottom,
+              pb: gapTop,
             )
           ],
         ),
