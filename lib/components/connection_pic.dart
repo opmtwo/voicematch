@@ -32,7 +32,8 @@ class ConnectionPic extends StatelessWidget {
             w: w,
             h: h,
           ),
-        if (profile?.pictureNormal?.isEmpty == true &&
+        if ((profile?.pictureNormal == null ||
+                profile?.pictureNormal?.isEmpty == true) &&
             profile?.pictureMasked != null)
           ProfilePic(
             src: profile?.pictureMasked as String,
@@ -40,8 +41,10 @@ class ConnectionPic extends StatelessWidget {
             w: w,
             h: h,
           ),
-        if (profile?.pictureNormal?.isEmpty == true &&
-            profile?.pictureMasked?.isEmpty == true)
+        if ((profile?.pictureNormal == null ||
+                profile?.pictureNormal?.isEmpty == true) &&
+            (profile?.pictureMasked == null ||
+                profile?.pictureMasked?.isEmpty == true))
           ProfilePic(
             src: 'assets/images/avatar.png',
             isLocal: true,
