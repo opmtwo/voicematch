@@ -65,6 +65,63 @@ const sha256 = (value, verbose = true) => {
 	return result;
 };
 
+const removeKeysFromObject = (obj) => {
+	const newObj = {};
+	for (const key in obj) {
+		if (keysToRemove.includes(key)) {
+			continue;
+		}
+
+		if (typeof obj[key] === 'object' && obj[key] !== null) {
+			newObj[key] = removeKeysFromObject(obj[key]);
+		} else {
+			newObj[key] = obj[key];
+		}
+	}
+	return newObj;
+};
+
+const removeKeys = (items, keysToRemove = ['pictureNormal']) => {
+	if (Array.isArray(items)) {
+		items = items.map((obj) => {
+			return removeKeysFromObject(obj);
+		});
+	} else if (typeof items === 'object') {
+		items = removeKeysFromObject(items);
+	}
+};
+
+const deleteNestedKey = (obj, key) => {
+	const keys = key.split('.');
+	let currentObj = obj;
+
+	for (let i = 0; i < keys.length - 1; i++) {
+		if (!currentObj || typeof currentObj !== 'object') {
+			// If any intermediate key doesn't exist or is not an object, return early
+			return;
+		}
+		currentObj = currentObj[keys[i]];
+	}
+
+	if (currentObj && typeof currentObj === 'object') {
+		delete currentObj[keys[keys.length - 1]];
+	}
+};
+
+const removeProfilePic = (items) => {
+	if (Array.isArray(items)) {
+		for (let i = 0; i < items.length; i++) {
+			if (items[i]?.isMemberRevealed !== true) {
+				deleteNestedKey(items[i], 'member.pictureNormal');
+			}
+		}
+	} else if (typeof items === 'object') {
+		if (items?.isMemberRevealed !== true) {
+			deleteNestedKey(items, 'member.pictureNormal');
+		}
+	}
+};
+
 module.exports = {
 	getHostname,
 	getRootDomain,
@@ -72,4 +129,8 @@ module.exports = {
 	getEventUser,
 	formatTimestamp,
 	sha256,
+	removeKeysFromObject,
+	removeKeys,
+	deleteNestedKey,
+	removeProfilePic,
 };
