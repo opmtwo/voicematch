@@ -6,6 +6,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
+import 'package:voicematch/icons/icon_video.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 import 'package:uuid/uuid.dart';
@@ -527,6 +529,28 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget? next;
+
+    if (activeItem?.id != null &&
+        (activeItem?.isUserRevealed != true ||
+            activeItem?.isMemberRevealed != true)) {
+      next = const P(
+        'Image Reveal',
+        isBody2: true,
+        ff: 'Abel',
+        fw: FontWeight.w700,
+        ta: TextAlign.center,
+      );
+    }
+
+    if (activeItem?.isUserRevealed == true &&
+        activeItem?.isMemberRevealed == true) {
+      next = SvgPicture.string(
+        iconVideo(),
+        width: 20,
+      );
+    }
+
     return Scaffold(
       body: AppLayout(
         Div(
@@ -538,13 +562,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                   onPrev: onBack,
                   hasNext: true,
                   onNext: onNext,
-                  nextIcon: const P(
-                    'Image Reveal',
-                    isBody2: true,
-                    ff: 'Abel',
-                    fw: FontWeight.w700,
-                    ta: TextAlign.center,
-                  ),
+                  nextIcon: next,
                   children: [
                     if (activeItem != null) ConnectionHeader(item: activeItem),
                   ],
