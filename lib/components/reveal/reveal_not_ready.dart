@@ -1,13 +1,17 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/image_masked.dart';
+import 'package:voicematch/components/connection_pic.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
+import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 import 'package:voicematch/form/progress_bar_alt.dart';
 
 class RevealNotReady extends StatelessWidget {
+  final ConnectionModel connection;
   final Duration duration;
 
   final String submitTitle;
@@ -18,6 +22,7 @@ class RevealNotReady extends StatelessWidget {
 
   const RevealNotReady({
     Key? key,
+    required this.connection,
     required this.duration,
     required this.submitTitle,
     required this.cancelTitle,
@@ -32,39 +37,38 @@ class RevealNotReady extends StatelessWidget {
         Div(
           [
             P(
-              'You talked for ${duration.inMinutes} min with Mario, You need to at least 10 Min Conversation to reveal yourself',
+              'You talked for ${duration.inMinutes} min with ${connection.member.givenName}, You need to at least 10 Min Conversation to reveal yourself',
               fg: colorOnSurfaceMediumEmphasis,
               isH5: true,
               ta: TextAlign.center,
             ),
           ],
-          mv: gap,
         ),
         Div(
           [
-            ImageMasked(
-              url: 'assets/images/avatar.png',
-              width: 160,
-              height: 160,
+            ConnectionPic(
+              item: connection,
+              w: avatarExtraLarge,
             ),
           ],
-          br: 99,
+          mv: gapBottom,
         ),
         Div(
           [
             ProgressBarAlt(
               gutter: (gap * 3).toInt(),
-              value: 10 * 1000,
-              total: const Duration(seconds: 10).inMilliseconds.toDouble(),
+              value: min(duration.inMilliseconds.toDouble(),
+                  const Duration(minutes: 10).inMilliseconds.toDouble()),
+              total: const Duration(minutes: 10).inMilliseconds.toDouble(),
             ),
           ],
-          mt: gapTop,
-          mb: gap,
+          mb: gapBottom,
         ),
         Div(
           [
             Button(
-              'Continue',
+              submitTitle,
+              onPress: onSubmit,
             ),
           ],
           w: 160,
