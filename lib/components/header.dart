@@ -72,11 +72,10 @@ class Header extends StatelessWidget {
                 Visibility(
                   visible: hasNext == true,
                   child: Align(
-                    // alignment: Alignment.topRight,
+                    alignment: Alignment.topRight,
                     child: FabButton(
                       w: avatarSmall,
                       h: avatarSmall,
-                      alignment: Alignment.centerRight,
                       nextIcon ??
                           const Icon(
                             Icons.arrow_left_rounded,
