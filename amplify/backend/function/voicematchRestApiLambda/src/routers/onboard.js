@@ -53,7 +53,7 @@ app.post('/api/v1/onboard', verifyToken, async (req, res, next) => {
 		try {
 			const pictureObj = await s3GetObject(BUCKETNAME, pictureKey);
 			const imageNormal = await sharp(pictureObj.Body).resize(512, 512).toBuffer();
-			const imageMasked = await sharp(pictureObj.Body).resize(512, 512).blur(10).toBuffer();
+			const imageMasked = await sharp(pictureObj.Body).resize(512, 512).blur(15).toBuffer();
 			const keyNormal = `avatars/${sub}/${v4()}`;
 			const keyMasked = `avatars/${sub}/${v4()}`;
 			await Promise.all([
