@@ -224,23 +224,30 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               height: MediaQuery.of(context).size.height *
                   1, // Adjust the height as needed
               child: Reveal(
-                duration: const Duration(seconds: 1500),
-                isUserHalfRevealed: true,
-                isUserFullRevealed: true,
-                isMemberHalfRevealed: true,
-                isMemberFullRevealed: true,
+                id: id,
                 header: [
                   if (activeItem != null) ConnectionHeader(item: activeItem),
                 ],
-                submitTitle: 'Continue',
-                cancelTitle: 'cancel',
-                yesTitle: 'Yes',
-                noTitle: 'No',
-                onPrev: onBack,
-                onSubmit: onSubmit,
-                onCancel: onCancel,
-                onYes: onYes,
-                onNo: onNo,
+                onPrev: () {
+                  Navigator.pop(context);
+                },
+                // duration: const Duration(seconds: 1500),
+                // isUserHalfRevealed: true,
+                // isUserFullRevealed: true,
+                // isMemberHalfRevealed: true,
+                // isMemberFullRevealed: true,
+                // header: [
+                //   if (activeItem != null) ConnectionHeader(item: activeItem),
+                // ],
+                // submitTitle: 'Continue',
+                // cancelTitle: 'cancel',
+                // yesTitle: 'Yes',
+                // noTitle: 'No',
+                // onPrev: onBack,
+                // onSubmit: onSubmit,
+                // onCancel: onCancel,
+                // onYes: onYes,
+                // onNo: onNo,
               ),
             );
           },
