@@ -382,6 +382,10 @@ exports.createConnection = /* GraphQL */ `
 			mutedAt
 			pinnedAt
 			matchPercentage
+			isUserRevealed
+			userRevealedAt
+			isMemberRevealed
+			memberRevealedAt
 			createdAt
 			updatedAt
 			__typename
@@ -472,6 +476,10 @@ exports.updateConnection = /* GraphQL */ `
 			mutedAt
 			pinnedAt
 			matchPercentage
+			isUserRevealed
+			userRevealedAt
+			isMemberRevealed
+			memberRevealedAt
 			createdAt
 			updatedAt
 			__typename
@@ -562,6 +570,10 @@ exports.deleteConnection = /* GraphQL */ `
 			mutedAt
 			pinnedAt
 			matchPercentage
+			isUserRevealed
+			userRevealedAt
+			isMemberRevealed
+			memberRevealedAt
 			createdAt
 			updatedAt
 			__typename

@@ -367,6 +367,10 @@ exports.getConnection = /* GraphQL */ `
 			mutedAt
 			pinnedAt
 			matchPercentage
+			isUserRevealed
+			userRevealedAt
+			isMemberRevealed
+			memberRevealedAt
 			createdAt
 			updatedAt
 			__typename
@@ -395,6 +399,10 @@ exports.listConnections = /* GraphQL */ `
 				mutedAt
 				pinnedAt
 				matchPercentage
+				isUserRevealed
+				userRevealedAt
+				isMemberRevealed
+				memberRevealedAt
 				createdAt
 				updatedAt
 				__typename
@@ -433,6 +441,10 @@ exports.listConnectionByChatId = /* GraphQL */ `
 				mutedAt
 				pinnedAt
 				matchPercentage
+				isUserRevealed
+				userRevealedAt
+				isMemberRevealed
+				memberRevealedAt
 				createdAt
 				updatedAt
 				__typename
@@ -471,6 +483,10 @@ exports.listConnectionByUserId = /* GraphQL */ `
 				mutedAt
 				pinnedAt
 				matchPercentage
+				isUserRevealed
+				userRevealedAt
+				isMemberRevealed
+				memberRevealedAt
 				createdAt
 				updatedAt
 				__typename
@@ -516,6 +532,10 @@ exports.listConnectionByMemberId = /* GraphQL */ `
 				mutedAt
 				pinnedAt
 				matchPercentage
+				isUserRevealed
+				userRevealedAt
+				isMemberRevealed
+				memberRevealedAt
 				createdAt
 				updatedAt
 				__typename
