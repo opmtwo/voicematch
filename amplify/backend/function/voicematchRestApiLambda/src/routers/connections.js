@@ -116,8 +116,20 @@ app.get('/api/v1/connections/:id', verifyToken, async (req, res, next) => {
 });
 
 app.get('/api/v1/connections/:id/duration', verifyToken, async (req, res, next) => {
-	const connection = await apsGetAll(listMessageEventByChatUserId, { id: req.params.id }, 'listMessageEventByChatUserId');
-	return res.status(200).json(connection.data.getConnection);
+	const { Username: sub } = req.user;
+	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
+	const chatUserId = `${connection.chatId}-${sub}`;
+	const connections = await apsGetAll(listMessageEventByChatUserId, { chatUserId }, 'listMessageEventByChatUserId');
+	let duration = 0;
+	for (let i = 0; i < connections.length; i++) {
+		duration += connections[i]?.recording?.duration || 0;
+	}
+	return res.status(200).json({
+		connection,
+		duration,
+	});
+});
+
 });
 
 /**
