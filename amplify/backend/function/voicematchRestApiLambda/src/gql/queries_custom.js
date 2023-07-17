@@ -74,6 +74,10 @@ exports.listConnectionByUserId = /* GraphQL */ `
 				mutedAt
 				pinnedAt
 				matchPercentage
+				isUserRevealed
+				userRevealedAt
+				isMemberRevealed
+				memberRevealedAt
 				createdAt
 				updatedAt
 				__typename
@@ -190,6 +194,10 @@ exports.getConnection = /* GraphQL */ `
 			mutedAt
 			pinnedAt
 			matchPercentage
+			isUserRevealed
+			userRevealedAt
+			isMemberRevealed
+			memberRevealedAt
 			createdAt
 			updatedAt
 			__typename
