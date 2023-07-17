@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:get/get.dart';
@@ -65,5 +67,28 @@ Future<String> uploadRecordingFile(String path) async {
   } on StorageException catch (err) {
     safePrint('uploadRecordingFile - error - $err');
     rethrow;
+  }
+}
+
+Future<Map<String, String>?> getHeaders({
+  Map<String, String>? defaultHeaders,
+}) async {
+  try {
+    // get access token
+    final result = await Amplify.Auth.fetchAuthSession(
+      options: CognitoSessionOptions(getAWSCredentials: true),
+    ) as CognitoAuthSession;
+    final accessToken = result.userPoolTokens?.accessToken;
+    final headers = {
+      ...defaultHeaders ?? {},
+      'Authorization': accessToken.toString(),
+    };
+    log('getHeaders - result - $headers');
+    return headers;
+  } catch (err) {
+    log('getHeaders - error - $err');
+    return {
+      ...defaultHeaders ?? {},
+    };
   }
 }
