@@ -167,226 +167,231 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/splash.png'),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/splash.png'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(
-            sigmaX: 9,
-            sigmaY: 9,
-          ),
-          child: AppLayout(
-            isGuestOnly: true,
-            bg: colorTransparent,
-            Div(
-              [
-                // auto expanding top block
-                const Expanded(
-                  child: Div(
-                    [
-                      //
-                    ],
-                  ),
-                ),
-                // bottom block
-                Div(
-                  [
-                    const Div(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 9,
+              sigmaY: 9,
+            ),
+            child: AppLayout(
+              isGuestOnly: true,
+              bg: colorTransparent,
+              Div(
+                [
+                  // auto expanding top block
+                  Expanded(
+                    child: Div(
                       [
-                        Div(
+                        const Div(
                           [
-                            Logo(),
-                          ],
-                          mb: gapTop,
-                        ),
-                      ],
-                    ),
-                    if (error != null)
-                      Div(
-                        [
-                          P(
-                            error,
-                            isBody1: true,
-                            fg: colorPrimary050,
-                            fw: FontWeight.w600,
-                          ),
-                        ],
-                        mb: gap,
-                      ),
-                    Div(
-                      [
-                        Input(
-                          givenNameController,
-                          placeholder: 'First Name',
-                          bc: colorTransparent,
-                          bw: 0,
-                          bg: colorWhite,
-                          fg: colorBlack,
-                          error: givenNameError,
-                          errorFg: colorPrimary100,
-                        ), //
-                      ],
-                      mb: gap,
-                    ),
-                    Div(
-                      [
-                        Input(
-                          usernameController,
-                          placeholder: '*Email Address',
-                          bc: colorTransparent,
-                          bw: 0,
-                          bg: colorWhite,
-                          fg: colorBlack,
-                          error: usernameError,
-                          errorFg: colorPrimary100,
-                        ), //
-                      ],
-                      mb: gap,
-                    ),
-                    Div(
-                      [
-                        Stack(
-                          children: [
-                            Input(
-                              passwordController,
-                              placeholder: '*Password',
-                              bw: 0,
-                              bg: colorWhite,
-                              fg: colorBlack,
-                              isPassword: isPasswordSecure,
-                              error: passwordError,
-                              errorFg: colorPrimary100,
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: FabButton(
-                                SvgPicture.string(
-                                  isPasswordSecure
-                                      ? iconEyeClose()
-                                      : iconEyeOpen(),
-                                  // width: 500,
-                                  height: 24,
-                                ),
-                                bg: colorTransparent,
-                                onPress: () {
-                                  setState(() {
-                                    isPasswordSecure = !isPasswordSecure;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      mb: gap,
-                    ),
-                    Div(
-                      [
-                        Stack(
-                          children: [
-                            Input(
-                              confirmationController,
-                              placeholder: '*Confirm Password',
-                              bw: 0,
-                              bg: colorWhite,
-                              fg: colorBlack,
-                              isPassword: isConfirmationSecure,
-                              error: confirmationError,
-                              errorFg: colorPrimary100,
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: FabButton(
-                                SvgPicture.string(
-                                  isConfirmationSecure
-                                      ? iconEyeClose()
-                                      : iconEyeOpen(),
-                                  // width: 500,
-                                  height: 24,
-                                ),
-                                bg: colorTransparent,
-                                onPress: () {
-                                  setState(() {
-                                    isConfirmationSecure =
-                                        !isConfirmationSecure;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      mb: gap,
-                    ),
-                    Div(
-                      [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CheckBox(
-                              value: isRemember,
-                              onChanged: (value) {
-                                setState(() {
-                                  isRemember = value;
-                                });
-                              },
-                            ),
                             Div(
                               [
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      isRemember = !isRemember;
-                                    });
-                                  },
-                                  child: P(
-                                    'Remember me'.toUpperCase(),
-                                    fg: colorWhite,
+                                Logo(),
+                              ],
+                              mb: gapTop,
+                            ),
+                          ],
+                        ),
+                        if (error != null)
+                          Div(
+                            [
+                              P(
+                                error,
+                                isBody1: true,
+                                fg: colorPrimary050,
+                                fw: FontWeight.w600,
+                              ),
+                            ],
+                            mb: gap,
+                          ),
+                        Div(
+                          [
+                            Input(
+                              givenNameController,
+                              placeholder: '*First Name',
+                              bc: colorTransparent,
+                              bw: 0,
+                              bg: colorWhite,
+                              fg: colorBlack,
+                              error: givenNameError,
+                              errorFg: colorPrimary100,
+                            ), //
+                          ],
+                          mb: gap,
+                        ),
+                        Div(
+                          [
+                            Input(
+                              usernameController,
+                              placeholder: '*Email Address',
+                              bc: colorTransparent,
+                              bw: 0,
+                              bg: colorWhite,
+                              fg: colorBlack,
+                              error: usernameError,
+                              errorFg: colorPrimary100,
+                            ), //
+                          ],
+                          mb: gap,
+                        ),
+                        Div(
+                          [
+                            Stack(
+                              children: [
+                                Input(
+                                  passwordController,
+                                  placeholder: '*Password',
+                                  bw: 0,
+                                  bg: colorWhite,
+                                  fg: colorBlack,
+                                  isPassword: isPasswordSecure,
+                                  error: passwordError,
+                                  errorFg: colorPrimary100,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: FabButton(
+                                    SvgPicture.string(
+                                      isPasswordSecure
+                                          ? iconEyeClose()
+                                          : iconEyeOpen(),
+                                      // width: 500,
+                                      height: 24,
+                                    ),
+                                    bg: colorTransparent,
+                                    onPress: () {
+                                      setState(() {
+                                        isPasswordSecure = !isPasswordSecure;
+                                      });
+                                    },
                                   ),
                                 ),
                               ],
-                              ml: gap / 2,
-                            )
+                            ),
+                          ],
+                          mb: gap,
+                        ),
+                        Div(
+                          [
+                            Stack(
+                              children: [
+                                Input(
+                                  confirmationController,
+                                  placeholder: '*Confirm Password',
+                                  bw: 0,
+                                  bg: colorWhite,
+                                  fg: colorBlack,
+                                  isPassword: isConfirmationSecure,
+                                  error: confirmationError,
+                                  errorFg: colorPrimary100,
+                                ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: FabButton(
+                                    SvgPicture.string(
+                                      isConfirmationSecure
+                                          ? iconEyeClose()
+                                          : iconEyeOpen(),
+                                      // width: 500,
+                                      height: 24,
+                                    ),
+                                    bg: colorTransparent,
+                                    onPress: () {
+                                      setState(() {
+                                        isConfirmationSecure =
+                                            !isConfirmationSecure;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          mb: gap,
+                        ),
+                        Div(
+                          [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                CheckBox(
+                                  value: isRemember,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isRemember = value;
+                                    });
+                                  },
+                                ),
+                                Div(
+                                  [
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          isRemember = !isRemember;
+                                        });
+                                      },
+                                      child: P(
+                                        'Remember me'.toUpperCase(),
+                                        fg: colorWhite,
+                                      ),
+                                    ),
+                                  ],
+                                  ml: gap / 2,
+                                )
+                              ],
+                            ),
                           ],
                         ),
                       ],
+                      pt: gapTop,
+                      ph: gap,
                     ),
-                    Div(
-                      [
-                        Button(
-                          'Next',
-                          onPress: onContinue,
-                        ),
-                      ],
-                      mv: gap,
-                    ),
-                    Div(
-                      [
-                        GestureDetector(
-                          onTap: () {
-                            Get.toNamed(Routes.signIn);
-                          },
-                          child: P(
-                            'I have account! Sign In'.toUpperCase(),
-                            fg: colorWhite,
+                  ),
+                  // bottom block
+                  Div(
+                    [
+                      Div(
+                        [
+                          Button(
+                            'Next',
+                            onPress: onContinue,
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                  pv: gapBottom,
-                  ph: gap,
-                  brTl: radiusLarge,
-                  brTr: radiusLarge,
-                  // bg: colorWhite,
-                ),
-              ],
+                        ],
+                        mv: gapBottom,
+                      ),
+                      Div(
+                        [
+                          GestureDetector(
+                            onTap: () {
+                              Get.toNamed(Routes.signIn);
+                            },
+                            child: P(
+                              'I have account! Sign In'.toUpperCase(),
+                              fg: colorWhite,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    pv: gapBottom,
+                    ph: gap,
+                    brTl: radiusLarge,
+                    brTr: radiusLarge,
+                    // bg: colorWhite,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
