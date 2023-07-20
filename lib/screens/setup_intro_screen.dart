@@ -203,156 +203,159 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: AppLayout(
-        Div(
-          [
-            const Div(
-              [
-                ProgressBar(value: 1 / 5),
-              ],
-              mv: gapTop,
-            ),
-            Div(
-              [
-                const Div(
-                  [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Avatar(
-                        w: 160,
-                        h: 160,
-                      ),
-                    )
-                  ],
-                  mb: gapTop,
-                ),
-                if (error != null)
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: AppLayout(
+          Div(
+            [
+              const Div(
+                [
+                  ProgressBar(value: 1 / 5),
+                ],
+                mb: gapTop,
+              ),
+              Div(
+                [
+                  const Div(
+                    [
+                      Align(
+                        alignment: Alignment.center,
+                        child: Avatar(
+                          w: 160,
+                          h: 160,
+                        ),
+                      )
+                    ],
+                    mb: gapTop,
+                  ),
+                  if (error != null)
+                    Div(
+                      [
+                        P(
+                          error,
+                          isBody1: true,
+                          fg: colorPrimary,
+                          fw: FontWeight.w600,
+                        ),
+                      ],
+                      mb: gap,
+                    ),
                   Div(
                     [
-                      P(
-                        error,
-                        isBody1: true,
-                        fg: colorPrimary,
-                        fw: FontWeight.w600,
-                      ),
+                      Input(
+                        givenNameController,
+                        placeholder: 'First Name',
+                        bc: colorOnSurfaceDisabled,
+                        bg: colorWhite,
+                        fg: colorBlack,
+                        error: givenNameError,
+                      ), //
                     ],
                     mb: gap,
                   ),
-                Div(
-                  [
-                    Input(
-                      givenNameController,
-                      placeholder: 'First Name',
-                      bc: colorOnSurfaceDisabled,
-                      bg: colorWhite,
-                      fg: colorBlack,
-                      error: givenNameError,
-                    ), //
-                  ],
-                  mb: gap,
-                ),
-                Div(
-                  [
-                    Stack(
-                      children: [
-                        Input(
-                          genderController,
-                          placeholder: 'Gender',
-                          bc: colorOnSurfaceDisabled,
-                          fg: colorBlack,
-                          error: genderError,
-                        ),
-                        Positioned(
-                          child: Opacity(
-                            opacity: 0,
-                            child: Select(
-                              genderController,
-                              index: genderIndex,
-                              options: genderOptions,
-                              onChange: (int index) {
-                                safePrint('genderIndex $index');
-                                setState(() {
-                                  genderIndex = index;
-                                });
-                              },
-                              error: genderError,
+                  Div(
+                    [
+                      Stack(
+                        children: [
+                          Input(
+                            genderController,
+                            placeholder: 'Gender',
+                            bc: colorOnSurfaceDisabled,
+                            fg: colorBlack,
+                            error: genderError,
+                          ),
+                          Positioned(
+                            child: Opacity(
+                              opacity: 0,
+                              child: Select(
+                                genderController,
+                                index: genderIndex,
+                                options: genderOptions,
+                                onChange: (int index) {
+                                  safePrint('genderIndex $index');
+                                  setState(() {
+                                    genderIndex = index;
+                                  });
+                                },
+                                error: genderError,
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: FabButton(
-                            bg: colorTransparent,
-                            SvgPicture.string(
-                              iconDown(),
-                              height: 20,
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: FabButton(
+                              bg: colorTransparent,
+                              SvgPicture.string(
+                                iconDown(),
+                                height: 20,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  ],
-                  mb: gap,
-                ),
-                Div(
-                  [
-                    Stack(
-                      children: [
-                        Input(
-                          targetGenderController,
-                          placeholder: 'I am looking for',
-                          bc: colorOnSurfaceDisabled,
-                          fg: colorBlack,
-                          error: targetGenderError,
-                        ),
-                        Positioned(
-                          child: Opacity(
-                            opacity: 0,
-                            child: Select(
-                              targetGenderController,
-                              index: targetGenderIndex,
-                              options: genderOptions,
-                              onChange: (int index) {
-                                safePrint('genderIndex $index');
-                                setState(() {
-                                  targetGenderIndex = index;
-                                });
-                              },
-                              error: targetGenderError,
+                        ],
+                      )
+                    ],
+                    mb: gap,
+                  ),
+                  Div(
+                    [
+                      Stack(
+                        children: [
+                          Input(
+                            targetGenderController,
+                            placeholder: 'I am looking for',
+                            bc: colorOnSurfaceDisabled,
+                            fg: colorBlack,
+                            error: targetGenderError,
+                          ),
+                          Positioned(
+                            child: Opacity(
+                              opacity: 0,
+                              child: Select(
+                                targetGenderController,
+                                index: targetGenderIndex,
+                                options: genderOptions,
+                                onChange: (int index) {
+                                  safePrint('genderIndex $index');
+                                  setState(() {
+                                    targetGenderIndex = index;
+                                  });
+                                },
+                                error: targetGenderError,
+                              ),
                             ),
                           ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: FabButton(
-                            bg: colorTransparent,
-                            SvgPicture.string(
-                              iconDown(),
-                              height: 20,
+                          Positioned(
+                            top: 0,
+                            right: 0,
+                            child: FabButton(
+                              bg: colorTransparent,
+                              SvgPicture.string(
+                                iconDown(),
+                                height: 20,
+                              ),
                             ),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                  mb: gap,
-                ),
-                Div(
-                  [
-                    Button(
-                      'next',
-                      onPress: onSubmit,
-                    ),
-                  ],
-                  mt: gap,
-                  mb: gapTop,
-                ),
-              ],
-              ph: gap,
-            )
-          ],
+                          )
+                        ],
+                      )
+                    ],
+                    mb: gap,
+                  ),
+                  Div(
+                    [
+                      Button(
+                        'next',
+                        onPress: onSubmit,
+                      ),
+                    ],
+                    mt: gap,
+                    mb: gapTop,
+                  ),
+                ],
+                ph: gap,
+              )
+            ],
+          ),
         ),
       ),
     );
