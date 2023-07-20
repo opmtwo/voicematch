@@ -568,7 +568,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                   ],
                 ),
               ],
-              mt: gapTop,
+              mt: gap,
             ),
             Expanded(
               flex: 1,
