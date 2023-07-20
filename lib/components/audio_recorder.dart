@@ -60,10 +60,13 @@ class _AudioRecorderState extends State<AudioRecorder> {
         error = null;
         isRecording = true;
       });
-      await Record().start();
+      final record = Record();
+      if (await record.hasPermission()) {
+        await Record().start();
+      }
       startRecordingDuration();
     } catch (err) {
-      // log('startRecording - error - $err');
+      log('startRecording - error - $err');
       setState(() {
         error = err.toString();
         isRecording = false;
