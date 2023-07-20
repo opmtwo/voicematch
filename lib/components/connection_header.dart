@@ -36,11 +36,18 @@ class ConnectionHeader extends StatelessWidget {
                 fg: colorBlack,
               ),
               if (item?.onlinePresence?.id != null)
-                P(
-                  'Last seen ${gethumanTimeDiff(item?.onlinePresence?.lastSeenAt as String).toLowerCase()}',
-                  isBody2: true,
-                  fg: colorBlack,
-                ),
+                Div(
+                  [
+                    P(
+                      'Last seen ${gethumanTimeDiff(item?.onlinePresence?.lastSeenAt as String).toLowerCase()}',
+                      isCaption: true,
+                      fg: colorBlack,
+                      lines: 2,
+                      lh: 1,
+                    ),
+                  ],
+                  w: MediaQuery.of(context).size.width * 0.3,
+                )
             ],
           ),
       ],
