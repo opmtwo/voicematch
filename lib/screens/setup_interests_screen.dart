@@ -398,7 +398,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                   ],
                 )
               ],
-              mt: gapTop,
+              // mt: gapTop,
             ),
             Expanded(
               flex: 1,
@@ -456,7 +456,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                                             alignment:
                                                 WrapAlignment.spaceBetween,
                                             runSpacing: gap / 2,
-                                            spacing: gap / 2,
+                                            spacing: gap / 6,
                                             children: List.generate(
                                               items.length,
                                               (j) {
@@ -471,9 +471,12 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                                                     [
                                                       Div(
                                                         [
-                                                          P(isChecked
-                                                              ? 'Yes'
-                                                              : 'No'),
+                                                          P(
+                                                            isChecked
+                                                                ? 'Yes'
+                                                                : 'No',
+                                                            isCaption: true,
+                                                          ),
                                                         ],
                                                       ),
                                                       Div(
@@ -499,7 +502,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                                                                 [
                                                                   P(
                                                                     tag,
-                                                                    isBody2:
+                                                                    isCaption:
                                                                         true,
                                                                     fg: colorBlack,
                                                                   ),
@@ -513,8 +516,11 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
                                                         ],
                                                       ),
                                                     ],
+                                                    h: 56,
                                                     pv: gap / 2,
-                                                    ph: gap * .75,
+                                                    ph: isChecked
+                                                        ? gap * 0.685
+                                                        : gap * 1.3,
                                                     bg: isChecked
                                                         ? colorSeondary
                                                         : colorGrey200,
