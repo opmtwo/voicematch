@@ -35,7 +35,9 @@ class _AppLayoutState extends State<AppLayout> {
       [
         Expanded(
           flex: 1,
-          child: widget.child,
+          child: SafeArea(
+            child: widget.child,
+          ),
         )
       ],
       bg: widget.bg ?? colorWhite,
