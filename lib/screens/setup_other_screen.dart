@@ -293,7 +293,7 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
               [
                 ProgressBar(value: 2 / 5),
               ],
-              mv: gapTop,
+              mb: gapTop,
             ),
             Div(
               [
