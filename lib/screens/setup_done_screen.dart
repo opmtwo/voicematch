@@ -109,7 +109,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
                   value: 5 / 5,
                 ),
               ],
-              mt: gapTop,
+              // mt: gapTop,
             ),
             Expanded(
               flex: 1,
