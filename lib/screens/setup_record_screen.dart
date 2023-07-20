@@ -12,6 +12,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:voicematch/components/audio_file_player.dart';
 import 'package:voicematch/components/current_time.dart';
@@ -115,6 +116,13 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   void initState() {
     super.initState();
     initUser();
+    initRecorder();
+  }
+
+  Future<void> initRecorder() async {
+    // Request the audio recording permission
+    PermissionStatus status = await Permission.microphone.request();
+    safePrint('status - $status');
   }
 
   Future<void> initUser() async {
@@ -359,7 +367,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
               [
                 ProgressBar(value: 4 / 5),
               ],
-              mv: gapTop,
+              mb: gapTop,
             ),
             Expanded(
               flex: 1,
