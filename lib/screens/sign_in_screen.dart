@@ -154,190 +154,200 @@ class SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/splash.png'),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/splash.png'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: AppLayout(
-          isGuestOnly: true,
-          bg: colorTransparent,
-          Div(
-            [
-              // auto expanding top block
-              const Expanded(
-                child: Div(
-                  [
-                    //
-                  ],
-                ),
-              ),
-              // bottom block
-              Div(
-                [
-                  const Div(
-                    [
+          child: AppLayout(
+            isGuestOnly: true,
+            bg: colorTransparent,
+            Div(
+              [
+                // auto expanding top block
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Div(
                         [
-                          Logo(),
-                        ],
-                        mb: gapTop,
-                      ),
-                    ],
-                  ),
-                  if (error != null)
-                    Div(
-                      [
-                        P(
-                          error,
-                          isBody1: true,
-                          fg: colorPrimary050,
-                          fw: FontWeight.w600,
-                        ),
-                      ],
-                      mb: gap,
-                    ),
-                  Div(
-                    [
-                      Input(
-                        usernameController,
-                        placeholder: '*Email',
-                        bc: colorTransparent,
-                        bw: 0,
-                        bg: colorWhite,
-                        fg: colorBlack,
-                        error: usernameError,
-                        errorFg: colorPrimary100,
-                      ), //
-                    ],
-                    mb: gap,
-                  ),
-                  Div(
-                    [
-                      Stack(
-                        children: [
-                          Input(
-                            passwordController,
-                            placeholder: '*Password',
-                            bw: 0,
-                            bg: colorWhite,
-                            fg: colorBlack,
-                            isPassword: isPasswordSecure,
-                            error: passwordError,
-                            errorFg: colorPrimary100,
-                          ),
-                          Positioned(
-                            top: 0,
-                            right: 0,
-                            child: FabButton(
-                              SvgPicture.string(
-                                isPasswordSecure
-                                    ? iconEyeClose()
-                                    : iconEyeOpen(),
-                                // width: 500,
-                                height: 24,
+                          const Div(
+                            [
+                              Div(
+                                [
+                                  Logo(),
+                                ],
+                                mb: gapTop,
                               ),
-                              bg: colorTransparent,
-                              onPress: () {
-                                setState(() {
-                                  isPasswordSecure = !isPasswordSecure;
-                                });
-                              },
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                    mb: gap,
-                  ),
-                  Div(
-                    [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CheckBox(
-                            value: isRemember,
-                            onChanged: (value) {
-                              setState(() {
-                                isRemember = value;
-                              });
-                            },
+                          if (error != null)
+                            Div(
+                              [
+                                P(
+                                  error,
+                                  isBody1: true,
+                                  fg: colorPrimary050,
+                                  fw: FontWeight.w600,
+                                ),
+                              ],
+                              mb: gap,
+                            ),
+                          Div(
+                            [
+                              Input(
+                                usernameController,
+                                placeholder: '*Email',
+                                bc: colorTransparent,
+                                bw: 0,
+                                bg: colorWhite,
+                                fg: colorBlack,
+                                error: usernameError,
+                                errorFg: colorPrimary100,
+                              ), //
+                            ],
+                            mb: gap,
                           ),
                           Div(
                             [
-                              GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    isRemember = !isRemember;
-                                  });
-                                },
-                                child: P(
-                                  'Remember me'.toUpperCase(),
-                                  fg: colorWhite,
-                                ),
+                              Stack(
+                                children: [
+                                  Input(
+                                    passwordController,
+                                    placeholder: '*Password',
+                                    bw: 0,
+                                    bg: colorWhite,
+                                    fg: colorBlack,
+                                    isPassword: isPasswordSecure,
+                                    error: passwordError,
+                                    errorFg: colorPrimary100,
+                                  ),
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: FabButton(
+                                      SvgPicture.string(
+                                        isPasswordSecure
+                                            ? iconEyeClose()
+                                            : iconEyeOpen(),
+                                        // width: 500,
+                                        height: 24,
+                                      ),
+                                      bg: colorTransparent,
+                                      onPress: () {
+                                        setState(() {
+                                          isPasswordSecure = !isPasswordSecure;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
-                            ml: gap / 2,
-                          )
-                        ],
-                      ),
-                    ],
-                    mb: gap,
-                  ),
-                  Div(
-                    [
-                      Button(
-                        'sign in',
-                        onPress: onSubmit,
-                      ),
-                    ],
-                    mt: gap,
-                    mb: gapTop,
-                  ),
-                  Div(
-                    [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(Routes.resetPasswordUsername);
-                            },
-                            child: const P(
-                              'Forget Password?',
-                              fg: colorWhite,
-                            ),
+                            mb: gap,
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(Routes.signUp);
-                            },
-                            child: P(
-                              'Create account'.toUpperCase(),
-                              fg: colorWhite,
-                            ),
+                          Div(
+                            [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  CheckBox(
+                                    value: isRemember,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isRemember = value;
+                                      });
+                                    },
+                                  ),
+                                  Div(
+                                    [
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            isRemember = !isRemember;
+                                          });
+                                        },
+                                        child: P(
+                                          'Remember me'.toUpperCase(),
+                                          fg: colorWhite,
+                                        ),
+                                      ),
+                                    ],
+                                    ml: gap / 2,
+                                  )
+                                ],
+                              ),
+                            ],
+                            mb: gap,
                           ),
                         ],
-                      )
+                        pt: gapTop,
+                        ph: gap,
+                      ),
                     ],
-                    mb: gap,
                   ),
-                  const Div(
-                    [
-                      AppLinks(),
-                    ],
-                    mt: gap / 2,
-                  ),
-                ],
-                pv: gapBottom,
-                ph: gap,
-                brTl: radiusLarge,
-                brTr: radiusLarge,
-                // bg: colorWhite,
-              ),
-            ],
+                ),
+                // bottom block
+                Div(
+                  [
+                    Div(
+                      [
+                        Button(
+                          'sign in',
+                          onPress: onSubmit,
+                        ),
+                      ],
+                      mt: gap,
+                      mb: gapTop,
+                    ),
+                    Div(
+                      [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.resetPasswordUsername);
+                              },
+                              child: const P(
+                                'Forget Password?',
+                                fg: colorWhite,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.signUp);
+                              },
+                              child: P(
+                                'Create account'.toUpperCase(),
+                                fg: colorWhite,
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                      mb: gap,
+                    ),
+                    const Div(
+                      [
+                        AppLinks(),
+                      ],
+                      mt: gap / 2,
+                    ),
+                  ],
+                  pv: gapBottom,
+                  ph: gap,
+                  brTl: radiusLarge,
+                  brTr: radiusLarge,
+                  // bg: colorWhite,
+                ),
+              ],
+            ),
           ),
         ),
       ),
