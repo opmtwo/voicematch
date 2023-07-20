@@ -55,7 +55,7 @@ class Input extends StatelessWidget {
 
   final List<BoxShadow>? boxShadow;
 
-  static const double defaultHeight = 48;
+  static const double defaultHeight = 40;
   static const double defaultRadius = radius;
 
   static const Color defaultBg = colorTransparent;
