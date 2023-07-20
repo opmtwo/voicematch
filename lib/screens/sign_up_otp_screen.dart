@@ -131,126 +131,131 @@ class SignUpOtpScreenState extends State<SignUpOtpScreen> {
       ),
     );
 
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/images/splash.png'),
-          fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/splash.png'),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: 9,
-          sigmaY: 9,
-        ),
-        child: AppLayout(
-          isGuestOnly: true,
-          bg: colorTransparent,
-          Div(
-            [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Div(
-                      [
-                        const Div(
-                          [
-                            Logo(),
-                          ],
-                          mt: gap,
-                          mb: gap * 2,
-                        ),
-                        const P(
-                          'Verification',
-                          isH4: true,
-                          fg: colorWhite,
-                          fw: FontWeight.bold,
-                        ),
-                        const Div(
-                          [
-                            P(
-                              'Please enter the code that was sent to your number',
-                              isBody1: true,
-                              fg: colorWhite,
-                              ta: TextAlign.center,
-                            ),
-                          ],
-                          mt: gap,
-                          mb: gap * 2,
-                        ),
-                        Pinput(
-                          length: 6,
-                          defaultPinTheme: defaultPinTheme,
-                          focusedPinTheme: focusedPinTheme,
-                          submittedPinTheme: submittedPinTheme,
-                          validator: (s) {
-                            // return s == '2222' ? null : 'Pin is incorrect';
-                            return null;
-                          },
-                          pinputAutovalidateMode:
-                              PinputAutovalidateMode.onSubmit,
-                          showCursor: true,
-                          onChanged: (value) {
-                            setState(() {
-                              codeController.text = value;
-                            });
-                          },
-                          onCompleted: (pin) {
-                            safePrint(pin);
-                            onSubmit();
-                          },
-                        ),
-                        if (!isResent)
-                          Div(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 9,
+            sigmaY: 9,
+          ),
+          child: AppLayout(
+            isGuestOnly: true,
+            bg: colorTransparent,
+            Div(
+              [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Div(
+                        [
+                          const Div(
                             [
-                              Align(
-                                alignment: Alignment.center,
-                                child: GestureDetector(
-                                  onTap: onResend,
-                                  child: const P(
-                                    'Resend Code',
-                                    isBody1: true,
-                                    fg: colorWhite,
-                                    fw: FontWeight.w600,
-                                  ),
-                                ),
-                              )
+                              Logo(),
                             ],
-                            mv: gap,
+                            mb: gapBottom,
                           ),
-                        if (isResent)
-                          Div(
+                          const Div(
                             [
-                              Align(
-                                alignment: Alignment.center,
-                                child: P(
-                                  'Verification code was resent to your email\n$email',
-                                  fg: colorWhite,
-                                  ta: TextAlign.center,
-                                ),
+                              P(
+                                'Verification',
+                                isH4: true,
+                                fg: colorWhite,
+                                fw: FontWeight.bold,
                               ),
                             ],
-                            mv: gap,
+                            mb: gapBottom,
                           ),
-                        Div(
-                          [
-                            if (codeError != null)
+                          Pinput(
+                            length: 6,
+                            defaultPinTheme: defaultPinTheme,
+                            focusedPinTheme: focusedPinTheme,
+                            submittedPinTheme: submittedPinTheme,
+                            validator: (s) {
+                              // return s == '2222' ? null : 'Pin is incorrect';
+                              return null;
+                            },
+                            pinputAutovalidateMode:
+                                PinputAutovalidateMode.onSubmit,
+                            showCursor: true,
+                            onChanged: (value) {
+                              setState(() {
+                                codeController.text = value;
+                              });
+                            },
+                            onCompleted: (pin) {
+                              safePrint(pin);
+                              onSubmit();
+                            },
+                          ),
+                          const Div(
+                            [
                               P(
-                                error,
-                                fg: colorPrimary,
-                                isH4: true,
+                                'Please enter the code that was sent to your number',
+                                isBody1: true,
+                                fg: colorWhite,
                                 ta: TextAlign.center,
-                              )
-                          ],
-                        )
-                      ],
-                      ph: gap,
-                    ),
-                  ],
+                              ),
+                            ],
+                            mt: gapBottom,
+                            mb: gap,
+                          ),
+                          if (!isResent)
+                            Div(
+                              [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: GestureDetector(
+                                    onTap: onResend,
+                                    child: const P(
+                                      'Resend Code',
+                                      isBody1: true,
+                                      fg: colorWhite,
+                                      fw: FontWeight.w600,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          if (isResent)
+                            Div(
+                              [
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: P(
+                                    'Verification code was resent to your email\n$email',
+                                    fg: colorWhite,
+                                    ta: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          Div(
+                            [
+                              if (codeError != null)
+                                P(
+                                  error,
+                                  fg: colorPrimary,
+                                  isH4: true,
+                                  ta: TextAlign.center,
+                                )
+                            ],
+                          )
+                        ],
+                        ph: gap,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
