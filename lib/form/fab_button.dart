@@ -54,8 +54,8 @@ class FabButton extends StatelessWidget {
 
   static const double defaultRadius = 99;
 
-  static const double defaultWidth = 56;
-  static const double defaultHeight = 56;
+  static const double defaultWidth = 48;
+  static const double defaultHeight = 48;
 
   @override
   Widget build(BuildContext context) {
