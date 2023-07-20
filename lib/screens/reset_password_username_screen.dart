@@ -114,112 +114,121 @@ class ResetPasswordUsernameScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/splash.png'),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: false,
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/splash.png'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: AppLayout(
-          isGuestOnly: true,
-          bg: colorTransparent,
-          Div(
-            [
-              // auto expanding top block
-              const Expanded(
-                child: Div(
-                  [
-                    //
-                  ],
-                ),
-              ),
-              // bottom block
-              Div(
-                [
-                  const Div(
-                    [
+          child: AppLayout(
+            isGuestOnly: true,
+            bg: colorTransparent,
+            Div(
+              [
+                // auto expanding top block
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Div(
                         [
-                          Logo(),
+                          const Div(
+                            [
+                              Div(
+                                [
+                                  Logo(),
+                                ],
+                                mb: gapTop,
+                              ),
+                            ],
+                          ),
+                          if (error != null)
+                            Div(
+                              [
+                                P(
+                                  error,
+                                  isBody1: true,
+                                  fg: colorPrimary050,
+                                  fw: FontWeight.w600,
+                                ),
+                              ],
+                              mb: gap,
+                            ),
+                          Div(
+                            [
+                              Input(
+                                usernameController,
+                                placeholder: '*Email',
+                                bc: colorTransparent,
+                                bw: 0,
+                                bg: colorWhite,
+                                fg: colorBlack,
+                                error: usernameError,
+                                errorFg: colorPrimary100,
+                              ), //
+                            ],
+                            mb: gap,
+                          ),
                         ],
-                        mb: gapTop,
+                        pt: gapBottom,
+                        ph: gap,
                       ),
                     ],
                   ),
-                  if (error != null)
+                ),
+                // bottom block
+                Div(
+                  [
                     Div(
                       [
-                        P(
-                          error,
-                          isBody1: true,
-                          fg: colorPrimary050,
-                          fw: FontWeight.w600,
+                        Button(
+                          'reset',
+                          onPress: onSubmit,
                         ),
                       ],
-                      mb: gap,
+                      mt: gap,
+                      mb: gapTop,
                     ),
-                  Div(
-                    [
-                      Input(
-                        usernameController,
-                        placeholder: '*Email',
-                        bc: colorTransparent,
-                        bw: 0,
-                        bg: colorWhite,
-                        fg: colorBlack,
-                        error: usernameError,
-                        errorFg: colorPrimary100,
-                      ), //
-                    ],
-                    mb: gap,
-                  ),
-                  Div(
-                    [
-                      Button(
-                        'reset',
-                        onPress: onSubmit,
-                      ),
-                    ],
-                    mt: gap,
-                    mb: gapTop,
-                  ),
-                  Div(
-                    [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(Routes.signIn);
-                            },
-                            child: const P(
-                              'Sign in',
-                              fg: colorWhite,
+                    Div(
+                      [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.signIn);
+                              },
+                              child: const P(
+                                'Sign in',
+                                fg: colorWhite,
+                              ),
                             ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Get.toNamed(Routes.signUp);
-                            },
-                            child: P(
-                              'Create account'.toUpperCase(),
-                              fg: colorWhite,
+                            GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.signUp);
+                              },
+                              child: P(
+                                'Create account'.toUpperCase(),
+                                fg: colorWhite,
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    ],
-                    mb: gap,
-                  ),
-                ],
-                pv: gapBottom,
-                ph: gap,
-                brTl: radiusLarge,
-                brTr: radiusLarge,
-                // bg: colorWhite,
-              ),
-            ],
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                  pv: gapBottom,
+                  ph: gap,
+                  brTl: radiusLarge,
+                  brTr: radiusLarge,
+                  // bg: colorWhite,
+                ),
+              ],
+            ),
           ),
         ),
       ),
