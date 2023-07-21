@@ -78,6 +78,8 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - permission_handler_apple (9.1.1):
+    - Flutter
   - record (0.0.1):
     - Flutter
   - share_plus (0.0.1):
@@ -107,6 +109,7 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - record (from `.symlinks/plugins/record/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - smart_auth (from `.symlinks/plugins/smart_auth/ios`)
@@ -153,6 +156,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   record:
     :path: ".symlinks/plugins/record/ios"
   share_plus:
@@ -190,6 +195,7 @@ SPEC CHECKSUMS:
   image_picker_ios: 58b9c4269cb176f89acea5e5d043c9358f2d25f8
   ObjectMapper: 1eb41f610210777375fa806bf161dc39fb832b81
   path_provider_foundation: c68054786f1b4f3343858c1e1d0caaded73f0be9
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   record: cae05d8dd3cdb1dea3511b20e5a5811a1ae00d0d
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   smart_auth: 4bedbc118723912d0e45a07e8ab34039c19e04f2
