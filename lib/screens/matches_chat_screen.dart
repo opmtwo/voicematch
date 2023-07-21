@@ -536,8 +536,9 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
             activeItem?.isMemberRevealed != true)) {
       next = const P(
         'Image Reveal',
-        isBody2: true,
+        isCaption: true,
         ff: 'Abel',
+        fg: colorWhite,
         fw: FontWeight.w700,
         ta: TextAlign.center,
       );
@@ -560,9 +561,10 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                 Header(
                   hasPrev: true,
                   onPrev: onBack,
-                  hasNext: true,
+                  hasNext: next != null,
                   onNext: onNext,
                   nextIcon: next,
+                  nextBg: colorSeondary500,
                   children: [
                     if (activeItem != null) ConnectionHeader(item: activeItem),
                   ],
