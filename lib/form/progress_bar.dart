@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/elements/div.dart';
 
-class ProgressBar extends StatelessWidget {
+class ProgressBar extends StatefulWidget {
   final double value;
   final String? title;
 
@@ -34,6 +34,31 @@ class ProgressBar extends StatelessWidget {
   final Color defaultFg = colorSeondary500;
 
   @override
+  State<ProgressBar> createState() => _ProgressBarState();
+}
+
+class _ProgressBarState extends State<ProgressBar>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _progressAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _progressAnimationController = AnimationController(
+      vsync: this,
+      duration:
+          const Duration(milliseconds: 150), // Adjust the duration as needed
+    );
+    _progressAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _progressAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,8 +67,8 @@ class ProgressBar extends StatelessWidget {
           children: [
             Div(
               const [],
-              h: h ?? defaultHeight,
-              br: br,
+              h: widget.h ?? widget.defaultHeight,
+              br: widget.br,
             ),
             Positioned(
               top: 0,
@@ -54,23 +79,30 @@ class ProgressBar extends StatelessWidget {
                 opacity: 0.4,
                 child: Div(
                   const [],
-                  bg: bg ?? defaultBg,
-                  br: br,
+                  bg: widget.bg ?? widget.defaultBg,
+                  br: widget.br,
                 ),
               ),
             ),
-            Positioned(
-              top: 0,
-              bottom: 0,
-              left: 0,
-              width:
-                  value * (MediaQuery.of(context).size.width - (gutter ?? 0)),
-              child: Div(
-                const [],
-                h: h ?? defaultHeight,
-                bg: fg ?? defaultFg,
-                br: br,
-              ),
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 0, end: widget.value),
+              duration: const Duration(milliseconds: 250),
+              builder: (context, value, child) {
+                return Positioned(
+                  top: 0,
+                  bottom: 0,
+                  left: 0,
+                  width: value *
+                      (MediaQuery.of(context).size.width -
+                          (widget.gutter ?? 0)),
+                  child: Div(
+                    const [],
+                    h: widget.h ?? widget.defaultHeight,
+                    bg: widget.fg ?? widget.defaultFg,
+                    br: widget.br,
+                  ),
+                );
+              },
             ),
           ],
         ),
