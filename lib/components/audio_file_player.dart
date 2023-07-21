@@ -92,6 +92,9 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
   // current time
   Duration? currentAudioTime;
 
+  // total audio duration
+  Duration? totalDuraion;
+
   // audio stream subscriptions
   StreamSubscription<PlayerState>? playerStateSubscription;
   StreamSubscription<Duration>? positionSubscription;
@@ -126,6 +129,8 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
     });
     positionSubscription =
         audioPlayer.onPositionChanged.listen((Duration duration) {
+      // safePrint('current duration ${duration.inMilliseconds}');
+      // safePrint('isComplete $isComplete');
       if (isComplete) {
         return;
       }
@@ -138,6 +143,10 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
       setState(() {
         isComplete = true;
       });
+      // safePrint('audio playback is complete - totalDuraion = $totalDuraion');
+      if (totalDuraion != null) {
+        widget.onPositionChanged(totalDuraion as Duration);
+      }
     });
   }
 
@@ -156,6 +165,11 @@ class AudioFilePlayerState extends State<AudioFilePlayer> {
           widget.audioPath,
         ));
       }
+      // find total audio duration
+      final audioDuration = await audioPlayer.getDuration();
+      setState(() {
+        totalDuraion = audioDuration;
+      });
     } catch (err) {
       safePrint('_playAudio - error - $err');
       setState(() {
