@@ -24,19 +24,19 @@ class Navbar extends StatelessWidget {
       'url': Routes.matchesIndex,
       'title': 'Home',
       'icon': iconHome(),
-      'width': 20.0,
+      'width': 16.0,
     },
     {
       'url': Routes.profile,
       'title': 'Settings',
       'icon': iconSettings(),
-      'width': 20.0,
+      'width': 16.0,
     },
     {
       'url': Routes.signOut,
       'title': 'Sign out',
       'icon': iconSignOut(),
-      'width': 20.0,
+      'width': 14.0,
       'onPress': () async {
         await EasyLoading.show(status: 'Loading');
         try {
@@ -91,6 +91,7 @@ class Navbar extends StatelessWidget {
                             [
                               P(
                                 data["title"],
+                                isCaption: true,
                                 fw: FontWeight.w600,
                                 fg: isActive ? colorSeondary200 : colorGrey900,
                               ),
@@ -121,7 +122,7 @@ class Navbar extends StatelessWidget {
           ),
         ),
       ],
-      pv: gapHorizontal,
+      pv: gap,
       ph: gap,
       bg: colorWhite,
       brTr: radiusLarge,
