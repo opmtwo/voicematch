@@ -20,8 +20,8 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // transparent status bar
-      statusBarBrightness: Brightness.light, // dark status bar
-      statusBarIconBrightness: Brightness.light, // dark text for status bar
+      statusBarBrightness: Brightness.dark, // dark status bar
+      statusBarIconBrightness: Brightness.dark, // dark text for status bar
     ),
   );
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
