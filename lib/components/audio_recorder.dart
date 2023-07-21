@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:amplify_flutter/amplify_flutter.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:record/record.dart';
@@ -78,9 +80,19 @@ class _AudioRecorderState extends State<AudioRecorder> {
     try {
       String? path = await Record().stop();
       // log('path $path');
-      stopRecordingDuration();
+      await stopRecordingDuration();
       if (path is String) {
-        await widget.onSubmit(path, duration);
+        Duration? audioDuration;
+        try {
+          final audioPlayer = AudioPlayer();
+          await audioPlayer.setSource(
+            DeviceFileSource(path),
+          );
+          audioDuration = await audioPlayer.getDuration();
+        } catch (err) {
+          safePrint('Error loading audio file to find duration - $err');
+        }
+        await widget.onSubmit(path, audioDuration ?? duration);
       }
       setState(() {
         error = null;
@@ -100,8 +112,8 @@ class _AudioRecorderState extends State<AudioRecorder> {
   }
 
   void startRecordingDuration() {
-    subscription = Stream.periodic(const Duration(milliseconds: 100), (_) {
-      return duration + const Duration(milliseconds: 100);
+    subscription = Stream.periodic(const Duration(milliseconds: 50), (_) {
+      return duration + const Duration(milliseconds: 50);
     }).listen((newDuration) {
       // log('newDuration - ${newDuration.inMilliseconds}');
       setState(() {
@@ -110,9 +122,11 @@ class _AudioRecorderState extends State<AudioRecorder> {
     });
   }
 
-  void stopRecordingDuration() {
-    subscription?.cancel();
-    subscription = null;
+  Future<void> stopRecordingDuration() async {
+    await subscription?.cancel();
+    setState(() {
+      subscription = null;
+    });
   }
 
   @override
