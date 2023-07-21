@@ -202,6 +202,7 @@ class SignInScreenState extends State<SignInScreen> {
                             [
                               Input(
                                 usernameController,
+                                kt: TextInputType.emailAddress,
                                 placeholder: '*Email',
                                 bc: colorTransparent,
                                 bw: 0,
@@ -219,6 +220,7 @@ class SignInScreenState extends State<SignInScreen> {
                                 children: [
                                   Input(
                                     passwordController,
+                                    kt: TextInputType.visiblePassword,
                                     placeholder: '*Password',
                                     bw: 0,
                                     bg: colorWhite,

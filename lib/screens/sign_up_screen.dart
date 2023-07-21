@@ -232,6 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           [
                             Input(
                               usernameController,
+                              kt: TextInputType.emailAddress,
                               placeholder: '*Email Address',
                               bc: colorTransparent,
                               bw: 0,
@@ -249,6 +250,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 Input(
                                   passwordController,
+                                  kt: TextInputType.visiblePassword,
                                   placeholder: '*Password',
                                   bw: 0,
                                   bg: colorWhite,
@@ -287,6 +289,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               children: [
                                 Input(
                                   confirmationController,
+                                  kt: TextInputType.visiblePassword,
                                   placeholder: '*Confirm Password',
                                   bw: 0,
                                   bg: colorWhite,

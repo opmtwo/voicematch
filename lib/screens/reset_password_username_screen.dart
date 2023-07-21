@@ -162,6 +162,7 @@ class ResetPasswordUsernameScreenState
                             [
                               Input(
                                 usernameController,
+                                kt: TextInputType.emailAddress,
                                 placeholder: '*Email',
                                 bc: colorTransparent,
                                 bw: 0,
