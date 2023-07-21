@@ -26,6 +26,7 @@ import 'package:voicematch/icons/icon_video.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
 import 'package:uuid/uuid.dart';
+import 'package:voicematch/utils/helper_utils.dart';
 import 'package:voicematch/utils/user_utils.dart';
 
 class MatchesChatScreen extends StatefulWidget {
@@ -514,6 +515,16 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       });
     } catch (err) {
       safePrint('onPublish - error - $err');
+      final index = messages.indexWhere((element) => element.id == id);
+      final newMessages = messages;
+      newMessages[index].isBusy = false;
+      setState(() {
+        messages = newMessages;
+      });
+      notifyError(
+        'Error',
+        'Message could not be send. Please try again.',
+      );
     }
     // await EasyLoading.dismiss();
     return null;
