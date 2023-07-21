@@ -233,13 +233,27 @@ class AvatarState extends State<Avatar> {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(100),
-          child: profilePic != null && profilePic?.trim().isEmpty == false
+          child: profilePic != null && profilePic?.trim().isNotEmpty == true
               ? Image.network(
                   profilePic as String,
                   width: widget.w ?? defaultWidth,
                   height: widget.h ?? defaultHeight,
                   fit: BoxFit.cover,
                   isAntiAlias: true,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Error occurred while fetching the image from the network
+                    return IconBox(
+                      const P(
+                        'Error Loading Image',
+                        isBody1: true,
+                        lh: 1,
+                        ta: TextAlign.center,
+                      ),
+                      w: widget.w ?? defaultWidth,
+                      h: widget.h ?? defaultHeight,
+                      bg: const Color(0xFFEEEEEE),
+                    );
+                  },
                 )
               : IconBox(
                   const P(
