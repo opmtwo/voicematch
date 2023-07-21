@@ -97,6 +97,9 @@ dependencies:
   # https://pub.dev/packages/permission_handler/install
   permission_handler: ^10.4.3
 
+  # https://pub.dev/packages/fuzzywuzzy/install
+  fuzzywuzzy: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
