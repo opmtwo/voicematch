@@ -357,43 +357,53 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                       ],
                                                       mr: gap,
                                                     ),
-                                                    Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Div(
-                                                          [
-                                                            Align(
-                                                              alignment:
-                                                                  Alignment
-                                                                      .topLeft,
-                                                              child: P(
-                                                                item.member
-                                                                    .givenName,
-                                                                isH6: true,
-                                                                lines: 1,
-                                                                ov: TextOverflow
-                                                                    .ellipsis,
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        Get.toNamed(
+                                                          Routes.matchesChat,
+                                                          arguments: {
+                                                            'id': item.id,
+                                                          },
+                                                        );
+                                                      },
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Div(
+                                                            [
+                                                              Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .topLeft,
+                                                                child: P(
+                                                                  item.member
+                                                                      .givenName,
+                                                                  isH6: true,
+                                                                  lines: 1,
+                                                                  ov: TextOverflow
+                                                                      .ellipsis,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                          w: 150,
-                                                        ),
-                                                        Div(
-                                                          [
-                                                            P(
-                                                              item.member
-                                                                  .ageRange,
-                                                              isCaption: true,
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    )
+                                                            ],
+                                                            w: 150,
+                                                          ),
+                                                          Div(
+                                                            [
+                                                              P(
+                                                                item.member
+                                                                    .ageRange,
+                                                                isCaption: true,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
                                                   ],
                                                 ),
                                               ],
