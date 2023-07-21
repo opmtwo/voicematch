@@ -8,6 +8,8 @@ import 'package:voicematch/icons/icon_left.dart';
 
 class Header extends StatelessWidget {
   final Color? bg;
+  final Color? nextBg;
+  final Color? prevBg;
   final List<Widget> children;
 
   final bool? hasPrev;
@@ -22,6 +24,8 @@ class Header extends StatelessWidget {
     Key? key,
     required this.children,
     this.bg,
+    this.nextBg,
+    this.prevBg,
     this.hasPrev,
     this.prevIcon,
     this.onPrev,
@@ -53,7 +57,7 @@ class Header extends StatelessWidget {
                             iconLeft(),
                             width: 24,
                           ),
-                      bg: Colors.transparent,
+                      bg: prevBg ?? Colors.transparent,
                       onPress: onPrev,
                     ),
                   ),
@@ -81,7 +85,7 @@ class Header extends StatelessWidget {
                             Icons.arrow_left_rounded,
                             color: colorWhite,
                           ),
-                      bg: Colors.transparent,
+                      bg: nextBg ?? Colors.transparent,
                       onPress: onNext,
                     ),
                   ),
