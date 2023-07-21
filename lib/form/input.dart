@@ -9,6 +9,8 @@ class Input extends StatelessWidget {
 
   final VoidCallback? onPress;
 
+  final TextInputType? kt;
+
   final bool? isDisabled;
   final bool? isReadOnly;
   final bool? isPassword;
@@ -76,6 +78,7 @@ class Input extends StatelessWidget {
   const Input(
     this.controller, {
     Key? key,
+    this.kt,
     this.onPress,
     this.isDisabled,
     this.isReadOnly,
@@ -127,6 +130,7 @@ class Input extends StatelessWidget {
         child: TextFormField(
           controller: controller,
           obscureText: isPassword ?? false,
+          keyboardType: kt,
           minLines: minLines ?? 1,
           maxLines: maxLines ?? max(minLines ?? 1, maxLines ?? 1),
           enabled: isDisabled != true,
