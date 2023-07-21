@@ -5,7 +5,7 @@ import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/elements/div.dart';
 import 'package:voicematch/form/progress_bar.dart';
 
-class ProgressBarAlt extends StatelessWidget {
+class ProgressBarAlt extends StatefulWidget {
   final double total;
   final double value;
   final int? gutter;
@@ -24,6 +24,32 @@ class ProgressBarAlt extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<ProgressBarAlt> createState() => _ProgressBarAltState();
+}
+
+class _ProgressBarAltState extends State<ProgressBarAlt>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _circleAnimationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _circleAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 150,
+      ), // Adjust the duration as needed
+    );
+    _circleAnimationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _circleAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
@@ -38,40 +64,56 @@ class ProgressBarAlt extends StatelessWidget {
         ),
         Div([
           ProgressBar(
-            value: value / total,
+            value: widget.value / widget.total,
             h: 4,
-            gutter: gutter ?? (gap * 2).toInt(),
-            bg: trackBg,
-            fg: trackFg,
+            gutter: widget.gutter ?? (gap * 2).toInt(),
+            bg: widget.trackBg,
+            fg: widget.trackFg,
             br: radius,
           ),
         ], pt: 18),
-        Positioned(
-          top: 0,
-          left: value /
-              total *
-              (MediaQuery.of(context).size.width - (gutter ?? (gap * 2)) - 40),
-          child: IconBox(
-            const Div([]),
-            w: 40,
-            h: 40,
-            bg: thumbBg,
-          ),
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: widget.value),
+          duration: const Duration(milliseconds: 250),
+          builder: (context, value, child) {
+            double leftPosition = value /
+                widget.total *
+                (MediaQuery.of(context).size.width -
+                    (widget.gutter ?? (gap * 2)) -
+                    40);
+            return Positioned(
+              top: 0,
+              left: leftPosition,
+              child: IconBox(
+                const Div([]),
+                w: 40,
+                h: 40,
+                bg: widget.thumbBg,
+              ),
+            );
+          },
         ),
-        Positioned(
-          top: 10,
-          left: value /
-                  total *
-                  (MediaQuery.of(context).size.width -
-                      (gutter ?? (gap * 2)) - // gap on both sides
-                      40) + // circle width
-              10, // shift center circle to center of parent circle
-          child: IconBox(
-            const Div([]),
-            w: 20,
-            h: 20,
-            bg: thumbFg,
-          ),
+        TweenAnimationBuilder<double>(
+          tween: Tween<double>(begin: 0, end: widget.value),
+          duration: const Duration(milliseconds: 250),
+          builder: (context, value, child) {
+            double leftPosition = value /
+                    widget.total *
+                    (MediaQuery.of(context).size.width -
+                        (widget.gutter ?? (gap * 2)) - // gap on both sides
+                        40) + // circle width
+                10; // shift center circle to center of parent circle
+            return Positioned(
+              top: 10,
+              left: leftPosition,
+              child: IconBox(
+                const Div([]),
+                w: 20,
+                h: 20,
+                bg: widget.thumbFg,
+              ),
+            );
+          },
         ),
       ],
     );
