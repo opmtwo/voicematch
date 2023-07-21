@@ -87,7 +87,7 @@ class _RevealState extends State<Reveal> {
       // update state
       setState(() {
         connection = ConnectionModel.fromJson(json['connection']);
-        duration = Duration(milliseconds: json['duration'] * 100);
+        duration = Duration(milliseconds: json['duration']);
       });
     } catch (err) {
       safePrint('getConnection- error - $err');
