@@ -130,7 +130,7 @@ class _AudioRecorderState extends State<AudioRecorder> {
           },
           w: 64,
           h: 64,
-          bg: isRecording ? colorPrimary : colorSeondary200,
+          bg: isRecording ? colorPrimary : colorSeondary100,
         ),
         if (isRecording)
           Div(
