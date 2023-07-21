@@ -8,6 +8,7 @@ class Input extends StatelessWidget {
   final TextEditingController controller;
 
   final VoidCallback? onPress;
+  final Function(String)? onChange;
 
   final TextInputType? kt;
 
@@ -80,6 +81,7 @@ class Input extends StatelessWidget {
     Key? key,
     this.kt,
     this.onPress,
+    this.onChange,
     this.isDisabled,
     this.isReadOnly,
     this.isPassword,
@@ -239,9 +241,14 @@ class Input extends StatelessWidget {
             ),
           ),
           onTap: onPress,
+          onChanged: (value) {
+            if (onChange != null) {
+              onChange!(value);
+            }
+          },
           style: TextStyle(
             color: fg ?? defaultFg,
-            height: 1,
+            height: 1.33,
             fontSize: 16,
           ),
         ),
