@@ -74,7 +74,8 @@ class _ChatMessageState extends State<ChatMessage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLocalMessage = widget.message.recording?.url.startsWith('file://');
+    final isLocalMessage =
+        widget.message.recording?.url.startsWith('https://') == false;
 
     final List<Widget> children = [
       if (isLocalMessage == true)

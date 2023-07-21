@@ -475,7 +475,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     try {
       // upload recording file and save recording entry
       RecordingModel? recording;
-      if (localMessage.recording?.url.startsWith('file://') == true &&
+      if (localMessage.recording?.url.startsWith('https://') == false &&
           localMessage.recording?.duration != null) {
         final recordingKey = await uploadRecordingFile(
           localMessage.recording?.url as String,
