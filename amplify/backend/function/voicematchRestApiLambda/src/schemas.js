@@ -54,18 +54,18 @@ const IConnection = joi
 
 const IConnectionMessage = joi
 	.object({
-		body: joi.string().optional().min(0).max(10000),
+		body: joi.string().allow(null).optional().min(0).max(10000),
 		isSilent: joi.bool().optional().default(false),
 		type: joi.string().optional().valid('text', 'image', 'video', 'audio', 'document', 'link', 'file', 'other'),
-		fileKey: joi.string().optional().max(1000),
+		fileKey: joi.string().optional().min(0).max(1000),
 		fileSize: joi.number().optional().min(1),
 		fileMime: joi.string().when('fileSize', {
 			is: joi.exist(),
 			then: joi.string().required().max(100),
-			otherwise: joi.string().optional().max(100),
+			otherwise: joi.string().optional().min(0).max(100),
 		}),
-		isUploaded: joi.bool().optional(),
-		recordingId: joi.string().optional().max(1000),
+		isUploaded: joi.bool().optional().default(false),
+		recordingId: joi.string().allow(null).optional().min(0).max(1000),
 	})
 	.options({ abortEarly: false });
 
