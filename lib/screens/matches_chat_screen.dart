@@ -11,6 +11,7 @@ import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:voicematch/components/audio_recorder.dart';
+import 'package:voicematch/components/chat_form.dart';
 import 'package:voicematch/components/connection_header.dart';
 import 'package:voicematch/components/header.dart';
 import 'package:voicematch/components/chat_message.dart';
@@ -538,6 +539,18 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     return null;
   }
 
+  Future<void> onTextSubmit(String msg) async {
+    //
+  }
+
+  Future<void> onFileSubmit(String fileKey, String fileType) async {
+    //
+  }
+
+  Future<void> onClipSubmit(String filepath, Duration duration) async {
+    await onRecord(filepath, duration);
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget? next;
@@ -651,9 +664,18 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               ),
               Div(
                 [
-                  AudioRecorder(
-                    onSubmit: onRecord,
-                  ),
+                  if (activeItem?.isUserRevealed != true ||
+                      activeItem?.isMemberRevealed != true)
+                    AudioRecorder(
+                      onSubmit: onRecord,
+                    ),
+                  if (activeItem?.isUserRevealed == true &&
+                      activeItem?.isMemberRevealed == true)
+                    ChatForm(
+                      onTextSubmit: onTextSubmit,
+                      onFileSubmit: onFileSubmit,
+                      onClipSubmit: onClipSubmit,
+                    ),
                 ],
                 ph: gap,
                 pt: gap,
