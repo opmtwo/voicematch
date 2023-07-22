@@ -22,6 +22,8 @@ import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/button.dart';
 import 'package:voicematch/form/fab_button.dart';
 import 'package:voicematch/form/input.dart';
+import 'package:voicematch/icons/icon_minus.dart';
+import 'package:voicematch/icons/icon_plus.dart';
 import 'package:voicematch/icons/icon_search.dart';
 import 'package:voicematch/layouts/app_layout.dart';
 import 'package:voicematch/router.dart';
@@ -225,6 +227,46 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
     });
   }
 
+  Future<void> onPinToggle(String id) async {
+    final item = connections.firstWhereOrNull((element) => element.id == id);
+    if (item == null) {
+      return;
+    }
+    EasyLoading.show(status: 'loading...');
+    try {
+      // get access token
+      final result = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = result.userPoolTokens?.accessToken;
+
+      final bool shouldPin = item.isPinned == true ? false : true;
+
+      // update profile via oboard api
+      final url = Uri.parse(
+          '${apiEndPoint}api/v1/connections/$id/${shouldPin ? "pin" : "unpin"}');
+      safePrint('onPin - url $url');
+      final response = await http.post(url, headers: {
+        'Authorization': accessToken.toString(),
+      });
+      safePrint('onPin - status code = ${response.statusCode}');
+
+      // non 200 response code
+      if (response.statusCode != 200) {
+        throw Exception('onPin - non 200 code - ${response.statusCode}');
+      }
+
+      // refresh connection
+      await getConnections();
+    } catch (err) {
+      safePrint('onPin - error $err');
+      setState(() {
+        error = err.toString();
+      });
+    }
+    EasyLoading.dismiss();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -284,7 +326,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                               [
                                 ConstrainedBox(
                                   constraints: BoxConstraints.loose(
-                                      const Size.fromHeight(80)),
+                                      const Size.fromHeight(100)),
                                   child: ListView(
                                     scrollDirection: Axis.horizontal,
                                     children: List.generate(
@@ -295,26 +337,60 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                           width: MediaQuery.of(context)
                                                   .size
                                                   .width /
-                                              5, // Divide the width equally to accommodate four items per row
+                                              4.6, // Divide the width equally to accommodate four items per row
                                           child: Column(
                                             children: [
                                               Div(
                                                 [
-                                                  FabButton(
-                                                    ConnectionPic(
-                                                      item: item,
-                                                      w: avatarSmall,
-                                                    ),
-                                                    w: avatarSmall,
-                                                    h: avatarSmall,
-                                                    onPress: () {
-                                                      Get.toNamed(
-                                                        Routes.matchesPreview,
-                                                        arguments: {
-                                                          'id': item.id,
-                                                        },
-                                                      );
-                                                    },
+                                                  Stack(
+                                                    children: [
+                                                      Div(
+                                                        [
+                                                          FabButton(
+                                                            ConnectionPic(
+                                                              item: item,
+                                                              w: avatarSmall,
+                                                            ),
+                                                            w: avatarSmall,
+                                                            h: avatarSmall,
+                                                            onPress: () {
+                                                              Get.toNamed(
+                                                                Routes
+                                                                    .matchesPreview,
+                                                                arguments: {
+                                                                  'id': item.id,
+                                                                },
+                                                              );
+                                                            },
+                                                          ),
+                                                        ],
+                                                        ph: gap / 2,
+                                                        pb: gap / 2,
+                                                      ),
+                                                      if (item.isPinned != true)
+                                                        Positioned(
+                                                          right: 0,
+                                                          bottom: 0,
+                                                          child: FabButton(
+                                                            SvgPicture.string(
+                                                              item.isPinned ==
+                                                                      true
+                                                                  ? iconMinus()
+                                                                  : iconPlus(),
+                                                              width: 16,
+                                                            ),
+                                                            w: 24,
+                                                            h: 24,
+                                                            bg: colorGrey200,
+                                                            bw: 1,
+                                                            bc: colorSeondary200,
+                                                            onPress: () {
+                                                              onPinToggle(
+                                                                  item.id);
+                                                            },
+                                                          ),
+                                                        )
+                                                    ],
                                                   ),
                                                 ],
                                                 mb: gap / 2,
