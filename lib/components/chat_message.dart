@@ -142,7 +142,7 @@ class _ChatMessageState extends State<ChatMessage> {
           ),
         ],
       ),
-      if (widget.message.recording?.id != null)
+      if (widget.message.recording?.url != null)
         Div(
           [
             AudioFilePlayer(
@@ -171,18 +171,19 @@ class _ChatMessageState extends State<ChatMessage> {
           ],
           mh: gap / 2,
         ),
-      Div(
-        [
-          Wave(
-            value: playbackDuration.inMilliseconds.toDouble(),
-            total: widget.message.recording?.duration.toDouble() as double,
-            w: (MediaQuery.of(context).size.width * 0.7) -
-                ((40 * 2) + (gap * 4)),
-            bg: const Color(0xFFC3D1FF),
-            alt: true,
-          ),
-        ],
-      )
+      if (widget.message.recording?.url != null)
+        Div(
+          [
+            Wave(
+              value: playbackDuration.inMilliseconds.toDouble(),
+              total: widget.message.recording?.duration.toDouble() as double,
+              w: (MediaQuery.of(context).size.width * 0.7) -
+                  ((40 * 2) + (gap * (isLocalMessage ? 4 : 1))),
+              bg: const Color(0xFFC3D1FF),
+              alt: true,
+            ),
+          ],
+        )
     ];
 
     return Column(
@@ -208,7 +209,7 @@ class _ChatMessageState extends State<ChatMessage> {
             ),
           ],
         ),
-        if (widget.message.recording?.id != null)
+        if (widget.message.recording?.url != null)
           Div(
             [
               Row(
