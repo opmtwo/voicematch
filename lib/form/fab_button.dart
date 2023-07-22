@@ -12,6 +12,10 @@ class FabButton extends StatelessWidget {
   final double? brBl;
   final double? brTl;
 
+  final Color? bc;
+  final BorderStyle? bs;
+  final double? bw;
+
   final Color? bg;
   final Color? fg;
 
@@ -31,6 +35,9 @@ class FabButton extends StatelessWidget {
     this.child, {
     Key? key,
     this.onPress,
+    this.bc,
+    this.bs,
+    this.bw,
     this.br,
     this.brTr,
     this.brBr,
@@ -75,6 +82,11 @@ class FabButton extends StatelessWidget {
           bottomRight: Radius.circular(brBr ?? br ?? defaultRadius),
           bottomLeft: Radius.circular(brBl ?? br ?? defaultRadius),
           topLeft: Radius.circular(brTl ?? br ?? defaultRadius),
+        ),
+        border: Border.all(
+          color: bc ?? Colors.transparent,
+          width: bw ?? 0,
+          style: bs ?? BorderStyle.solid,
         ),
       ),
       child: Material(
