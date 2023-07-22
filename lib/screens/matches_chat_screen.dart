@@ -564,98 +564,103 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     }
 
     return Scaffold(
-      body: AppLayout(
-        Div(
-          [
-            Div(
-              [
-                Header(
-                  hasPrev: true,
-                  onPrev: onBack,
-                  hasNext: next != null,
-                  onNext: onNext,
-                  nextIcon: next,
-                  nextBg: colorSeondary500,
-                  children: [
-                    if (activeItem != null) ConnectionHeader(item: activeItem),
-                  ],
-                ),
-              ],
-              mt: gap,
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Column(
-                  children: [
-                    if (messages.isEmpty && isMessagesLoading == false)
-                      const Div(
-                        [
-                          P(
-                            'No messages found. Get started by sending the first message!',
-                            isH6: true,
-                            ta: TextAlign.center,
-                          ),
-                        ],
-                        pv: gap,
-                        ph: gap,
-                      ),
-                    if (nextToken != null)
+      body: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: AppLayout(
+          Div(
+            [
+              Div(
+                [
+                  Header(
+                    hasPrev: true,
+                    onPrev: onBack,
+                    hasNext: next != null,
+                    onNext: onNext,
+                    nextIcon: next,
+                    nextBg: colorSeondary500,
+                    children: [
+                      if (activeItem != null)
+                        ConnectionHeader(item: activeItem),
+                    ],
+                  ),
+                ],
+                mt: gap,
+              ),
+              Expanded(
+                flex: 1,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Column(
+                    children: [
+                      if (messages.isEmpty && isMessagesLoading == false)
+                        const Div(
+                          [
+                            P(
+                              'No messages found. Get started by sending the first message!',
+                              isH6: true,
+                              ta: TextAlign.center,
+                            ),
+                          ],
+                          pv: gap,
+                          ph: gap,
+                        ),
+                      if (nextToken != null)
+                        Div(
+                          [
+                            Button(
+                              'Load More',
+                              height: gap * 2,
+                              bg: colorSeondary200,
+                              // fg: colorSeondary500,
+                              onPress: () {
+                                getMessages(isLoadMore: true);
+                              },
+                            ),
+                          ],
+                          w: 150,
+                          mv: gap,
+                        ),
                       Div(
-                        [
-                          Button(
-                            'Load More',
-                            height: gap * 2,
-                            bg: colorSeondary200,
-                            // fg: colorSeondary500,
-                            onPress: () {
-                              getMessages(isLoadMore: true);
-                            },
-                          ),
-                        ],
-                        w: 150,
-                        mv: gap,
+                        List.generate(
+                          messages.length,
+                          (index) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Div(
+                                  [
+                                    ChatMessage(
+                                      connection: activeItem as ConnectionModel,
+                                      message: messages[index],
+                                      onPublish: onPublish,
+                                      onDelete: onDelete,
+                                    ),
+                                  ],
+                                  mb: gap,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        mh: gap,
+                        mv: gapTop,
                       ),
-                    Div(
-                      List.generate(
-                        messages.length,
-                        (index) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Div(
-                                [
-                                  ChatMessage(
-                                    connection: activeItem as ConnectionModel,
-                                    message: messages[index],
-                                    onPublish: onPublish,
-                                    onDelete: onDelete,
-                                  ),
-                                ],
-                                mb: gap,
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                      mh: gap,
-                      mv: gapTop,
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Div(
-              [
-                AudioRecorder(
-                  onSubmit: onRecord,
-                ),
-              ],
-              pt: gap,
-              pb: gapBottom,
-            )
-          ],
+              Div(
+                [
+                  AudioRecorder(
+                    onSubmit: onRecord,
+                  ),
+                ],
+                ph: gap,
+                pt: gap,
+                pb: gapBottom,
+              )
+            ],
+          ),
         ),
       ),
     );
