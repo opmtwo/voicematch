@@ -83,6 +83,24 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     getMessages();
   }
 
+  void scrollIntoView() {
+    if (_scrollController.position.pixels <
+        _scrollController.position.maxScrollExtent) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent + 100,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void showErrorAlert() {
+    notifyError(
+      'Error',
+      'Message could not be send. Please try again.',
+    );
+  }
+
   Future<void> getConnection() async {
     // await EasyLoading.show(status: 'loading...');
     try {
@@ -148,7 +166,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
       // decode response
       final json = await jsonDecode(response.body);
-      log('getMessages - json - ${response.body}');
+      // log('getMessages - json - ${response.body}');
 
       // parse results
       List<MessageEventModel> newMessages = [];
@@ -156,27 +174,25 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
         newMessages.add(MessageEventModel.fromJson(json['items'][i]));
       }
 
+      if (isLoadMore == true) {
+        newMessages = newMessages + messages;
+      } else {
+        newMessages = newMessages;
+      }
+
+      newMessages.sort((a, b) =>
+          DateTime.parse(a.createdAt).compareTo(DateTime.parse(b.createdAt)));
+
       // if load more then prepend to list else reset entire list
       setState(() {
-        if (isLoadMore == true) {
-          messages = newMessages + messages;
-        } else {
-          messages = newMessages;
-        }
+        messages = newMessages;
         nextToken = json['nextToken'];
       });
 
       // Scroll to the bottom of the ListView
       if (isLoadMore != true) {
         Future.delayed(const Duration(milliseconds: 100), () {
-          if (_scrollController.position.pixels <
-              _scrollController.position.maxScrollExtent) {
-            _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent + 100,
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOut,
-            );
-          }
+          scrollIntoView();
         });
       }
     } catch (err) {
@@ -235,23 +251,6 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                 onPrev: () {
                   Navigator.pop(context);
                 },
-                // duration: const Duration(seconds: 1500),
-                // isUserHalfRevealed: true,
-                // isUserFullRevealed: true,
-                // isMemberHalfRevealed: true,
-                // isMemberFullRevealed: true,
-                // header: [
-                //   if (activeItem != null) ConnectionHeader(item: activeItem),
-                // ],
-                // submitTitle: 'Continue',
-                // cancelTitle: 'cancel',
-                // yesTitle: 'Yes',
-                // noTitle: 'No',
-                // onPrev: onBack,
-                // onSubmit: onSubmit,
-                // onCancel: onCancel,
-                // onYes: onYes,
-                // onNo: onNo,
               ),
             );
           },
@@ -281,6 +280,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
   Future<MessageEventModel> getMessageEvent({
     String? type = 'text',
+    String? body,
     RecordingModel? recording,
   }) async {
     final id = const Uuid().v4().toString();
@@ -294,6 +294,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       chatUserId: '${activeItem?.userId}-${activeItem?.memberId}',
       messageId: id,
       type: type,
+      body: body,
       recordingId: recording?.id,
       recording: recording,
       isSender: true,
@@ -321,14 +322,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     });
 
     // Scroll to the bottom of the ListView
-    if (_scrollController.position.pixels <
-        _scrollController.position.maxScrollExtent) {
-      await _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent + 100,
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-    }
+    scrollIntoView();
   }
 
   /// @summary
@@ -369,15 +363,6 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
 
       // parse data
       final recording = RecordingModel.fromJson(json);
-
-      // // create new messages
-      // final newMessages = messages;
-      // newMessages.add(recording);
-
-      // // update state
-      // setState(() {
-      //   messages = newMessages;
-      // });
 
       return recording;
     } catch (err) {
@@ -434,15 +419,6 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       // parse data
       final newMessageEvent = MessageEventModel.fromJson(json);
 
-      // // create new messages
-      // final newMessages = messages;
-      // newMessages.add(newMessageEvent);
-
-      // // update state
-      // setState(() {
-      //   messages = newMessages;
-      // });
-
       // all done
       return newMessageEvent;
     } catch (err) {
@@ -451,19 +427,15 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     }
   }
 
-  Future<MessageEventModel?> onPublish(
+  Future<MessageEventModel?> onClipPublish(
     String id, {
-    // MessageTypeEnum? type = 'text',
-    // String? body = '',
-    // String? filepath,
-    // int? duration,
     bool isSilent = false,
   }) async {
     // await EasyLoading.show(status: 'loading...');
     final MessageEventModel? localMessage =
         messages.firstWhereOrNull((element) => element.id == id);
     if (localMessage == null) {
-      Get.snackbar('onPublish - error', 'Message not found');
+      showErrorAlert();
       return null;
     }
 
@@ -497,8 +469,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       );
 
       if (message?.id == null) {
-        log('onPublish - something went wrong trying to save the recording');
-        return null;
+        throw ('');
       }
 
       // if we reached this far then we only can replace the model if we want
@@ -515,24 +486,79 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
         messages = newMessages;
       });
     } catch (err) {
-      safePrint('onPublish - error - $err');
+      safePrint('onClipPublish - error - $err');
       final index = messages.indexWhere((element) => element.id == id);
       final newMessages = messages;
       newMessages[index].isBusy = false;
       setState(() {
         messages = newMessages;
       });
-      notifyError(
-        'Error',
-        'Message could not be send. Please try again.',
+      showErrorAlert();
+    }
+    // await EasyLoading.dismiss();
+    return null;
+  }
+
+  Future<MessageEventModel?> onTextPublish(
+    String id, {
+    bool isSilent = false,
+  }) async {
+    // await EasyLoading.show(status: 'loading...');
+    final MessageEventModel? localMessage =
+        messages.firstWhereOrNull((element) => element.id == id);
+    if (localMessage == null) {
+      showErrorAlert();
+      return null;
+    }
+
+    final index = messages.indexWhere((element) => element.id == id);
+    final newMessages = messages;
+    newMessages[index].isBusy = true;
+    setState(() {
+      messages = newMessages;
+    });
+
+    try {
+      // save message entry
+      MessageEventModel? message = await createMessage(
+        type: localMessage.type,
+        body: localMessage.body ?? '',
+        isSilent: isSilent,
       );
+
+      if (message?.id == null) {
+        throw ('');
+      }
+
+      // if we reached this far then we only can replace the model if we want
+      // by replace the model I mean replace the dummy model with the real one
+      // may not be needed as the user will already have a local model in place
+      List<MessageEventModel> newMessages = messages;
+      for (int i = 0; i < messages.length; i++) {
+        if (messages[i].id != localMessage.id) {
+          continue;
+        }
+        newMessages[i] = message as MessageEventModel;
+      }
+      setState(() {
+        messages = newMessages;
+      });
+    } catch (err) {
+      safePrint('onClipPublish - error - $err');
+      final index = messages.indexWhere((element) => element.id == id);
+      final newMessages = messages;
+      newMessages[index].isBusy = false;
+      setState(() {
+        messages = newMessages;
+      });
+      showErrorAlert();
     }
     // await EasyLoading.dismiss();
     return null;
   }
 
   /// Used to remove local messages
-  Future<MessageEventModel?> onDelete(String id) async {
+  Future<MessageEventModel?> onClipDelete(String id) async {
     setState(() {
       messages = messages.takeWhile((value) => value.id != id).toList();
     });
@@ -540,7 +566,21 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   }
 
   Future<void> onTextSubmit(String msg) async {
-    //
+    // create new local message event model
+    final newMessageEvent = await getMessageEvent(
+      type: 'text',
+      body: msg,
+    );
+
+    // append the the end of existing messages
+    final newMessages = messages + [newMessageEvent];
+    setState(() {
+      messages = newMessages;
+    });
+
+    // Scroll to the bottom of the ListView
+    scrollIntoView();
+    onTextPublish(newMessageEvent.id);
   }
 
   Future<void> onFileSubmit(String fileKey, String fileType) async {
@@ -645,8 +685,8 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                                     ChatMessage(
                                       connection: activeItem as ConnectionModel,
                                       message: messages[index],
-                                      onPublish: onPublish,
-                                      onDelete: onDelete,
+                                      onPublish: onClipPublish,
+                                      onDelete: onClipDelete,
                                     ),
                                   ],
                                   mb: gap,
@@ -664,12 +704,12 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               ),
               Div(
                 [
-                  if (activeItem?.isUserRevealed != true ||
+                  if (activeItem?.isUserRevealed != true &&
                       activeItem?.isMemberRevealed != true)
                     AudioRecorder(
                       onSubmit: onRecord,
                     ),
-                  if (activeItem?.isUserRevealed == true &&
+                  if (activeItem?.isUserRevealed == true ||
                       activeItem?.isMemberRevealed == true)
                     ChatForm(
                       onTextSubmit: onTextSubmit,

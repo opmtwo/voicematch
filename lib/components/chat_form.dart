@@ -36,6 +36,7 @@ class ChatFormState extends State<ChatForm> {
 
   Future<void> onTextInputSubmit(String value) async {
     safePrint('onTextInputSubmit - $value');
+    widget.onTextSubmit(value);
   }
 
   @override
