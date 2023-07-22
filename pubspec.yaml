@@ -100,6 +100,12 @@ dependencies:
   # https://pub.dev/packages/fuzzywuzzy/install
   fuzzywuzzy: ^1.1.2
 
+  # https://pub.dev/packages/firebase_core
+  firebase_core: ^2.8.0
+
+  # https://pub.dev/packages/firebase_messaging
+  firebase_messaging: ^14.3.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
