@@ -37,6 +37,13 @@ class Input extends StatelessWidget {
   final double? mv;
   final double? mh;
 
+  final double? pt;
+  final double? pr;
+  final double? pb;
+  final double? pl;
+  final double? pv;
+  final double? ph;
+
   final double? br;
   final double? brTr;
   final double? brBr;
@@ -52,6 +59,11 @@ class Input extends StatelessWidget {
 
   final Color? bc;
   final double? bw;
+
+  final TextAlign? ta;
+
+  final String? prT;
+  final String? suT;
 
   final int? minLines;
   final int? maxLines;
@@ -107,11 +119,20 @@ class Input extends StatelessWidget {
     this.ml,
     this.mv,
     this.mh,
+    this.pt,
+    this.pr,
+    this.pb,
+    this.pl,
+    this.pv,
+    this.ph,
     this.boxShadow,
     this.bg,
     this.fg,
     this.bc,
     this.bw,
+    this.ta,
+    this.prT,
+    this.suT,
     this.minLines,
     this.maxLines,
     this.labelFg,
@@ -128,6 +149,12 @@ class Input extends StatelessWidget {
         bottom: mb ?? mv ?? 0,
         left: ml ?? mh ?? 0,
       ),
+      padding: EdgeInsets.fromLTRB(
+        pl ?? ph ?? 0,
+        pt ?? pv ?? 0,
+        pr ?? ph ?? 0,
+        pb ?? pv ?? 0,
+      ),
       child: Center(
         child: TextFormField(
           controller: controller,
@@ -140,6 +167,8 @@ class Input extends StatelessWidget {
           autocorrect: autocorrect == true,
           enableSuggestions: enableSuggestions == true,
           decoration: InputDecoration(
+            prefixText: prT,
+            suffixText: suT,
             fillColor: bg ?? defaultBg,
             filled: true,
             prefixIcon: iconLeft != null
@@ -251,6 +280,7 @@ class Input extends StatelessWidget {
             height: 1.33,
             fontSize: 16,
           ),
+          textAlign: ta ?? TextAlign.left,
         ),
       ),
     );
