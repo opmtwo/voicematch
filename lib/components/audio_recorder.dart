@@ -16,9 +16,16 @@ import 'package:voicematch/icons/icon_mic.dart';
 class AudioRecorder extends StatefulWidget {
   final Future<void> Function(String, Duration) onSubmit;
 
+  final double? w;
+  final double? h;
+  final double? d;
+
   const AudioRecorder({
     Key? key,
     required this.onSubmit,
+    this.w,
+    this.h,
+    this.d,
   }) : super(key: key);
 
   @override
@@ -129,6 +136,10 @@ class _AudioRecorderState extends State<AudioRecorder> {
     });
   }
 
+  final double defaultWidth = 64;
+  final double defaultHeight = 64;
+  final double defaultDiff = 8;
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -137,30 +148,29 @@ class _AudioRecorderState extends State<AudioRecorder> {
         FabButton(
           SvgPicture.string(
             iconMic(opacity: 0),
-            height: 56,
+            height: (widget.h ?? defaultHeight) - (widget.d ?? defaultDiff),
           ),
           onPress: () {
             isRecording ? onStop() : onStart();
           },
-          w: 64,
-          h: 64,
+          w: widget.w ?? defaultWidth,
+          h: widget.h ?? defaultHeight,
           bg: isRecording ? colorPrimary : colorSeondary100,
         ),
         if (isRecording)
-          Div(
-            [
-              CurrentTime(
-                duration: duration,
-                style: const TextStyle(
-                  color: colorWhite,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+          IgnorePointer(
+            child: Div(
+              [
+                CurrentTime(
+                  duration: duration,
+                  style: const TextStyle(
+                    color: colorWhite,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            ],
-            ph: gap,
-            pt: 2,
-            // bg: colorWhite.withOpacity(0.9),
+              ],
+            ),
           ),
       ],
     );
