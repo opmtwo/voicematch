@@ -63,7 +63,7 @@ class ChatFormState extends State<ChatForm> {
             Positioned(
               top: 0,
               bottom: 0,
-              left: 0,
+              left: 10,
               child: FabButton(
                 SvgPicture.string(
                   iconGallery(),
