@@ -9,6 +9,7 @@ class Input extends StatelessWidget {
 
   final VoidCallback? onPress;
   final Function(String)? onChange;
+  final Function(String)? onSubmit;
 
   final TextInputType? kt;
 
@@ -94,6 +95,7 @@ class Input extends StatelessWidget {
     this.kt,
     this.onPress,
     this.onChange,
+    this.onSubmit,
     this.isDisabled,
     this.isReadOnly,
     this.isPassword,
@@ -275,6 +277,7 @@ class Input extends StatelessWidget {
               onChange!(value);
             }
           },
+          onFieldSubmitted: onSubmit,
           style: TextStyle(
             color: fg ?? defaultFg,
             height: 1.33,
