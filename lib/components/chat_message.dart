@@ -10,6 +10,7 @@ import 'package:voicematch/constants/colors.dart';
 import 'package:voicematch/constants/theme.dart';
 import 'package:voicematch/constants/types.dart';
 import 'package:voicematch/elements/div.dart';
+import 'package:voicematch/elements/p.dart';
 import 'package:voicematch/form/fab_button.dart';
 import 'package:voicematch/icons/icon_delete.dart';
 import 'package:voicematch/icons/icon_pause.dart';
@@ -76,6 +77,32 @@ class _ChatMessageState extends State<ChatMessage> {
   Widget build(BuildContext context) {
     final isLocalMessage =
         widget.message.recording?.url.startsWith('https://') == false;
+
+    if (widget.message.type?.toLowerCase() == 'text') {
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: widget.message.isSender == true
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              Div(
+                [
+                  P(
+                    widget.message.body,
+                    fg: colorWhite,
+                  ),
+                ],
+                ph: gap,
+                pv: gap / 2,
+                bg: const Color(0xFF34332D),
+                br: 99,
+              ),
+            ],
+          )
+        ],
+      );
+    }
 
     final List<Widget> children = [
       if (isLocalMessage == true)
