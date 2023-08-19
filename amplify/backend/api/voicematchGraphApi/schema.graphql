@@ -155,3 +155,15 @@ type MessageEvent @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
+
+type Token
+	@model
+	@auth(
+		rules: [{ allow: owner, operations: [create, read, update, delete] }, { allow: private, provider: iam, operations: [create, read, update, delete] }]
+	) {
+	id: ID!
+	userId: String @index(name: "listTokensByUserId", queryField: "listTokensByUserId", sortKeyFields: ["createdAt"])
+	value: String
+	createdAt: AWSDateTime!
+	updatedAt: AWSDateTime!
+}
