@@ -4,7 +4,7 @@ const { default: slugify } = require('slugify');
 const { verifyToken } = require('../middlewares/auth');
 const { validateFormData, IConnection, IConnectionMessage } = require('../schemas');
 const { ddbUpdate, ddbDelete } = require('../utils/ddb-utils');
-const { idpAdminGetUser } = require('../utils/idp-utils');
+const { idpAdminGetUser, idpGetUserAttribute } = require('../utils/idp-utils');
 const { apsGetAll, apsMutation, apsQuery } = require('../utils/aps-utils');
 const {
 	listMessageByChatId,
@@ -32,12 +32,14 @@ const { s3CreatePresignedPostCommand } = require('../utils/s3-utils');
 
 const { LIMIT, LIMIT_SEARCH_RESULTS, BATCH_SIZE } = require('../consts');
 const { removeProfilePic } = require('../utils/helper-utils');
+const { firebaseSendToDevice } = require('../utils/firebase-utils');
 
 const {
 	AUTH_VOICEMATCHC92D7B64_USERPOOLID: USERPOOLID,
 	API_VOICEMATCHGRAPHAPI_CONNECTIONTABLE_NAME: CONNECTIONTABLE,
 	API_VOICEMATCHGRAPHAPI_MESSAGETABLE_NAME: MESSAGETABLE,
 	API_VOICEMATCHGRAPHAPI_MESSAGEEVENTTABLE_NAME: MESSAGEEVENTTABLE,
+	API_VOICEMATCHGRAPHAPI_TOKENTABLE_NAME: TOKENTABLE_NAME,
 	SNS_CLEANUP_TOPIC_ARN,
 	STORAGE_STORAGE_BUCKETNAME: BUCKETNAME,
 } = process.env;
@@ -189,19 +191,22 @@ app.post('/api/v1/connections/:id/reveal', verifyToken, async (req, res, next) =
 	// all chat connections - should be 2
 	const connections = await apsGetAll(listConnectionByChatId, { chatId: connection.chatId }, 'listConnectionByChatId');
 
-	//
+	// connection member id
+	let memberId;
 	let promises = [];
 	for (let i = 0; i < connections.length; i++) {
 		const { id, _version, owner, isUserRevealed, isMemberRevealed } = connections[i];
 
 		// user already reavealed?
 		if (owner === sub && isUserRevealed) {
+			memberId = connection.memberId;
 			console.log('User already revealed - skip');
 			continue;
 		}
 
 		// member already reavealed?
 		if (owner === connection.memberId && isMemberRevealed) {
+			memberId = connection.userId;
 			console.log('Member already revealed - skip');
 			continue;
 		}
@@ -224,6 +229,29 @@ app.post('/api/v1/connections/:id/reveal', verifyToken, async (req, res, next) =
 
 	// remove normal profile pic if required
 	removeProfilePic(connectionUpdated);
+
+	// fetch all tokens owned by this user
+	const tokens = await ddbQuery(
+		TOKENTABLE_NAME,
+		'listTokensByUserId',
+		'#userId = :userId',
+		{
+			'#userId': 'userId',
+		},
+		{
+			':userId': memberId,
+		}
+	);
+	console.log('Found member tokens', tokens.length);
+
+	// send notification to all connected devices
+	if (tokens.length > 0) {
+		const gender = await idpGetUserAttribute(req.user, 'given_name', 'female');
+		const givenName = await idpGetUserAttribute(req.user, 'given_name', 'Anonnymous');
+		const title = `Face revelaed!`;
+		const body = `${givenName} has revealed ${gender === 'female' ? 'her' : 'his'} face! You can now video chat with ${givenName}.`;
+		await firebaseNotify(tokens, title, body);
+	}
 
 	// all done
 	return res.status(200).json(connectionUpdated);
