@@ -42,9 +42,15 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
   // recording duration
   Duration duration = const Duration(seconds: 0);
 
+  // redirect to path provided via route argument
+  String? redirectTo;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      redirectTo = Get.arguments['redirectTo'] ?? '';
+    });
     // initUser();
   }
 
@@ -87,7 +93,11 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
       }
 
       // all done
-      Get.toNamed(Routes.matchesIndex);
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.matchesIndex);
+      }
     } catch (err) {
       safePrint('onSubmit - error $err');
       setState(() {

@@ -112,10 +112,16 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
   // playback duration
   Duration playbackDuration = const Duration(seconds: 0);
 
+  // redirect to path provided via route argument
+  String? redirectTo;
+
   @override
   void initState() {
     super.initState();
     initUser();
+    setState(() {
+      redirectTo = Get.arguments['redirectTo'] ?? '';
+    });
     initRecorder();
   }
 
@@ -310,7 +316,12 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
         userRecordingUrl?.trim().isNotEmpty == true &&
         (recordingPath == null || recordingPath?.trim().isEmpty == true)) {
       safePrint('Using existing audio recording - skip');
-      Get.toNamed(Routes.setupDone);
+      // all done
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.setupDone);
+      }
       return;
     }
 
@@ -335,7 +346,11 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
       safePrint('onSubmit - status code = ${response.statusCode}');
 
       // all done
-      Get.toNamed(Routes.setupDone);
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.setupDone);
+      }
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {

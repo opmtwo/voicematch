@@ -50,6 +50,9 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
 
   String? error;
 
+  // redirect to path provided via route argument
+  String? redirectTo;
+
   final options = [
     {
       'id': 'creativity',
@@ -86,6 +89,9 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      redirectTo = Get.arguments['redirectTo'] ?? '';
+    });
     initUser();
   }
 
@@ -361,7 +367,11 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
       safePrint('onSubmit - status code = ${response.statusCode}');
 
       // all done
-      Get.toNamed(Routes.setupRecording);
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.setupRecording);
+      }
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {

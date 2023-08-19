@@ -53,9 +53,15 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
   int ageRangeIndex = -1;
   int distanceIndex = -1;
 
+  // redirect to path provided via route argument
+  String? redirectTo;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      redirectTo = Get.arguments['redirectTo'] ?? '';
+    });
     initUser();
   }
 
@@ -194,7 +200,11 @@ class SetupOtherScreenState extends State<SetupOtherScreen> {
       safePrint('onSubmit - status code = ${response.statusCode}');
 
       // all done
-      Get.toNamed(Routes.setupInterests);
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.setupInterests);
+      }
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {

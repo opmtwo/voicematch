@@ -49,9 +49,15 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
   int genderIndex = -1;
   int targetGenderIndex = -1;
 
+  // redirect to path provided via route argument
+  String? redirectTo;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      redirectTo = Get.arguments['redirectTo'] ?? '';
+    });
     initUser();
   }
 
@@ -190,7 +196,12 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
       });
       safePrint('onSubmit - status code = ${response.statusCode}');
 
-      Get.toNamed(Routes.setupOther);
+      // all done
+      if (redirectTo != null && redirectTo?.isNotEmpty == true) {
+        Get.back();
+      } else {
+        Get.toNamed(Routes.setupOther);
+      }
     } on AuthException catch (e) {
       safePrint('onSubmit - error ${e.message}');
       setState(() {

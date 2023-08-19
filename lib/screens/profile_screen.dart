@@ -69,56 +69,96 @@ class ProfileScreenState extends State<ProfileScreen> {
       'id': 'givenName',
       'label': 'First Name',
       'callback': () {
-        Get.toNamed(Routes.setupIntro);
+        Get.toNamed(
+          Routes.setupIntro,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'gender',
       'label': 'Gender',
       'callback': () {
-        Get.toNamed(Routes.setupIntro);
+        Get.toNamed(
+          Routes.setupIntro,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'targetGender',
       'label': 'I am looking for',
       'callback': () {
-        Get.toNamed(Routes.setupIntro);
+        Get.toNamed(
+          Routes.setupIntro,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'ageRange',
       'label': 'Age range',
       'callback': () {
-        Get.toNamed(Routes.setupOther);
+        Get.toNamed(
+          Routes.setupOther,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'distance',
       'label': 'Distance',
       'callback': () {
-        Get.toNamed(Routes.setupOther);
+        Get.toNamed(
+          Routes.setupOther,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'locale',
       'label': 'Language',
       'callback': () {
-        Get.toNamed(Routes.setupOther);
+        Get.toNamed(
+          Routes.setupOther,
+          arguments: {
+            'redirectTo': '/profile',
+          },
+        );
       }
     },
     {
       'id': 'interests',
       'label': 'Interests',
       'callback': () {
-        Get.toNamed(Routes.setupInterests);
+        Get.toNamed(
+          Routes.setupInterests,
+          arguments: {
+            'redirectTo': '/interests',
+          },
+        );
       }
     },
     {
       'id': 'intro',
       'label': 'Intro Recording',
       'callback': () {
-        Get.toNamed(Routes.setupRecording);
+        Get.toNamed(
+          Routes.setupRecording,
+          arguments: {
+            'redirectTo': '/recording',
+          },
+        );
       }
     },
     // {
