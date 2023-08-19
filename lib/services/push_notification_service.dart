@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 // import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:voicevibe/constants/env.dart';
 
 class PushNotificationService {
   final FirebaseMessaging _fcm;
@@ -20,20 +24,26 @@ class PushNotificationService {
 
   Future<void> saveFirebaseToken(String token) async {
     try {
-      AuthUser user = await Amplify.Auth.getCurrentUser();
-      var options = RestOptions(
-        path: '/api/tokens',
-        apiName: 'restApi',
-        queryParameters: {
-          'username': user.username,
-          'userId': user.userId,
-          'token': token,
-        },
-      );
-      final restOperation = Amplify.API.post(restOptions: options);
-      final response = await restOperation.response;
-      safePrint(
-          'saveFirebaseToken - success - ${String.fromCharCodes(response.data)}');
+      // get access token
+      final authSession = await Amplify.Auth.fetchAuthSession(
+        options: CognitoSessionOptions(getAWSCredentials: true),
+      ) as CognitoAuthSession;
+      final accessToken = authSession.userPoolTokens?.accessToken;
+
+      // api url
+      final url = Uri.parse('${apiEndPoint}api/v1/tokens');
+      safePrint('saveFirebaseToken - url $url');
+
+      // call api
+      final res = await http.post(url,
+          body: jsonEncode({
+            'token': token,
+          }),
+          headers: {
+            'Authorization': accessToken.toString(),
+            'Content-Type': 'application/json',
+          });
+      safePrint('saveFirebaseToken - status code = ${res.statusCode}');
     } on ApiException catch (e) {
       safePrint('saveFirebaseToken - error: $e');
     } catch (err) {
@@ -66,7 +76,7 @@ class PushNotificationService {
   Future init() async {
     safePrint('PushNotificationService - init');
 
-    safePrint('Calling clearBadge from init');
+    safePrint('Firebase init - clearBadge');
     clearBadge();
 
     if (Platform.isIOS) {
@@ -133,6 +143,6 @@ class PushNotificationService {
       clearBadge();
     });
 
-    FirebaseMessaging.onBackgroundMessage(onMessage);
+    // FirebaseMessaging.onBackgroundMessage(onMessage);
   }
 }
