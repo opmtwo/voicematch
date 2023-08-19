@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:amplify_api/amplify_api.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
@@ -10,12 +12,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:voicevibe/amplifyconfiguration.dart';
 import 'package:voicevibe/components/loader.dart';
 import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/firebase_options.dart';
 import 'package:voicevibe/observers/getx_route_observer.dart';
 import 'package:voicevibe/router.dart';
 import 'package:voicevibe/services/lifecycle_service.dart';
+import 'package:voicevibe/services/push_notification_service.dart';
 import 'package:voicevibe/utils/user_utils.dart';
 
 void main() async {
@@ -29,7 +34,7 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const VoiceVibe());
 }
 
@@ -54,6 +59,9 @@ class _VoiceVibeState extends State<VoiceVibe> {
   // Initialize your custom RouteObserver
   final GetXRouteObserver routeObserver = GetXRouteObserver();
 
+// firebase messaging
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+
   @override
   void initState() {
     super.initState();
@@ -64,9 +72,20 @@ class _VoiceVibeState extends State<VoiceVibe> {
     configLoading();
     await _configureAmplify();
     await _initAuth();
+    await _configureFirebase();
     // let amplify load before trying to init auth state
     // await Future.delayed(const Duration(milliseconds: 1500), _initAuth);
     await logoutIfNotRemember();
+  }
+
+  Future<void> _configureFirebase() async {
+    var status = await Permission.notification.request();
+    if (status.isGranted) {
+      log('_configureFirebase - permissions have been granted');
+      await PushNotificationService(firebaseMessaging).init();
+    } else {
+      log('_configureFirebase - permissions have been denied');
+    }
   }
 
   void configLoading() {
