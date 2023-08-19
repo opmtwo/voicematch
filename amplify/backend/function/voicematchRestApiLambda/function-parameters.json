@@ -57,6 +57,12 @@
         "read",
         "update",
         "delete"
+      ],
+      "Token:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
       ]
     },
     "api": {

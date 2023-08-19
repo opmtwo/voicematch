@@ -11,6 +11,7 @@ require('./routers/onboard');
 require('./routers/online');
 require('./routers/connections');
 require('./routers/recordings');
+require('./routers/tokens');
 
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}

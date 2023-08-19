@@ -122,7 +122,7 @@ const ddbQuery = async (
 			nextToken = queryRes.LastEvaluatedKey;
 		}
 		if (verbose) {
-			console.log(`ddbQuery - res: ${res}`);
+			console.log(`ddbQuery - length/sample`, res.length, [...res].pop());
 		}
 		return res;
 	} catch (err) {

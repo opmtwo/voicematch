@@ -76,6 +76,12 @@ const IRecording = joi
 	})
 	.options({ abortEarly: false });
 
+const IToken = joi
+	.object({
+		token: joi.string().max(2000).required(),
+	})
+	.options({ abortEarly: false });
+
 module.exports = {
 	validateFormData,
 	IIds,
@@ -85,4 +91,5 @@ module.exports = {
 	IConnection,
 	IConnectionMessage,
 	IRecording,
+	IToken,
 };
