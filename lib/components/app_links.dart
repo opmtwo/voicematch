@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
 
 class AppLinks extends StatelessWidget {
   final String? privacy = '';
@@ -51,7 +51,7 @@ class AppLinks extends StatelessWidget {
                     // print('Terms tapped');
                     try {
                       launchUrl(
-                        Uri.parse('https://www.voicematch.com/terms/'),
+                        Uri.parse('https://www.voicevibe.com/terms/'),
                         mode: LaunchMode.platformDefault,
                       );
                     } catch (e) {
@@ -72,7 +72,7 @@ class AppLinks extends StatelessWidget {
                     // print('Privacy Policy tapped');
                     try {
                       launchUrl(
-                        Uri.parse('https://www.voicematch.com/privacy/'),
+                        Uri.parse('https://www.voicevibe.com/privacy/'),
                         mode: LaunchMode.platformDefault,
                       );
                     } catch (e) {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/icon_box.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/form/progress_bar.dart';
+import 'package:voicevibe/components/icon_box.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/form/progress_bar.dart';
 
 class ProgressBarAlt extends StatefulWidget {
   final double total;

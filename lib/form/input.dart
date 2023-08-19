@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
 
 class Input extends StatelessWidget {
   final TextEditingController controller;

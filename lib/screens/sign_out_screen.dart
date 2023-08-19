@@ -4,10 +4,10 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/components/logo.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicevibe/components/logo.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
 
 class SignOutScreen extends StatefulWidget {
   const SignOutScreen({Key? key}) : super(key: key);

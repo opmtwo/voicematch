@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/icons/icon_home.dart';
-import 'package:voicematch/icons/icon_settings.dart';
-import 'package:voicematch/icons/icon_sign_out.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/icons/icon_home.dart';
+import 'package:voicevibe/icons/icon_settings.dart';
+import 'package:voicevibe/icons/icon_sign_out.dart';
+import 'package:voicevibe/router.dart';
 
 class Navbar extends StatelessWidget {
   final int? index;

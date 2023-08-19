@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/elements/div.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/elements/div.dart';
 
 class ProgressBar extends StatefulWidget {
   final double value;

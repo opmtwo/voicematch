@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/constants/colors.dart';
+import 'package:voicevibe/constants/colors.dart';
 
 class CircularProgressBar extends StatelessWidget {
   final double value;

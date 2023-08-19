@@ -1,6 +1,6 @@
 // Define a function to compute the average similarity across multiple fields
 import 'package:fuzzywuzzy/fuzzywuzzy.dart';
-import 'package:voicematch/constants/types.dart';
+import 'package:voicevibe/constants/types.dart';
 
 // Define a class to hold the client and its similarity score
 class ConnectionWithSimilarity {

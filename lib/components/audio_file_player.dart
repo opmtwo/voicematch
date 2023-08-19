@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/form/fab_button.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/form/fab_button.dart';
 
 class AudioFilePlayer extends StatefulWidget {
   // file path or url

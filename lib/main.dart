@@ -10,12 +10,13 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:voicematch/amplifyconfiguration.dart';
-import 'package:voicematch/components/loader.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/observers/getx_route_observer.dart';
-import 'package:voicematch/router.dart';
-import 'package:voicematch/utils/user_utils.dart';
+import 'package:voicevibe/amplifyconfiguration.dart';
+import 'package:voicevibe/components/loader.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/observers/getx_route_observer.dart';
+import 'package:voicevibe/router.dart';
+import 'package:voicevibe/services/lifecycle_service.dart';
+import 'package:voicevibe/utils/user_utils.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
@@ -29,17 +30,17 @@ void main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const VoiceMatch());
+  runApp(const VoiceVibe());
 }
 
-class VoiceMatch extends StatefulWidget {
-  const VoiceMatch({Key? key}) : super(key: key);
+class VoiceVibe extends StatefulWidget {
+  const VoiceVibe({Key? key}) : super(key: key);
 
   @override
-  State<VoiceMatch> createState() => _VoiceMatchState();
+  State<VoiceVibe> createState() => _VoiceVibeState();
 }
 
-class _VoiceMatchState extends State<VoiceMatch> {
+class _VoiceVibeState extends State<VoiceVibe> {
   // busy and error
   bool? isBusy;
   String? error;
@@ -48,7 +49,7 @@ class _VoiceMatchState extends State<VoiceMatch> {
   bool isLoggedIn = false;
 
   // local storage - used to store badge counter
-  final storage = LocalStorage('voicematch.json');
+  final storage = LocalStorage('voicevibe.json');
 
   // Initialize your custom RouteObserver
   final GetXRouteObserver routeObserver = GetXRouteObserver();
@@ -156,11 +157,68 @@ class _VoiceMatchState extends State<VoiceMatch> {
     }
   }
 
+  // clear notifications badge when app resumes
+  Future<void> clearBadgeOnResume() async {
+    WidgetsBinding.instance.addObserver(
+      LifecycleEventService(
+        resumeCallBack: () async {
+          // log('clearBadgeOnResume - resumeCallBack invoked');
+          final session = await Amplify.Auth.fetchAuthSession();
+          var isSignedIn = session.isSignedIn;
+          if (!isSignedIn) {
+            // log('clearBadgeOnResume - user is not signed in - return');
+            return;
+          }
+          // final List<AuthUserAttribute> userAttributes =
+          //     await Amplify.Auth.fetchUserAttributes();
+          // final profile = userAttributes
+          //         .firstWhereOrNull((element) =>
+          //             element.userAttributeKey ==
+          //             CognitoUserAttributeKey.profile)
+          //         ?.value ??
+          //     '';
+          // UserProfileModel? userProfile;
+          // try {
+          //   userProfile = UserProfileModel.fromJson(jsonDecode(profile));
+          // } catch (e) {
+          //   safePrint('clearBadgeOnResume - error - user profile not found');
+          //   return;
+          // }
+          // if (userProfile.hasNotifications != true ||
+          //     userProfile.hasPushNotifications != true) {
+          //   safePrint(
+          //       'clearBadgeOnResume - error - push notifications not enabled');
+          //   return;
+          // }
+
+          // invoking clear badge needs notifications permission
+          // if invoked during app startup without any check - causes permissions
+          // popup to be shown
+          final int badgeCount = await storage.getItem('badgeCount') ?? 0;
+          if (badgeCount == 0) {
+            return;
+          }
+
+          safePrint('clearBadge called');
+          try {
+            // FlutterAppBadger.removeBadge();
+            await storage.setItem('badgeCount', 0);
+          } catch (e) {
+            safePrint('clearBadge - error - $e');
+          }
+
+          // when subscription is cancelled - the loader keeps showing - remove the loader here
+          // EasyLoading.dismiss();
+        },
+      ),
+    );
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'voicematchApp',
+      title: 'voicevibeApp',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.red,

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/utils/color_utils.dart';
+import 'package:voicevibe/utils/color_utils.dart';
 
 String iconWaveAlt({Color? code = const Color(0xFFC3D1FF)}) {
   return ("""

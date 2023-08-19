@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/elements/div.dart';
+import 'package:voicevibe/elements/div.dart';
 
 class IconBox extends StatelessWidget {
   final Widget child;

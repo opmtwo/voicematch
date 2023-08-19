@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/components/avatar.dart';
-import 'package:voicematch/components/header.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/form/button.dart';
-import 'package:voicematch/icons/icon_right.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicevibe/components/avatar.dart';
+import 'package:voicevibe/components/header.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/form/button.dart';
+import 'package:voicevibe/icons/icon_right.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);

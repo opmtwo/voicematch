@@ -7,15 +7,15 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:voicematch/components/logo.dart';
-import 'package:voicematch/constants/env.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/form/button.dart';
-import 'package:voicematch/form/progress_bar.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicevibe/components/logo.dart';
+import 'package:voicevibe/constants/env.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/form/button.dart';
+import 'package:voicevibe/form/progress_bar.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
 
 class SetupDoneScreen extends StatefulWidget {
   const SetupDoneScreen({Key? key}) : super(key: key);

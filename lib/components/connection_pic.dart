@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/profile_pic.dart';
-import 'package:voicematch/constants/types.dart';
-import 'package:voicematch/elements/div.dart';
+import 'package:voicevibe/components/profile_pic.dart';
+import 'package:voicevibe/constants/types.dart';
+import 'package:voicevibe/elements/div.dart';
 
 class ConnectionPic extends StatelessWidget {
   final ConnectionModel item;

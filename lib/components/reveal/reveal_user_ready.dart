@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/connection_pic.dart';
-import 'package:voicematch/components/logo.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/constants/types.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/form/button.dart';
+import 'package:voicevibe/components/connection_pic.dart';
+import 'package:voicevibe/components/logo.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/constants/types.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/form/button.dart';
 
 class RevealUserReady extends StatelessWidget {
   final ConnectionModel connection;

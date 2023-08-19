@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/utils/color_utils.dart';
+import 'package:voicevibe/utils/color_utils.dart';
 
 String iconHeart({Color? code = const Color(0xFFF82641)}) {
   return ("""

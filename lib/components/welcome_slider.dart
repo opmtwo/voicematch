@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:voicematch/components/icon_box.dart';
-import 'package:voicematch/components/logo.dart';
+import 'package:voicevibe/components/icon_box.dart';
+import 'package:voicevibe/components/logo.dart';
 import 'dart:math' as math;
-import 'package:voicematch/components/slider_dots.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/icons/icon_slide1.dart';
-import 'package:voicematch/icons/icon_slide2.dart';
-import 'package:voicematch/icons/icon_slide3.dart';
+import 'package:voicevibe/components/slider_dots.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/icons/icon_slide1.dart';
+import 'package:voicevibe/icons/icon_slide2.dart';
+import 'package:voicevibe/icons/icon_slide3.dart';
 
 class WelcomeSlider extends StatefulWidget {
   const WelcomeSlider({

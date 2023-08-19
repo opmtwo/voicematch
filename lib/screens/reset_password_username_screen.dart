@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:voicematch/components/logo.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/form/button.dart';
-import 'package:voicematch/form/input.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
-import 'package:voicematch/utils/user_utils.dart';
+import 'package:voicevibe/components/logo.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/form/button.dart';
+import 'package:voicevibe/form/input.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
+import 'package:voicevibe/utils/user_utils.dart';
 
 class ResetPasswordUsernameScreen extends StatefulWidget {
   const ResetPasswordUsernameScreen({Key? key}) : super(key: key);
@@ -43,7 +43,7 @@ class ResetPasswordUsernameScreenState
   bool isPasswordSecure = true;
 
   // local storage - used to store badge counter
-  final storage = LocalStorage('voicematch.json');
+  final storage = LocalStorage('voicevibe.json');
 
   @override
   initState() {

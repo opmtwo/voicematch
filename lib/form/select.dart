@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/form/input.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/form/input.dart';
 
 const double kItemExtent = 32.0;
 

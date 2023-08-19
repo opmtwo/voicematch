@@ -11,14 +11,14 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
-import 'package:voicematch/components/icon_box.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/env.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/icons/icon_close.dart';
-import 'package:voicematch/utils/date_utils.dart';
+import 'package:voicevibe/components/icon_box.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/env.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/icons/icon_close.dart';
+import 'package:voicevibe/utils/date_utils.dart';
 
 enum Status { available, busy, offline }
 

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:voicematch/components/welcome_slider.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/form/button.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
+import 'package:voicevibe/components/welcome_slider.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/form/button.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/elements/p.dart';
+import 'package:voicevibe/elements/p.dart';
 
 class CurrentTime extends StatelessWidget {
   final Duration duration;

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:voicematch/components/slider_dots.dart';
-import 'package:voicematch/elements/div.dart';
+import 'package:voicevibe/components/slider_dots.dart';
+import 'package:voicevibe/elements/div.dart';
 
 class Loader extends StatefulWidget {
   const Loader({super.key});

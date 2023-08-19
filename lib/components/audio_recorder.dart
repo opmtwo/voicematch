@@ -6,12 +6,12 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:record/record.dart';
-import 'package:voicematch/components/current_time.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/form/fab_button.dart';
-import 'package:voicematch/icons/icon_mic.dart';
+import 'package:voicevibe/components/current_time.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/form/fab_button.dart';
+import 'package:voicevibe/icons/icon_mic.dart';
 
 class AudioRecorder extends StatefulWidget {
   final Future<void> Function(String, Duration) onSubmit;

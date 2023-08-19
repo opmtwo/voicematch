@@ -1,12 +1,12 @@
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:voicematch/components/audio_recorder.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/form/fab_button.dart';
-import 'package:voicematch/form/input.dart';
-import 'package:voicematch/icons/icon_gallery.dart';
+import 'package:voicevibe/components/audio_recorder.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/form/fab_button.dart';
+import 'package:voicevibe/form/input.dart';
+import 'package:voicevibe/icons/icon_gallery.dart';
 
 class ChatForm extends StatefulWidget {
   final Future<void> Function(String) onTextSubmit;

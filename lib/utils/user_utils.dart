@@ -5,8 +5,8 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/router.dart';
-import 'package:voicematch/utils/date_utils.dart';
+import 'package:voicevibe/router.dart';
+import 'package:voicevibe/utils/date_utils.dart';
 import 'package:uuid/uuid.dart';
 
 bool isPasswordValid(String value) {

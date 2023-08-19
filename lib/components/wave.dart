@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:voicematch/icons/icon_wave.dart';
-import 'package:voicematch/icons/icon_wave_alt.dart';
-import 'package:voicematch/utils/svg_utils.dart';
+import 'package:voicevibe/icons/icon_wave.dart';
+import 'package:voicevibe/icons/icon_wave_alt.dart';
+import 'package:voicevibe/utils/svg_utils.dart';
 
 class Wave extends StatelessWidget {
   final double total;

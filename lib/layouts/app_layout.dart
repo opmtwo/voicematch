@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/elements/div.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/elements/div.dart';
 
 class AppLayout extends StatefulWidget {
   final Widget child;

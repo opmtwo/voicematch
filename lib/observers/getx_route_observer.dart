@@ -4,7 +4,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:voicematch/constants/env.dart';
+import 'package:voicevibe/constants/env.dart';
 
 class GetXRouteObserver extends NavigatorObserver {
   @override

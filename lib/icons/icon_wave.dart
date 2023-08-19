@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:voicematch/utils/color_utils.dart';
+import 'package:voicevibe/utils/color_utils.dart';
 
 String iconWave({Color? code = const Color(0xFFDDE1F0)}) {
   return ("""

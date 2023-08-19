@@ -4,14 +4,14 @@ import 'package:flutter_html/shims/dart_ui_real.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
-import 'package:voicematch/components/logo.dart';
-import 'package:voicematch/constants/colors.dart';
-import 'package:voicematch/constants/theme.dart';
-import 'package:voicematch/elements/div.dart';
-import 'package:voicematch/elements/p.dart';
-import 'package:voicematch/layouts/app_layout.dart';
-import 'package:voicematch/router.dart';
-import 'package:voicematch/utils/user_utils.dart';
+import 'package:voicevibe/components/logo.dart';
+import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/theme.dart';
+import 'package:voicevibe/elements/div.dart';
+import 'package:voicevibe/elements/p.dart';
+import 'package:voicevibe/layouts/app_layout.dart';
+import 'package:voicevibe/router.dart';
+import 'package:voicevibe/utils/user_utils.dart';
 
 class ResetPasswordCodeScreen extends StatefulWidget {
   const ResetPasswordCodeScreen({Key? key}) : super(key: key);
