@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.voicematch.app" "\0"
-            VALUE "FileDescription", "voicematch" "\0"
+            VALUE "CompanyName", "com.voicevibe.app" "\0"
+            VALUE "FileDescription", "voicevibe" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "voicematch" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.voicematch.app. All rights reserved." "\0"
-            VALUE "OriginalFilename", "voicematch.exe" "\0"
-            VALUE "ProductName", "voicematch" "\0"
+            VALUE "InternalName", "voicevibe" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2023 com.voicevibe.app. All rights reserved." "\0"
+            VALUE "OriginalFilename", "voicevibe.exe" "\0"
+            VALUE "ProductName", "voicevibe" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
