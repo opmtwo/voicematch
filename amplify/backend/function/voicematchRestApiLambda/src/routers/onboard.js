@@ -213,7 +213,7 @@ app.post('/api/v1/onboard/done', verifyToken, async (req, res, next) => {
 	matchingProfiles.sort((a, b) => b.matchPercentage - a.matchPercentage);
 
 	// filter any profiles with less than 50% match
-	matchingProfiles = matchingProfiles.filter((_profile) => _profile.matchPercentage >= 50);
+	matchingProfiles = matchingProfiles.filter((_profile) => _profile.matchPercentage >= 25);
 
 	// create matches
 	let promises = [];
