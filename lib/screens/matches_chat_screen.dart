@@ -283,6 +283,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     String? type = 'text',
     String? body,
     RecordingModel? recording,
+    UploadModel? upload,
   }) async {
     final id = const Uuid().v4().toString();
     final user = await Amplify.Auth.getCurrentUser();
@@ -298,6 +299,8 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       body: body,
       recordingId: recording?.id,
       recording: recording,
+      uploadId: upload?.id,
+      upload: upload,
       isSender: true,
       isReceiver: false,
       createdAt: now,
@@ -380,6 +383,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
   Future<MessageEventModel?> createMessage({
     String? body,
     String? recordingId,
+    String? uploadId,
     String? type = 'text',
     bool isSilent = false,
   }) async {
@@ -396,6 +400,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       final response = await http.post(url,
           body: jsonEncode({
             'body': body ?? '',
+            'uploadId': uploadId,
             'recordingId': recordingId,
             'type': type,
             'isSilent': isSilent,
@@ -635,7 +640,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       body: msg,
     );
 
-    // append the the end of existing messages
+    // append to the end of existing messages
     final newMessages = messages + [newMessageEvent];
     setState(() {
       messages = newMessages;
@@ -646,8 +651,24 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     onTextPublish(newMessageEvent.id);
   }
 
-  Future<void> onFileSubmit(String fileKey, String fileType) async {
-    //
+  Future<void> onFileSubmit(UploadModel upload) async {
+    safePrint('onFileSubmit - $upload');
+
+    // create new local message event model
+    final newMessageEvent = await getMessageEvent(
+      type: 'file',
+      upload: upload,
+    );
+
+    // append to the end of existing messages
+    final newMessages = messages + [newMessageEvent];
+    setState(() {
+      messages = newMessages;
+    });
+
+    // Scroll to the bottom of the ListView
+    scrollIntoView();
+    onFilePublish(newMessageEvent.id, upload: upload);
   }
 
   Future<void> onClipSubmit(String filepath, Duration duration) async {
@@ -767,12 +788,14 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               ),
               Div(
                 [
-                  if (activeItem?.isUserRevealed != true &&
+                  if (false &&
+                      activeItem?.isUserRevealed != true &&
                       activeItem?.isMemberRevealed != true)
                     AudioRecorder(
                       onSubmit: onRecord,
                     ),
-                  if (activeItem?.isUserRevealed == true ||
+                  if (true ||
+                      activeItem?.isUserRevealed == true ||
                       activeItem?.isMemberRevealed == true)
                     ChatForm(
                       onTextSubmit: onTextSubmit,
