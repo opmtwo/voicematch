@@ -567,12 +567,19 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                               Div(
                                                 [
                                                   SizedBox(
-                                                    width: 100,
+                                                    width: 120,
                                                     child: Button(
                                                       'Unmatch'.toUpperCase(),
                                                       height: 40,
                                                       // bg: colorOnSurfaceMediumEmphasis,
-                                                      bg: colorOnSurfaceMediumEmphasis,
+                                                      // bg: colorSeondary500,
+                                                      bc: colorSeondary500,
+                                                      bg: colorTransparent,
+                                                      bw: 1.5,
+                                                      fg: colorSeondary500,
+                                                      fz: 12,
+                                                      fw: FontWeight.bold,
+                                                      ls: 1.5,
                                                       onPress: () {
                                                         safePrint(
                                                             'item.id ${item.id}');
