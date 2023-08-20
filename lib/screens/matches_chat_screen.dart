@@ -558,6 +558,68 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
     return null;
   }
 
+  Future<MessageEventModel?> onFilePublish(
+    String id, {
+    UploadModel? upload,
+    bool isSilent = false,
+  }) async {
+    // await EasyLoading.show(status: 'loading...');
+    final MessageEventModel? localMessage =
+        messages.firstWhereOrNull((element) => element.id == id);
+    if (localMessage == null) {
+      showErrorAlert();
+      return null;
+    }
+
+    // mark message as busy
+    final index = messages.indexWhere((element) => element.id == id);
+    final newMessages = messages;
+    newMessages[index].isBusy = true;
+    setState(() {
+      messages = newMessages;
+    });
+
+    //
+    try {
+      // save message entry
+      MessageEventModel? message = await createMessage(
+        type: localMessage.type,
+        uploadId: upload?.id,
+        isSilent: isSilent,
+      );
+
+      // message creation has failed - trigger error
+      if (message?.id == null) {
+        throw ('');
+      }
+
+      // if we reached this far then we only can replace the model if we want
+      // by replace the model I mean replace the dummy model with the real one
+      // may not be needed as the user will already have a local model in place
+      List<MessageEventModel> newMessages = messages;
+      for (int i = 0; i < messages.length; i++) {
+        if (messages[i].id != localMessage.id) {
+          continue;
+        }
+        newMessages[i] = message as MessageEventModel;
+      }
+      setState(() {
+        messages = newMessages;
+      });
+    } catch (err) {
+      safePrint('onFilePublish - error - $err');
+      final index = messages.indexWhere((element) => element.id == id);
+      final newMessages = messages;
+      newMessages[index].isBusy = false;
+      setState(() {
+        messages = newMessages;
+      });
+      showErrorAlert();
+    }
+    // await EasyLoading.dismiss();
+    return null;
+  }
+
   /// Used to remove local messages
   Future<MessageEventModel?> onClipDelete(String id) async {
     setState(() {
