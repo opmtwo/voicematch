@@ -311,8 +311,8 @@ class MessageEventModel {
   bool? isBusy;
   final String? type;
   final String? body;
-  // final String uploadId;
-  // final String upload;
+  final String? uploadId;
+  final UploadModel? upload;
   final String? recordingId;
   final RecordingModel? recording;
   final String? fileKey;
@@ -335,8 +335,8 @@ class MessageEventModel {
     this.isBusy,
     this.type,
     this.body,
-    // final String uploadId;
-    // final String upload;
+    this.uploadId,
+    this.upload,
     this.recordingId,
     this.recording,
     this.fileKey,
@@ -356,6 +356,11 @@ class MessageEventModel {
       recording = RecordingModel.fromJson(parsedJson['recording']);
     }
 
+    UploadModel? upload;
+    if (parsedJson['upload']?['id'] != null) {
+      upload = UploadModel.fromJson(parsedJson['upload']);
+    }
+
     return MessageEventModel(
       id: parsedJson['id'],
       owner: parsedJson['owner'],
@@ -365,8 +370,8 @@ class MessageEventModel {
       chatUserId: parsedJson['chatUserId'],
       type: parsedJson['type'],
       body: parsedJson['body'],
-      // uploadId: parsedJson['uploadId'],
-      // upload: parsedJson['upload'],
+      uploadId: upload?.id,
+      upload: upload,
       recordingId: parsedJson['recordingId'],
       recording: recording,
       fileKey: parsedJson['fileKey'],
