@@ -23,6 +23,8 @@ import 'package:voicevibe/utils/user_utils.dart';
 class Reveal extends StatefulWidget {
   final String id;
 
+  final bool? isModal;
+
   final List<Widget> header;
 
   final VoidCallback onPrev;
@@ -32,6 +34,7 @@ class Reveal extends StatefulWidget {
     required this.id,
     required this.header,
     required this.onPrev,
+    this.isModal,
   }) : super(key: key);
 
   @override
@@ -211,7 +214,7 @@ class _RevealState extends State<Reveal> {
                   children: widget.header,
                 ),
               ],
-              pt: gapTop,
+              pt: widget.isModal == true ? gapTop * 2 : gapTop,
               bg: colorWhite,
             ),
             Flexible(

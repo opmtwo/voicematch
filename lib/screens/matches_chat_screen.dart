@@ -239,8 +239,8 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, updateState) {
-            final originalState = updateState;
-            return Container(
+            // final originalState = updateState;
+            return SizedBox(
               height: MediaQuery.of(context).size.height *
                   1, // Adjust the height as needed
               child: Reveal(
@@ -251,6 +251,7 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
                 onPrev: () {
                   Navigator.pop(context);
                 },
+                isModal: true,
               ),
             );
           },
