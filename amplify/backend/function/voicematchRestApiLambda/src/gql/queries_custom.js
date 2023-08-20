@@ -232,6 +232,22 @@ exports.listMessageEventByChatUserId = /* GraphQL */ `
 				type
 				body
 				uploadId
+				upload {
+					id
+					owner
+					userId
+					modelId
+					modelType
+					name
+					mime
+					size
+					duration
+					key
+					url
+					createdAt
+					updatedAt
+					__typename
+				}
 				recordingId
 				recording {
 					id
