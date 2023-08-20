@@ -583,7 +583,7 @@ app.get('/api/v1/connections/:id/messages', verifyToken, async (req, res, next) 
  */
 app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConnectionMessage), async (req, res, next) => {
 	const { Username: sub } = req.user;
-	const { body, isSilent, type, recordingId } = req.body;
+	const { body, isSilent, type, recordingId, uploadId } = req.body;
 
 	// get connection
 	const connection = (await apsQuery(getConnection, { id: req.params.id })).data.getConnection;
@@ -617,6 +617,7 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 			body,
 			// isSilent,
 			recordingId,
+			uploadId,
 		}),
 		apsMutation(createMessageEvent, {
 			owner: sub,
@@ -630,6 +631,7 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 			isSender: true,
 			isReceiver: false,
 			recordingId,
+			uploadId,
 		}),
 		apsMutation(createMessageEvent, {
 			messageId,
@@ -643,6 +645,7 @@ app.post('/api/v1/connections/:id/messages', verifyToken, validateFormData(IConn
 			isSender: false,
 			isReceiver: true,
 			recordingId,
+			uploadId,
 		}),
 	]);
 
