@@ -2,7 +2,9 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:voicevibe/components/audio_recorder.dart';
+import 'package:voicevibe/components/gallery_file_picker.dart';
 import 'package:voicevibe/constants/colors.dart';
+import 'package:voicevibe/constants/types.dart';
 import 'package:voicevibe/elements/div.dart';
 import 'package:voicevibe/form/fab_button.dart';
 import 'package:voicevibe/form/input.dart';
@@ -10,7 +12,7 @@ import 'package:voicevibe/icons/icon_gallery.dart';
 
 class ChatForm extends StatefulWidget {
   final Future<void> Function(String) onTextSubmit;
-  final Future<void> Function(String, String) onFileSubmit;
+  final Future<void> Function(UploadModel upload) onFileSubmit;
   final Future<void> Function(String, Duration) onClipSubmit;
 
   const ChatForm({
@@ -68,11 +70,8 @@ class ChatFormState extends State<ChatForm> {
               top: 0,
               bottom: 0,
               left: 10,
-              child: FabButton(
-                SvgPicture.string(
-                  iconGallery(),
-                ),
-                bg: colorTransparent,
+              child: GalleryFilePicker(
+                onSubmit: widget.onFileSubmit,
               ),
             ),
             Positioned(
