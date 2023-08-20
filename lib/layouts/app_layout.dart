@@ -36,6 +36,7 @@ class _AppLayoutState extends State<AppLayout> {
         Expanded(
           flex: 1,
           child: SafeArea(
+            bottom: false,
             child: widget.child,
           ),
         )
