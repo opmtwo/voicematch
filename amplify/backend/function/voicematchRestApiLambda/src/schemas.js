@@ -77,6 +77,16 @@ const IRecording = joi
 	})
 	.options({ abortEarly: false });
 
+const IUpload = joi
+	.object({
+		key: joi.string().max(1000).required(),
+		duration: joi.number().integer().min(0).required(),
+		name: joi.string().max(200).required(),
+		mime: joi.string().optional().max(100),
+		size: joi.number().integer().min(0).required(),
+	})
+	.options({ abortEarly: false });
+
 const IToken = joi
 	.object({
 		token: joi.string().max(2000).required(),
@@ -92,5 +102,6 @@ module.exports = {
 	IConnection,
 	IConnectionMessage,
 	IRecording,
+	IUpload,
 	IToken,
 };
