@@ -386,12 +386,14 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                                   ? iconMinus()
                                                                   : iconPlus(),
                                                               width: 16,
+                                                              color:
+                                                                  colorSeondary500,
                                                             ),
                                                             w: 24,
                                                             h: 24,
-                                                            bg: colorGrey200,
-                                                            bw: 1,
-                                                            bc: colorSeondary200,
+                                                            bg: colorWhite,
+                                                            bw: 2,
+                                                            bc: colorSeondary500,
                                                             onPress: () {
                                                               onPinToggle(
                                                                   item.id);
