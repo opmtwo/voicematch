@@ -117,6 +117,52 @@ class OnlinePresenceModel {
   }
 }
 
+class UploadModel {
+  final String id;
+  final String owner;
+  final String userId;
+  final String name;
+  final String mime;
+  final int size;
+  final double? duration;
+  final String key;
+  final String url;
+  final String createdAt;
+  final String updatedAt;
+
+  UploadModel({
+    required this.id,
+    required this.owner,
+    required this.userId,
+    required this.name,
+    required this.mime,
+    required this.size,
+    required this.duration,
+    required this.key,
+    required this.url,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory UploadModel.fromJson(Map<String, dynamic> parsedJson) {
+    return UploadModel(
+      id: parsedJson['id'],
+      owner: parsedJson['owner'],
+      userId: parsedJson['userId'],
+      name: parsedJson['name'],
+      mime: parsedJson['mime'],
+      size: int.parse(parsedJson['size'].toString()),
+      duration: parsedJson['duration'] != null
+          ? double.parse(parsedJson['duration'].toString())
+          : null,
+      key: parsedJson['key'],
+      url: parsedJson['url'],
+      createdAt: parsedJson['createdAt'],
+      updatedAt: parsedJson['updatedAt'],
+    );
+  }
+}
+
 class RecordingModel {
   final String id;
   final String owner;
