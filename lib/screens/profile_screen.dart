@@ -474,19 +474,21 @@ class ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            Div(
-              [
-                Button(
-                  'next',
-                  onPress: () {
-                    Get.toNamed(Routes.matchesIndex);
-                  },
-                ),
-              ],
-              mb: gapTop,
-              pt: gap,
-              ph: gap,
-            ),
+            // is profile screen - if yes then hide the next button
+            if (Get.currentRoute != '/profile')
+              Div(
+                [
+                  Button(
+                    'next',
+                    onPress: () {
+                      Get.toNamed(Routes.matchesIndex);
+                    },
+                  ),
+                ],
+                mb: gapTop,
+                pt: gap,
+                ph: gap,
+              ),
           ],
         ),
       ),
