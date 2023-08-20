@@ -120,7 +120,7 @@ class SetupRecordScreenState extends State<SetupRecordScreen> {
     super.initState();
     initUser();
     setState(() {
-      redirectTo = Get.arguments['redirectTo'] ?? '';
+      redirectTo = Get.arguments?['redirectTo'] ?? '';
     });
     initRecorder();
   }

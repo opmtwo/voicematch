@@ -90,7 +90,7 @@ class SetupInterestsScreenState extends State<SetupInterestsScreen> {
   void initState() {
     super.initState();
     setState(() {
-      redirectTo = Get.arguments['redirectTo'] ?? '';
+      redirectTo = Get.arguments?['redirectTo'] ?? '';
     });
     initUser();
   }

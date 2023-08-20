@@ -56,7 +56,7 @@ class SetupIntroScreenState extends State<SetupIntroScreen> {
   void initState() {
     super.initState();
     setState(() {
-      redirectTo = Get.arguments['redirectTo'] ?? '';
+      redirectTo = Get.arguments?['redirectTo'] ?? '';
     });
     initUser();
   }

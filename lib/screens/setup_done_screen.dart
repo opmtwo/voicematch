@@ -49,7 +49,7 @@ class SetupDoneScreenState extends State<SetupDoneScreen> {
   void initState() {
     super.initState();
     setState(() {
-      redirectTo = Get.arguments['redirectTo'] ?? '';
+      redirectTo = Get.arguments?['redirectTo'] ?? '';
     });
     // initUser();
   }
