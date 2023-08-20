@@ -13,7 +13,7 @@ class ConnectionWithSimilarity {
 double averageSimilarity(String query, ConnectionModel client) {
   final fields = [client.member.givenName];
   return fields
-          .map((field) => ratio(query, field ?? ''))
+          .map((field) => tokenSortPartialRatio(query, field ?? ''))
           .reduce((a, b) => a + b) /
       fields.length;
 }
@@ -24,7 +24,7 @@ List<ConnectionModel> searchConnections(
       .map((item) =>
           ConnectionWithSimilarity(item, averageSimilarity(query, item)))
       .where(
-        (connectionWithSimilarity) => connectionWithSimilarity.similarity > 0,
+        (connectionWithSimilarity) => connectionWithSimilarity.similarity > 33,
       ) // You can adjust the similarity threshold here
       .toList();
 

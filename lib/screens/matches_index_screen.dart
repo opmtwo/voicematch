@@ -146,7 +146,8 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
 
       // update state
       setState(() {
-        connections = connections.where((value) => value.id != id).toList();
+        filteredConnections =
+            connections.where((value) => value.id != id).toList();
       });
     } on AuthException catch (e) {
       safePrint('onDelete - error ${e.message}');
@@ -339,7 +340,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                     children: List.generate(
                                       filteredConnections.length,
                                       (index) {
-                                        final item = connections[index];
+                                        final item = filteredConnections[index];
                                         return SizedBox(
                                           width: MediaQuery.of(context)
                                                   .size
