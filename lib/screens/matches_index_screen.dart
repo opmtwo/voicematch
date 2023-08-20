@@ -46,6 +46,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
 
   // list of matched connections
   List<ConnectionModel> connections = [];
+  bool? isConnectionsLoading;
 
   // list of pinned connections
   List<ConnectionModel> pinnedConnections = [];
@@ -63,6 +64,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
   }
 
   Future<void> getConnections() async {
+    setState(() {
+      isConnectionsLoading = true;
+    });
     await EasyLoading.show(status: 'loading...');
     try {
       // get access token
@@ -109,6 +113,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
       safePrint('getConnections- error - $err');
     }
     await EasyLoading.dismiss();
+    setState(() {
+      isConnectionsLoading = false;
+    });
   }
 
   void onBack() {
@@ -302,13 +309,13 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                       children: [
                         Div(
                           [
-                            if (connections.isNotEmpty)
-                              const Div(
-                                [
-                                  Logo(),
-                                ],
-                                mv: gap,
-                              ),
+                            // if (connections.isNotEmpty)
+                            const Div(
+                              [
+                                Logo(),
+                              ],
+                              mv: gap,
+                            ),
                             if (connections.isNotEmpty)
                               Div(
                                 [
@@ -585,6 +592,34 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                 ),
                               ],
                             ),
+                            if (isConnectionsLoading != true &&
+                                connections.isEmpty)
+                              Div(
+                                [
+                                  const Div(
+                                    [
+                                      P(
+                                        "No matching profiles found.\nPlease provide additional details about your profile.",
+                                        isH6: true,
+                                        fg: colorGrey900,
+                                        ta: TextAlign.center,
+                                      )
+                                    ],
+                                    mb: gapBottom,
+                                  ),
+                                  Div(
+                                    [
+                                      Button(
+                                        'setup profile',
+                                        onPress: () {
+                                          Get.toNamed(Routes.setupIntro);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                                pt: gapBottom,
+                              ),
                           ],
                           ph: gap,
                         ),
