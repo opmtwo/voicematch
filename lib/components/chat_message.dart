@@ -78,6 +78,54 @@ class _ChatMessageState extends State<ChatMessage> {
     final isLocalMessage =
         widget.message.recording?.url.startsWith('https://') == false;
 
+    final isImage = widget.message.upload?.url != null;
+    final isLocalImage =
+        widget.message.upload?.url.startsWith('https://') == false;
+
+    if (widget.message.type?.toLowerCase() == 'file' && isImage == true) {
+      return Column(
+        children: [
+          Row(
+            mainAxisAlignment: widget.message.isSender == true
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
+            children: [
+              Div(
+                [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Div(
+                      [
+                        // P(widget.message.upload?.url),
+                        if (isImage == true && isLocalImage == true)
+                          Image.asset(
+                            widget.message.upload?.url as String,
+                            width: 128,
+                            height: 128,
+                            fit: BoxFit.cover,
+                          ),
+                        if (isImage == true && isLocalImage == false)
+                          Image.network(
+                            widget.message.upload?.url as String,
+                            width: 128,
+                            height: 128,
+                            fit: BoxFit.cover,
+                          ),
+                      ],
+                      bg: colorGrey200,
+                      h: avatarLarge,
+                      w: avatarLarge,
+                    ),
+                  ),
+                ],
+                // br: 99,
+              ),
+            ],
+          )
+        ],
+      );
+    }
+
     if (widget.message.type?.toLowerCase() == 'text') {
       return Column(
         children: [
