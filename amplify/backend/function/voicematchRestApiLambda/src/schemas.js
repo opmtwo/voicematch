@@ -65,6 +65,7 @@ const IConnectionMessage = joi
 			otherwise: joi.string().optional().min(0).max(100),
 		}),
 		isUploaded: joi.bool().optional().default(false),
+		uploadId: joi.string().allow(null).optional().min(0).max(1000),
 		recordingId: joi.string().allow(null).optional().min(0).max(1000),
 	})
 	.options({ abortEarly: false });
