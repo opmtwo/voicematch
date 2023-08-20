@@ -198,9 +198,9 @@ class SignUpOtpScreenState extends State<SignUpOtpScreen> {
                           const Div(
                             [
                               P(
-                                'Please enter the code that was sent to your number',
+                                'Please enter the code that was sent to\nyour  email address',
                                 isBody1: true,
-                                fg: colorWhite,
+                                fg: colorGrey200,
                                 ta: TextAlign.center,
                               ),
                             ],
@@ -231,6 +231,7 @@ class SignUpOtpScreenState extends State<SignUpOtpScreen> {
                                   alignment: Alignment.center,
                                   child: P(
                                     'Verification code was resent to your email\n$email',
+                                    isSubtitle1: true,
                                     fg: colorWhite,
                                     ta: TextAlign.center,
                                   ),
