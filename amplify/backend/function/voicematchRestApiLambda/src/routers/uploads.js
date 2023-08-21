@@ -1,11 +1,12 @@
 const app = require('../app');
+const sharp = require('sharp');
 const { v4 } = require('uuid');
 const { verifyToken } = require('../middlewares/auth');
 const { apsGetAll, apsMutation, apsQuery } = require('../utils/aps-utils');
 const { ddbUpdate, ddbDelete } = require('../utils/ddb-utils');
 const { getUpload, listUploadsByUserId } = require('../gql/queries');
 const { deleteUpload, createUpload } = require('../gql/mutations');
-const { s3DeleteObject, s3UpdateACL, s3CloneObject } = require('../utils/s3-utils');
+const { s3DeleteObject, s3UpdateACL, s3CloneObject, s3PutObject, s3GetObject } = require('../utils/s3-utils');
 const { validateFormData, IUpload } = require('../schemas');
 
 const {
@@ -39,13 +40,28 @@ app.post('/api/v1/uploads', verifyToken, validateFormData(IUpload), async (req, 
 	const secureKey = `uploads/${sub}/${today}/${v4()}`;
 
 	// copy file from public directory to private directory
-	await s3CloneObject(BUCKETNAME, key, BUCKETNAME, secureKey);
-
-	// make upload readable
-	await s3UpdateACL(BUCKETNAME, secureKey, 'public-read');
+	const fileSource = await s3GetObject(BUCKETNAME, key);
+	await s3PutObject(BUCKETNAME, secureKey, fileSource.Body, null, mime, 'public-read');
 
 	// delete the original file
 	await s3DeleteObject(BUCKETNAME, key);
+
+	// generate thumb image
+	let keyThumb = null;
+	let urlThumb = null;
+	if (['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/gif'].includes(mime)) {
+		try {
+			const pictureObj = await s3GetObject(BUCKETNAME, secureKey);
+			const imageThumb = await sharp(pictureObj.Body).resize(512, 512).toBuffer();
+			keyThumb = `${secureKey}-thumb`;
+			urlThumb = `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/${keyThumb}`;
+			await s3PutObject(BUCKETNAME, keyThumb, imageThumb, null, mime, 'public-read');
+		} catch (err) {
+			console.log('Error generating thumb image', err);
+			keyThumb = null;
+			urlThumb = null;
+		}
+	}
 
 	// store the upload data
 	const upload = await apsMutation(createUpload, {
@@ -59,6 +75,8 @@ app.post('/api/v1/uploads', verifyToken, validateFormData(IUpload), async (req, 
 		mime,
 		size,
 		url: `https://s3.${REGION}.amazonaws.com/${BUCKETNAME}/${secureKey}`,
+		keyThumb,
+		urlThumb,
 	});
 
 	// all done
