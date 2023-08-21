@@ -127,6 +127,8 @@ class UploadModel {
   final double? duration;
   final String key;
   final String url;
+  final String? keyThumb;
+  final String? urlThumb;
   final String createdAt;
   final String updatedAt;
 
@@ -140,6 +142,8 @@ class UploadModel {
     required this.duration,
     required this.key,
     required this.url,
+    required this.keyThumb,
+    required this.urlThumb,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -157,6 +161,8 @@ class UploadModel {
           : null,
       key: parsedJson['key'],
       url: parsedJson['url'],
+      keyThumb: parsedJson['keyThumb'],
+      urlThumb: parsedJson['urlThumb'],
       createdAt: parsedJson['createdAt'],
       updatedAt: parsedJson['updatedAt'],
     );
