@@ -252,6 +252,8 @@ exports.createUpload = /* GraphQL */ `
 			duration
 			key
 			url
+			keyThumb
+			urlThumb
 			createdAt
 			updatedAt
 			__typename
@@ -272,6 +274,8 @@ exports.updateUpload = /* GraphQL */ `
 			duration
 			key
 			url
+			keyThumb
+			urlThumb
 			createdAt
 			updatedAt
 			__typename
@@ -292,6 +296,8 @@ exports.deleteUpload = /* GraphQL */ `
 			duration
 			key
 			url
+			keyThumb
+			urlThumb
 			createdAt
 			updatedAt
 			__typename
@@ -602,6 +608,8 @@ exports.createMessage = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -646,6 +654,8 @@ exports.updateMessage = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -690,6 +700,8 @@ exports.deleteMessage = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -736,6 +748,8 @@ exports.createMessageEvent = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -786,6 +800,8 @@ exports.updateMessageEvent = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -836,6 +852,8 @@ exports.deleteMessageEvent = /* GraphQL */ `
 				duration
 				key
 				url
+				keyThumb
+				urlThumb
 				createdAt
 				updatedAt
 				__typename
@@ -858,6 +876,45 @@ exports.deleteMessageEvent = /* GraphQL */ `
 			isReceiver
 			createdAt
 			updatedAt
+			__typename
+		}
+	}
+`;
+exports.createToken = /* GraphQL */ `
+	mutation CreateToken($input: CreateTokenInput!, $condition: ModelTokenConditionInput) {
+		createToken(input: $input, condition: $condition) {
+			id
+			userId
+			value
+			createdAt
+			updatedAt
+			owner
+			__typename
+		}
+	}
+`;
+exports.updateToken = /* GraphQL */ `
+	mutation UpdateToken($input: UpdateTokenInput!, $condition: ModelTokenConditionInput) {
+		updateToken(input: $input, condition: $condition) {
+			id
+			userId
+			value
+			createdAt
+			updatedAt
+			owner
+			__typename
+		}
+	}
+`;
+exports.deleteToken = /* GraphQL */ `
+	mutation DeleteToken($input: DeleteTokenInput!, $condition: ModelTokenConditionInput) {
+		deleteToken(input: $input, condition: $condition) {
+			id
+			userId
+			value
+			createdAt
+			updatedAt
+			owner
 			__typename
 		}
 	}
