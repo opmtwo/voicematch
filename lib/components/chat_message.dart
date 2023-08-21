@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:voicevibe/components/audio_file_player.dart';
 import 'package:voicevibe/components/connection_pic.dart';
 import 'package:voicevibe/components/current_time.dart';
@@ -78,11 +79,14 @@ class _ChatMessageState extends State<ChatMessage> {
     final isLocalMessage =
         widget.message.recording?.url.startsWith('https://') == false;
 
-    final isImage = widget.message.upload?.url != null;
-    final isLocalImage =
-        widget.message.upload?.url.startsWith('https://') == false;
+    final imageUrl = widget.message.upload?.url;
+    final thumbUrl = widget.message.upload?.urlThumb;
+    final imgUrl = thumbUrl ?? imageUrl;
 
-    if (widget.message.type?.toLowerCase() == 'file' && isImage == true) {
+    final isImage = imgUrl != null;
+    final isLocalImage = imgUrl?.startsWith('https://') == false;
+
+    if (isImage == true && imgUrl != null) {
       return Column(
         children: [
           Row(
@@ -94,27 +98,42 @@ class _ChatMessageState extends State<ChatMessage> {
                 [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Div(
-                      [
-                        // P(widget.message.upload?.url),
-                        if (isImage == true && isLocalImage == true)
-                          Image.asset(
-                            widget.message.upload?.url as String,
-                            width: 128,
-                            height: 128,
-                            fit: BoxFit.cover,
-                          ),
-                        if (isImage == true && isLocalImage == false)
-                          Image.network(
-                            widget.message.upload?.url as String,
-                            width: 128,
-                            height: 128,
-                            fit: BoxFit.cover,
-                          ),
-                      ],
-                      bg: colorGrey200,
-                      h: avatarLarge,
-                      w: avatarLarge,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (imageUrl == null) {
+                          return;
+                        }
+                        try {
+                          launchUrl(
+                            Uri.parse(imageUrl),
+                            mode: LaunchMode.platformDefault,
+                          );
+                        } catch (e) {
+                          // safePrint('onBack - error - $e');
+                        }
+                      },
+                      child: Div(
+                        [
+                          // P(widget.message.upload?.url),
+                          if (isImage == true && isLocalImage == true)
+                            Image.asset(
+                              imgUrl,
+                              width: 128,
+                              height: 128,
+                              fit: BoxFit.cover,
+                            ),
+                          if (isImage == true && isLocalImage == false)
+                            Image.network(
+                              imgUrl,
+                              width: 128,
+                              height: 128,
+                              fit: BoxFit.cover,
+                            ),
+                        ],
+                        bg: colorGrey200,
+                        h: avatarLarge,
+                        w: avatarLarge,
+                      ),
                     ),
                   ),
                 ],
