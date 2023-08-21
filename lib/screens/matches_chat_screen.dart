@@ -788,14 +788,12 @@ class MatchesChatScreenState extends State<MatchesChatScreen> {
               ),
               Div(
                 [
-                  if (false &&
-                      activeItem?.isUserRevealed != true &&
+                  if (activeItem?.isUserRevealed != true &&
                       activeItem?.isMemberRevealed != true)
                     AudioRecorder(
                       onSubmit: onRecord,
                     ),
-                  if (true ||
-                      activeItem?.isUserRevealed == true ||
+                  if (activeItem?.isUserRevealed == true ||
                       activeItem?.isMemberRevealed == true)
                     ChatForm(
                       onTextSubmit: onTextSubmit,
