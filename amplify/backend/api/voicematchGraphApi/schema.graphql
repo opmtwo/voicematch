@@ -84,6 +84,8 @@ type Upload @model @auth(rules: [{ allow: owner, operations: [] }]) {
 	duration: Int
 	key: String
 	url: String
+	keyThumb: String
+	urlThumb: String
 	createdAt: AWSDateTime
 	updatedAt: AWSDateTime
 }
