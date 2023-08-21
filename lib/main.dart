@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -25,10 +26,14 @@ import 'package:voicevibe/utils/user_utils.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
+    SystemUiOverlayStyle(
       statusBarColor: Colors.transparent, // transparent status bar
-      statusBarBrightness: Brightness.dark, // dark status bar
-      statusBarIconBrightness: Brightness.dark, // dark text for status bar
+      statusBarBrightness: Platform.isIOS == true
+          ? Brightness.light
+          : Brightness.dark, // dark status bar
+      statusBarIconBrightness: Platform.isIOS == true
+          ? Brightness.light
+          : Brightness.dark, // dark text for status bar
     ),
   );
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
