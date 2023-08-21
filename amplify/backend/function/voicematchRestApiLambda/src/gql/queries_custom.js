@@ -244,6 +244,8 @@ exports.listMessageEventByChatUserId = /* GraphQL */ `
 					duration
 					key
 					url
+					keyThumb
+					urlThumb
 					createdAt
 					updatedAt
 					__typename
