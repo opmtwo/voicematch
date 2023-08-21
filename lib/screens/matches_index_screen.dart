@@ -392,8 +392,8 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                             w: 24,
                                                             h: 24,
                                                             bg: colorWhite,
-                                                            bw: 2,
-                                                            bc: colorSeondary500,
+                                                            bw: 0,
+                                                            bc: colorTransparent,
                                                             onPress: () {
                                                               onPinToggle(
                                                                   item.id);
@@ -570,7 +570,7 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                               Div(
                                                 [
                                                   SizedBox(
-                                                    width: 120,
+                                                    width: 100,
                                                     child: Button(
                                                       'Unmatch'.toUpperCase(),
                                                       height: 40,
@@ -580,9 +580,9 @@ class MatchesIndexScreenState extends State<MatchesIndexScreen> {
                                                       bg: colorTransparent,
                                                       bw: 1.5,
                                                       fg: colorSeondary500,
-                                                      fz: 12,
+                                                      fz: 10,
                                                       fw: FontWeight.bold,
-                                                      ls: 1.5,
+                                                      // ls: 1,
                                                       onPress: () {
                                                         safePrint(
                                                             'item.id ${item.id}');
